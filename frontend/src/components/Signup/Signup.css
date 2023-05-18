@@ -1,0 +1,48 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+/* html{
+  background: rgba(10,25,39,1);
+} */
+
+body {
+  font-size: 14px;
+  /* background-color: rgba(10, 25, 39, 1); */
+  /* height: 100vh;
+  width: 100vw; */
+}
+/* .body {
+  background: rgba(10, 25, 39, 1);
+} */
+.email {
+  width: 50vw;
+  height: 50vh;
+  background-color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  margin-left: 4rem;
+  font-size: 1.3rem;
+  flex-direction: column;
+}
+
+.verify {
+  width: 50vw;
+  height: 50vh;
+  background-color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  /* margin-left: 4rem; */
+  font-size: 1.3rem;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
