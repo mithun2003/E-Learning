@@ -6,9 +6,12 @@ urlpatterns = [
     # path('super/login/', AdminLoginView.as_view(), name='admin_login'),
     path('get/users/', RetrieveUserView.as_view()),
     path('user/', GetOneUser.as_view()),
+    path('view/user/<user_id>', ViewOneUser.as_view()),
     path('user/delete/<id>', DeleteUser.as_view()),
     path('user/block/<id>', BlockUser.as_view()),
+    path('user/edit/<id>', EditUser.as_view()),
     path('auth/user/login/', Login.as_view(), name='custom_login'),
+    path('auth/users/admin/login/', AdminLoginView.as_view(), name='custom_login'),
     
     
     

@@ -71,3 +71,15 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = '__all__'
+        
+class WishlistCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wishlist
+        fields = ('user', 'courses')
+              
+class WishlistSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True)
+
+    class Meta:
+        model = Wishlist
+        fields = ('user', 'courses')

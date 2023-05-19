@@ -16,6 +16,11 @@ class UserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
         model = User
         fields = ('id', 'name', 'email', 'password')
+class UserEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        
 class TeacherCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teachers
@@ -35,12 +40,19 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    def get_image(self, obj):
+        if obj.image:
+            return "http://localhost:8000/" + obj.image.url
+        else:
+            return None
     class Meta:
         model = UserAccount
         fields = (
             "id",
             "name",
             "email",
+            "image",
             "is_active",
             "is_block",
             'is_student',

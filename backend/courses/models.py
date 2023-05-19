@@ -37,3 +37,8 @@ class Enrollment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     enrolled_at = models.DateField(auto_now_add = True)
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    courses = models.ManyToManyField(Course)

@@ -11,7 +11,9 @@ class BlockMiddleware:
             return response
         if request.user.is_authenticated:
             if 'application/json' in response.get('Content-Type', ''):
-                response_data = json.loads(response.content)
-                response_data['is_blocked'] = request.user.is_block
-                response = JsonResponse(response_data)
+                if request.user.is_student:
+                    response_data = json.loads(response.content)
+                    # print("resp",response_data,response,response.content)
+                    response_data['is_blocked'] = request.user.is_block
+                    response = JsonResponse(response_data)
         return response

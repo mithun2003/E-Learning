@@ -39,16 +39,13 @@ export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
  const person = JSON.parse(localStorage.getItem('user'))
   const isDesktop = useResponsive('up', 'lg');
-  // const {success,admin} = useSelector((state)=>state.adminLogin)
   const {user} = useSelector((state)=>state.login)
-  console.log(user);
-  // console.log(admin)
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
   const filteredNavConfig = user.is_teacher
   ? navConfig
@@ -62,22 +59,17 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
       <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        {/* <Logo /> */}
       </Box>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={person?.image} alt="photoURL" />
+            <Avatar src={user?.image} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
                 {user.name}
               </Typography>
-
-              {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
-              </Typography> */}
             </Box>
           </StyledAccount>
         </Link>

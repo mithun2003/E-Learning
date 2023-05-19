@@ -27,10 +27,10 @@ class AdminLoginView(APIView):
 
         user = authenticate(email=email, password=password)
         if user is None:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_403_FORBIDDEN)
 
         if not user.is_staff:
-            return Response({'error': 'You are not authorized to perform this action'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'You are not authorized to perform this action'}, status=status.HTTP_403_FORBIDDEN)
 
         refresh = RefreshToken.for_user(user)
 
@@ -66,6 +66,18 @@ class GetOneUser(APIView):
         # email = 'root@gmail.com'
         email = request.GET.get('email')
         user = UserAccount.objects.get(email=email)
+        serializer = UserSerializer(user)
+        print(request)
+        return Response(serializer.data)
+
+class ViewOneUser(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request,user_id):
+
+        # email = 'root@gmail.com'
+        # email = request.GET.get('email')
+        user = UserAccount.objects.get(id=user_id)
         serializer = UserSerializer(user)
         print(request)
         return Response(serializer.data)
@@ -246,3 +258,31 @@ class BlockTeacher(APIView):
             return Response(status=status.HTTP_202_ACCEPTED)
         except Teachers.DoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class EditUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, id):
+        try:
+            user = UserAccount.objects.get(pk=id)
+        except UserAccount.DoesNotExist:
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserEditSerializer(user, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        is_teacher = user.is_teacher
+
+        if is_teacher:
+            teacher = Teacher.objects.get(user=user)
+            teacher_serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+            if not teacher_serializer.is_valid():
+                return Response(teacher_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            teacher_serializer.save()
+        
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

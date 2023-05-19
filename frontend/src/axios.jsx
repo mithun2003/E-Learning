@@ -115,7 +115,7 @@ instance.interceptors.response.use(
     if (error.response.status === 401 && error.response.statusText === "Unauthorized") {
       const refresh = localStorage.getItem('refresh');
       const admin_refresh = localStorage.getItem('admin-refresh');
-      if (refresh && !originalRequest.url.includes('/auth/user/login') && !originalRequest.url.includes('/auth/users') && !originalRequest.url.includes('/auth/users/admin/login/')) {
+      if (refresh && !originalRequest.url.includes('/auth/user/login/') && !originalRequest.url.includes('/auth/users') && !originalRequest.url.includes('/auth/users/admin/login/')) {
         return instance
           .post('/auth/jwt/refresh/', { refresh: refresh })
           .then((response) => {

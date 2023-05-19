@@ -206,3 +206,25 @@ class ViewOneChapter(APIView):
         chapter = Chapter.objects.get(id=chapter_id)
         serializer = ChapterSerializer(chapter)
         return Response(serializer.data)
+
+class WishlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        wishlist = Wishlist.objects.get(user=request.user)
+        serializer = WishlistSerializer(wishlist)
+        return Response(serializer.data)
+
+    def post(self, request):
+        course_id = request.data.get('course_id')
+        course = Course.objects.get(pk=course_id)
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        wishlist.courses.add(course)
+        return Response({'message': 'Course added to wishlist'})
+
+    def delete(self, request):
+        course_id = request.data.get('course_id')
+        course = Course.objects.get(pk=course_id)
+        wishlist = Wishlist.objects.get(user=request.user)
+        wishlist.courses.remove(course)
+        return Response({'message': 'Course removed from wishlist'})

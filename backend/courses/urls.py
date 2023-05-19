@@ -27,5 +27,9 @@ urlpatterns = [
         
         path('enroll/<course_id>', Enroll.as_view()),
         path('enrollement/<course_id>', ViewEnrolled.as_view()),
+        
+        
+        
+        path('', Enroll.as_view()),
 ]
 

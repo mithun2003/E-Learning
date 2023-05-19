@@ -10,9 +10,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('',include('account.urls')),
     path('course/',include('courses.urls')),
-    path('super/login/', AdminLoginView.as_view(), name='admin_login'),
-
-
 ]
 
 # urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
