@@ -20,12 +20,29 @@ class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        
+class UserSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, user):
+        if user.image:
+            image_url = user.image.url
+            if image_url.startswith('/media/media'):
+                image_url = image_url.replace('/media/media', '/media')
+            return image_url
+        else:
+            return None
+    class Meta:
+        model = UserAccount
+        fields = "__all__"    
+# class TeacherCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Teachers
+#         fields = ('id', 'name', 'email', 'image','country','mobile_number','address','highest_qualification','skills','resume')
 class TeacherCreateSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all())
     class Meta:
         model = Teachers
-        fields = ('id', 'name', 'email', 'image','country','mobile_number','address','highest_qualification','skills','resume')
-
+        fields = ( 'user', 'address', 'highest_qualification', 'skills', 'resume')
 # class UserSerializerDjoser(UserSerializer):
 #     class Meta(UserSerializer.Meta):
 #         model = User
@@ -39,42 +56,33 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
 #         )
 
 
-class UserSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-    def get_image(self, obj):
-        if obj.image:
-            return "http://localhost:8000/" + obj.image.url
-        else:
-            return None
-    class Meta:
-        model = UserAccount
-        fields = (
-            "id",
-            "name",
-            "email",
-            "image",
-            "is_active",
-            "is_block",
-            'is_student',
-            "is_teacher",
-            "is_submit"
-        )
+
+# class TeacherSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Teachers
+#         fields = (
+#             "name",
+#             "email",
+#             "highest_qualification",
+#             "skills",
+#             'address',
+#             'image',
+#             'country',
+#             'mobile_number',
+#             'resume',
+#             'is_block',
+#             'is_verified'
+#         )
 class TeacherSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Teachers
         fields = (
-            "id",
-            "name",
-            "email",
+            "user",
             "highest_qualification",
             "skills",
             'address',
-            'image',
-            'country',
-            'mobile_number',
             'resume',
-            'is_block',
-            'is_verified'
         )
 
 

@@ -15,6 +15,7 @@ import Scrollbar from '../../Admin/scrollbar';
 import navConfig from './config';
 import { useSelector } from 'react-redux';
 import NavSection from './NavSection';
+import { baseUrl } from '../../constants/baseUrl';
 
 // ----------------------------------------------------------------------
 
@@ -39,13 +40,12 @@ export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
  const person = JSON.parse(localStorage.getItem('user'))
   const isDesktop = useResponsive('up', 'lg');
-  const {user} = useSelector((state)=>state.login)
+  const  user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
-
   }, [pathname]);
   const filteredNavConfig = user.is_teacher
   ? navConfig
@@ -64,7 +64,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={user?.image} alt="photoURL" />
+            <Avatar src={user.image && `${baseUrl}${user.image}`} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>

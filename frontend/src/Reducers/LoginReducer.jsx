@@ -31,11 +31,7 @@ export const loginUser = createAsyncThunk(
 
       localStorage.setItem("user", JSON.stringify(userData));
       if (users.data.is_teacher===true){
-        const teacher = await axios.get("/request/teacher",{
-          params:{
-            email:user.email
-          }
-        })
+        const teacher = await axios.get(`/teacher/get/${userData.id}`)
         console.log(teacher)
         localStorage.setItem("teacher",JSON.stringify(teacher.data))
       }

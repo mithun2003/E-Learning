@@ -25,7 +25,7 @@ import Swal from "sweetalert2";
 const level = ["Easy", "Medium", "Hard"];
 const EditCourse = ({ onOpen, onCloseModal, id }) => {
   const fileRef = useRef();
-  const [course, setCourse] = useState({});
+  const [course, setCourse] = useState();
   const [open, setOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState();  
   const [teacher, setTeacher] = useState([]);
@@ -48,13 +48,13 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
         setCourse((prevCourse) => ({
           ...prevCourse,
           ...response.data,
-          teacher: response.data.teacher.id,
+          teacher: response.data.teacher.user.id,
           cat: response.data.cat.map((c) => c.id),
         }));
         setSelectedCat(response.data.cat.map((category) => category.name));
         console.log("category", response.data);
         console.log(course);
-        setCourse({...response.data,teacher: response.data.teacher.id,cat:[]})
+        setCourse({...response.data,teacher: response.data.teacher.user.id,cat:[]})
         console.log(course);
       })
       .catch((error) => console.error(error));
@@ -263,7 +263,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
               label="Course Name"
               fullWidth
               name="title"
-              value={course.title}
+              value={course?.title}
               onChange={handleInputChange}
               error={formErrors.title}
               helperText={formErrors.title ? "Please enter a title" : ""}
@@ -277,7 +277,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
               name="desc"
               rows={3}
               fullWidth
-              value={course.desc}
+              value={course?.desc}
               onChange={handleInputChange}
               error={formErrors.desc}
               helperText={formErrors.desc ? "Please enter a description" : ""}
@@ -291,7 +291,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
               <InputLabel>Level</InputLabel>
               <Select
                 name="level"
-                value={course.level}
+                value={course?.level}
                 onChange={handleInputChange}
                 error={formErrors.level}
               >
@@ -318,7 +318,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
               name="duration"
               multiline
               fullWidth
-              value={course.duration}
+              value={course?.duration}
               onChange={handleInputChange}
               error={formErrors.duration}
               helperText={
@@ -349,7 +349,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
   >
     {cat.map((category) => (
       <MenuItem key={category.id} value={category.name}>
-        {category.name}
+        {category?.name}
       </MenuItem>
     ))}
   </Select>
@@ -383,7 +383,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
                 This field is require
               </p>
             )}
-            {course.image ? <img src={course.image}></img> : null}
+            {course?.image ? <img src={course.image}></img> : null}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseModal}>Cancel</Button>

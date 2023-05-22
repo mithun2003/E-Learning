@@ -24,7 +24,7 @@ sx: {
           {pages.map((page,index)=>(
           <ListItemButton key={index} sx={{width:'100%'}}>
             <ListItemIcon>
-              <ListItemText sx={{color:'#212B36'}} onClick={()=>setOpen(!open)}>
+              <ListItemText sx={{color:'#212B36',fontFamily: 'Montserrat, sans-serif'}} onClick={()=>setOpen(!open)}>
                 {page}
               </ListItemText>
             </ListItemIcon>

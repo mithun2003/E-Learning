@@ -409,7 +409,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
                 This field is require
               </p>
             )}
-            {course.image ? <img src={course.image}></img> : null}
+            {course.image ? <img src={course.image}/> : null}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseModal}>Cancel</Button>

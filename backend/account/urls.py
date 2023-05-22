@@ -20,9 +20,10 @@ urlpatterns = [
     path('request/teacher/verify/<id>', Verify.as_view()),
     path('request/teacher/reject/<id>', Reject.as_view()),
     path('teacher/get', RetrieveTeacherView.as_view()),
+    path('teacher/get/<id>', RetrieveOneTeacherView.as_view()),
     path('request/teacher/<id>', OneTeacher.as_view()),
     path('request/teacher/', RequestTeacher.as_view()),
-    path('teacher/block/<id>', BlockTeacher.as_view()),
+    # path('teacher/block/<id>', BlockTeacher.as_view()),
 
     # path('get/users/', get_users),
     

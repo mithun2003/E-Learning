@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import EditProfile from './EditProfile';
 import axios from '../../axios';
+import TeacherEditProfile from './TeacherEditProfile';
+import { baseUrl } from '../../constants/baseUrl';
+import TeacherProfile from './TeacherProfile';
 
 const Profile = () => {
-  const {user} = useSelector((state)=>state.login)
+  const {user} = useSelector((state) => state.login);
   const teacher = JSON.parse(localStorage.getItem("teacher"))
-  const [userDetails,setUserDetails] = useState(teacher?teacher:user)
+  const [userDetails,setUserDetails] = useState()
   const [open,setOpen]= useState(false)
   useEffect(() => {
     document.body.style.backgroundColor = "#fff";
@@ -19,32 +22,35 @@ const Profile = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  useEffect(() => {
-    axios
+//   useEffect(() => {
+//     if (teacher){
+//     axios
+//     .get(`/teacher/get/${user.id}`)
+//     .then((response) => {
+//       setUserDetails(response.data);
+//       console.log(response.data);
+//       localStorage.setItem("teacher",JSON.stringify(response.data))
+//     })
+//     .catch((error) => console.error(error));
+//   }
+// }, [open]);
+useEffect(() => {
+  axios
     .get(`/view/user/${user.id}`)
     .then((response) => {
       setUserDetails(response.data);
       console.log(response.data);
-      localStorage.setItem("user",JSON.stringify(response.data))
     })
     .catch((error) => console.error(error));
-}, [open]);
-  useEffect(() => {
-    if (teacher){
-    axios
-    .get(`/request/teacher/${teacher.id}`)
-    .then((response) => {
-      setUserDetails(response.data);
-      console.log(response.data);
-      localStorage.setItem("teacher",JSON.stringify(response.data))
-    })
-    .catch((error) => console.error(error));
-  }
 }, [open]);
 
 
   return (
     <>
+    {teacher?
+  <TeacherProfile/>
+  :
+  (<>
     <Paper
       style={{
         padding: '2rem',
@@ -57,8 +63,7 @@ const Profile = () => {
       <Grid container direction="column" alignItems="center" spacing={2}>
         <Grid item>
           <Avatar
-            src={userDetails?.image}
-            alt="User Avatar"
+            alt={userDetails?.name} src={userDetails && `${baseUrl}${userDetails.image}`} 
             style={{
               width: '10rem',
               height: '10rem',
@@ -68,29 +73,30 @@ const Profile = () => {
         </Grid>
         <Grid item>
           <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-            {userDetails.name}
+            {userDetails && userDetails.name}
           </Typography>
         </Grid>
         <Grid item>
           <Typography variant="subtitle1" style={{ color: '#757575', marginBottom: '2rem' }}>
-            {userDetails.email}
+            {userDetails && userDetails.email}
           </Typography>
         </Grid>
         <Grid item>
           <Typography variant="body1" style={{ marginBottom: '2rem' }}>
-            {userDetails.bio}
+            {userDetails && userDetails.mobile_number}
           </Typography>
         </Grid>
           {/* <Link to='/teacher/register' style={{color:'blue'}}>If you want to become a teacher here?</Link> */}
           <Button variant='contained' onClick={handleOpenModal}>Edit</Button>
-        {user.is_submit?null:(<Grid item>
+        {userDetails?.is_submit?null:(<Grid item>
           <Link to='/teacher/register' style={{color:'blue'}}>If you want to become a teacher here?</Link>
         </Grid>)}
       </Grid>
     </Paper>
-    <EditProfile onOpen={open} onCloseModal={handleClose} userDetails={user}/>
-
-    </>
+    <EditProfile onOpen={open} onCloseModal={handleClose} userDetails={userDetails}/>
+    </>)
+  }
+  </>
   );
 };
 

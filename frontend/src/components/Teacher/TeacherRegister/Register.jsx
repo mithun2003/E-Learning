@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { setUser } from "../../../Reducers/LoginReducer";
 import Swal from "sweetalert2";
 import { logout } from "../../../Reducers/LoginReducer";
+import { baseUrl } from "../../../constants/baseUrl";
 
 const countries = [
   "USA",
@@ -36,7 +37,9 @@ const Register = () => {
   const dispatch = useDispatch();
 
   const [load, setLoad] = useState(null);
-  const { user } = useSelector((state) => state.login);
+  const [image, setImage] = useState(null);
+  const  user = JSON.parse(localStorage.getItem("user"));
+  // const { user } = useSelector((state) => state.login);
   const fileRef = useRef();
   console.log(user);
   useEffect(() => {
@@ -45,12 +48,12 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: user.name,
     email: user.email,
-    country: "",
-    mobile_number: "",
+    country: user.country,
+    mobile_number: user.mobile_number,
     highest_qualification: "",
     skills: "",
     address: "",
-    image: null,
+    image: user.image,
     resume: null,
     is_submit: false
   });
@@ -124,6 +127,7 @@ const Register = () => {
     _form.append("highest_qualification", formData.highest_qualification);
     _form.append("skills", formData.skills);
     _form.append("address", formData.address);
+    
     if (fileRef.current.files.length > 0) {
       console.log("image appended");
       _form.append(
@@ -131,6 +135,8 @@ const Register = () => {
         fileRef.current.files[0],
         fileRef.current.files[0]?.name
       );
+    }else if (user.image){
+      _form.append("image",user.image)
     }
     _form.append("resume", formData.resume);
     setFormData({ ...formData, is_submit: true });
@@ -153,6 +159,7 @@ const Register = () => {
       } else {
         // User is not blocked, proceed with success action
         navigate("/profile");
+        localStorage.setItem('user',JSON.stringify(response.data))
         setFormErrors({
           name: false,
           country: false,
@@ -185,18 +192,21 @@ const Register = () => {
 
   const handleImageChange = (e) => {
     const file = URL.createObjectURL(e.target.files[0]);
+    setImage(file)
     const name = e.target.files[0];
     console.log(file);
     console.log(file);
     if (file && name.type.startsWith("image/")) {
       // if (file && file.type.startsWith("image/")) {
-      setFormData({ ...formData, image: file });
+      setFormData({ ...formData,
+        image: file
+      })
       setFormErrors((prevErrors) => ({
         ...prevErrors,
         image: false
       }));
     } else {
-      setFormData({ ...formData, image: null });
+      // setFormData({ ...formData, image: null });
       setFormErrors((prevErrors) => ({
         ...prevErrors,
         image: true
@@ -247,7 +257,7 @@ const Register = () => {
                 fontSize: 32,
                 marginBottom: "1rem"
               }}
-              src={formData.image ? formData.image : null}
+              src={image?image:`${baseUrl}${formData.image}`}
             >
               {/* <LockOutlinedIcon /> */}
             </Avatar>
@@ -376,7 +386,7 @@ const Register = () => {
 
               <input
                 type="file"
-                accept="image/*"
+                accept="image/png, image/jpeg"
                 onChange={handleImageChange}
                 sx={{ marginBottom: "16px", marginTop: "1rem" }}
                 error={formErrors.image}
@@ -404,7 +414,7 @@ const Register = () => {
                   lineHeight: "23px"
                 }}
               >
-                Upload Resume:
+              Upload Resume:
               </label>
               <br />
               <TextField
@@ -464,6 +474,16 @@ const Register = () => {
                 }}
               >
                 Submit
+              </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                color='error'
+                onClick={()=>navigate('/profile')}
+                sx={{marginTop:'1rem'}}
+              >
+                Cancel
               </Button>
             </form>
           </CardContent>

@@ -9,11 +9,10 @@ const Contact = () => {
           Contact us
         </Typography>
         <Typography variant="body1" sx={{ fontSize: "lg", fontWeight: "thin", lineHeight: 1.2, color: "#1D5564",marginLeft:"2rem",px:8,minWidth:"70px" }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare.
-        </Typography>
+        Users can provide their thoughts, opinions, suggestions, or comments regarding a course, teacher, or experience.        </Typography>
       </Grid>
       <Grid item xs={12} md={6} >
-        <Grid container spacing={2} sx={{width:"95%",margin:'auto'}}>
+        <Grid container spacing={2} sx={{width:"95%",margin:'auto',marginRight:'2rem'}}>
           <Grid item xs={12}>
             <TextField variant="outlined" fullWidth placeholder="Name" sx={{bgcolor:"white"}} />
           </Grid>

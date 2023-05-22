@@ -7,6 +7,10 @@ const navConfig = [
     path: '/',
   },
   {
+     title: 'Profile',
+     path: '/profile',
+   },
+  {
     title: 'Change Password',
     path: '/user/chage-password',
   },

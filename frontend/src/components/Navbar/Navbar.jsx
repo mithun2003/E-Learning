@@ -19,6 +19,7 @@ import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import DrawerComp from "./DrawerComp";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { baseUrl } from "../../constants/baseUrl";
 
 const pages = ["Courses", "Category", "About"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -36,9 +37,11 @@ function ResponsiveAppBar() {
       navigate("/");
     }
   };
+  const  user = JSON.parse(localStorage.getItem("user"));
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { isAuthenticated, user } = useSelector((state) => state.login);
+  const { isAuthenticated } = useSelector((state) => state.login);
   const teacher = JSON.parse(localStorage.getItem("teacher"))
   const handleWishlist = () => {
     navigate('/whishlist')
@@ -59,6 +62,12 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const handleNav = (page) => {
+    if (page === "Courses") {
+      navigate('/courses');
+    } 
+    
+  };
   const handleItemClick = (setting) => {
     if (setting === "Logout") {
       logoutHandler();
@@ -67,6 +76,7 @@ function ResponsiveAppBar() {
     } else if (setting === "Dashboard") {
       navigate("/");
     }
+    
   };
   return (
     <AppBar
@@ -89,9 +99,9 @@ function ResponsiveAppBar() {
             
             sx={{
               mr: 2,
-              display: { xs: "flex", md: "none" },
+              display: { xs: "flex" },
               flexGrow: 1,
-              fontFamily: "monospace",
+              fontFamily: 'Montserrat, sans-serif',
               fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
@@ -104,7 +114,7 @@ function ResponsiveAppBar() {
             <img
               src={image}
               alt="Logo"
-              style={{ width: "50px", height: "50px", marginRight: "10px" }}
+              style={{ width: "4.5vh" }}
               
               />
               </Link>
@@ -114,105 +124,46 @@ function ResponsiveAppBar() {
 
           ) : 
           
-          (<Typography
+          (
+            <>
+          <Typography
             variant="h6"
             noWrap
             component="a"
-            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
+              fontFamily: 'Montserrat, sans-serif',
               fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none"
             }}
-          >
-            <img
-              src={image}
-              alt="Logo"
-              style={{ width: "50px", height: "50px", marginRight: "10px" }}
-            />
-          </Typography>)
-          }
 
-          {/* <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left"
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left"
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" }
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
-          {/* <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none"
-            }}
           >
             <img
               src={image}
               alt="Logo"
-              style={{ width: "50px", height: "50px", marginRight: "10px" }}
+              style={{ width: "50px",cursor:'pointer'}}
+              onClick={()=>navigate('/')}
+              
             />
-          </Typography> */}
-          {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
-            <img
-              src={image}
-              alt="Logo"
-              style={{ width: '100px', marginRight: '10px' }}
-            />
-            </Box> */}
+          </Typography>
+          
+       
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "#1D5564", display: "block" }}
+                onClick={()=>handleNav(page)}
+                sx={{ my: 2, color: "#1D5564", display: "block",fontFamily: 'Montserrat, sans-serif' }}
               >
                 {page}
               </Button>
             ))}
           </Box>
+          </>
+          )}
 
    <IconButton onClick={handleWishlist}>
           <FavoriteBorderIcon sx={{marginRight:'1rem'}}/>
@@ -221,7 +172,7 @@ function ResponsiveAppBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src={user?.image} />
+                <Avatar alt={user.name} src={user.image && `${baseUrl}${user.image}`} />
                 {/* <Button
                 variant="outlined"
                   onClick={handleOpenUserMenu}

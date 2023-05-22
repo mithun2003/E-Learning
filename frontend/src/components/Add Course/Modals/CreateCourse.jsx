@@ -36,7 +36,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
         cat: [],
         duration: "",
         level: "",
-        teacher:teacher.id,
+        teacher:teacher.user.id,
         is_publish: true
       });
       const token = localStorage.getItem('admin-access')
@@ -132,24 +132,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
         }))
       }
     };
-      // const handleImageChange = (e) => {
-      //   const file = e.target.files[0];
-      //   console.log(file);
-      //   if (file && file.type.startsWith("image/")) {
-      //     setCourse({ ...course, image: file });
-      //     setFormErrors((prevErrors) => ({
-      //       ...prevErrors,
-      //       image: false
-      //     }));
-      //   } else {
-      //     setCourse({ ...course, image: null });
-      //     setFormErrors((prevErrors) => ({
-      //       ...prevErrors,
-      //       image: true
-      //     }));
-      //   }
-      //   console.log(course);
-      // };
+    
     
       const handleSubmit = (event) => {
         event.preventDefault();
@@ -192,11 +175,6 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
             );
         }   
         formData.append('is_publish', "True");
-      
-        console.log(fileRef.current.files[0]?.name,fileRef.current.files[0]);
-        for (const [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
         try {
           const response = await axios.post("course/course-create", formData, {
             headers: {
@@ -210,6 +188,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
           return response.data;
         } catch (error) {
           console.log(error);
+          handleCloseModal();
           Swal.fire({
             title: "Error!",
             text: "Something went wrong.",
@@ -284,6 +263,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
               <InputLabel>Level</InputLabel>
               <Select
                 name="level"
+                label='Level'
                 value={course.level}
                 onChange={handleInputChange}
                 error={formErrors.level}
@@ -320,7 +300,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
           <FormControl fullWidth margin="normal">
   <InputLabel id="category-label">Category</InputLabel>
   <Select
-    labelId="category-label"
+    label="Category"
     id="category"
     name="cat"
     multiple

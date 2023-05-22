@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState } from "react";
 import { Box, Typography, Button, useMediaQuery, Grid, IconButton } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../axios";
 import { useTheme } from "@emotion/react";
 import NameOfCourses from "./NameOfCourses";
@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import { logout } from "../../Reducers/LoginReducer";
+import CourseReviews from "./CourseReviews";
 
 
 
@@ -25,7 +26,7 @@ export default function CoursesDetailedView() {
   const [chapter, setChapter] = useState([]);
   const [enroll,setEnroll] = useState(false)
   const dispatch = useDispatch();
-
+const navigate = useNavigate()
   useEffect(() => {
     axios
       .get(`/course/${id}/chapter-list`)
@@ -52,7 +53,7 @@ export default function CoursesDetailedView() {
 
   useEffect(() => {
     axios
-      .get(`/course/enrollement/${id}`)
+      .get(`/course/enrollment/${id}`)
       .then((response) => {
         if (response.data.enrolled === true)
         setEnroll(true);
@@ -105,6 +106,65 @@ export default function CoursesDetailedView() {
         const response = await axios.get(`/course/enrollment/${id}`);
         if (response.data.enrolled === true) {
           setEnroll(true);
+        }
+      } catch (error) {
+        Swal.fire({
+          position: "top-right",
+          icon: "error",
+          title: "Something went wrong",
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+          timerProgressBar: true,
+        });
+      }
+    } else {
+      Swal.fire({
+        title: "",
+        position: "top-right",
+        text: "You have to login for enrolling.",
+        icon: "warning",
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        timerProgressBar: true,
+      });
+    }
+  };
+  const handleUnenroll = async () => {
+    if (user.is_blocked === true) {
+      Swal.fire({
+        title: "Error!",
+        text: "You are blocked",
+        icon: "error",
+        backdrop: false
+      }).then(() => {
+        dispatch(logout())
+      });
+    }
+
+    if (isAuthenticated) {
+      try {
+        await axios.post(`/course/unenroll/${course.id}`, null, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        await Swal.fire({
+          position: "top-right",
+          icon: "success",
+          title: "You unenrolled this course",
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+          timerProgressBar: true,
+        });
+  
+        const response = await axios.get(`/course/enrollment/${id}`);
+        if (response.data.enrolled === false) {
+          setEnroll(false);
         }
       } catch (error) {
         Swal.fire({
@@ -198,62 +258,93 @@ export default function CoursesDetailedView() {
                   fontFamily:
                     "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif",
                   // position: "absolute",
-                  justifyContent: "center",
-                  flexDirection: "column"
+                  display:'flex',
+                  flexDirection: "row",
+                  alignItems:'center'
                   // width: "500px"
                 }}
               >
                 {course.desc}
+ </Typography>
+              <Typography
+                sx={{
+                  marginTop: isMobile ? 0 : 5,
+                  color: "#1D5564",
+                  fontSize: "18px",
+                  lineHeight: "33px",
+                  // top: "294px",
+                  fontWeight: 300,
+                  fontFamily:
+                    "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif",
+                  // position: "absolute",
+                  display:'flex',
+                  flexDirection: "row",
+                  alignItems:'center'
+                  // width: "500px"
+                }}
+              >
+                <Typography fontWeight={'bold'}>Rating &nbsp;:&nbsp; </Typography>{course.avg_rating}
+                <Typography fontWeight={'bold'} marginLeft={2}>Course By &nbsp;:&nbsp; </Typography><Typography onClick={()=>navigate(`/teacher-profile/${user.name}`)} sx={{textDecoration:'underline',cursor:'pointer'}}>{course.teacher?.user.name}</Typography>
               </Typography>
               <Box     display='flex'
     alignItems='center'
     alignContent= 'center'
     flexDirection= 'row'
     flexWrap='wrap'>
-              {enroll?
-              (<Button
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 200,
-                  height: 50,
-                  opacity:'0.8',
-                  backgroundColor: "rgba(25,89,100,0.7)",
-                  marginTop: 5,
-                  "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
-                }}
-                disabled
-              >
-                <Typography
-                  variant="h4"
-                  className="text-white"
-                  sx={{ color: "white", fontWeight: 100 }}
-                >
-                  Enrolled
-                </Typography>
-              </Button>)              
-              :(<Button
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 200,
-                  height: 50,
-                  backgroundColor: "#1D5564",
-                  marginTop: 5,
-                  "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
-                }}
-                onClick={handleEnroll}
-              >
-                <Typography
-                  variant="h4"
-                  className="text-white"
-                  sx={{ color: "white", fontWeight: 100 }}
-                >
-                  Enroll Now
-                </Typography>
-              </Button>)}
+
+
+{course?.teacher?.user.id !== user.id && (
+  enroll ? (
+    <Button
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 200,
+        height: 50,
+        opacity: 0.8,
+        backgroundColor: "rgba(25, 89, 100, 0.7)",
+        marginTop: 5,
+        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
+      }}
+      onClick={handleUnenroll}
+    >
+      <Typography
+        variant="h4"
+        className="text-white"
+        sx={{ color: "white", fontWeight: 100 }}
+      >
+        Unenroll
+      </Typography>
+    </Button>
+  ) : (
+    <Button
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 200,
+        height: 50,
+        backgroundColor: "#1D5564",
+        marginTop: 5,
+        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
+      }}
+      onClick={handleEnroll}
+    >
+      <Typography
+        variant="h4"
+        className="text-white"
+        sx={{ color: "white", fontWeight: 100 }}
+      >
+        Enroll Now
+      </Typography>
+    </Button>
+  )
+)}
+
+
+
+
               {wishlist ?(<IconButton sx={{marginTop:'40px'}} onClick={handleRemoveFromWishlist}>
               <FavoriteOutlinedIcon sx={{width:'4rem', height:'3rem'}}/>
               </IconButton>):
@@ -273,8 +364,9 @@ export default function CoursesDetailedView() {
                   width: isMobile ? "fit-content" : "70%",
                   height: "auto",
                   maxWidth: "100%",
-                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.3)",
+                  boxShadow: 'rgb(0, 0, 0,1.3) 15px 10px 10px',
                   // marginLeft:'10px'
+                  borderRadius:'8%',
                   [theme.breakpoints.up("sm")]: {
                     width: "100%"
                   }
@@ -293,8 +385,9 @@ export default function CoursesDetailedView() {
         spacing={2}
         alignItems="center"
         direction={isMobile ? "column" : "row"}
-        mb="5vh"
         bgcolor="white"
+        display={isMobile && 'flex'}
+        sx={{alignItems:isMobile && 'flex-start'}}
       >
         <Grid item xs={12} sm={6} md={6} lg={6} sx={{ paddingLeft: "4vw" }}>
           <NameOfCourses chapter={chapter} courseName={course.title} course_id={course.id}/>
@@ -303,6 +396,17 @@ export default function CoursesDetailedView() {
           <AboutCourse course={course} categories={categories} />
         </Grid>
       </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        // direction={isMobile ? "column" : "row"}
+        bgcolor="white"
+      >
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ paddingLeft: "4vw" }}>
+          <CourseReviews courseId={course.id} enroll={enroll}/>
+          </Grid>
+          </Grid>
     </div>
   );
 }

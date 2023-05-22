@@ -79,7 +79,7 @@ export const handleRequestSort = (event, property, order,orderBy, setOrder, setO
       return filter(
         array,
         // (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || (_user) => _user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
-        (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
+        (_user) => _user.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
 
       );
     }

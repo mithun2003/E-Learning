@@ -58,10 +58,10 @@ class CourseCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        
-        print('KJDJFHS',request.data.get('cat'))
+
+        print('KJDJFHS', request.data.get('cat'))
         serializer = CourseCreateSerializer(data=request.data)
-        print("AFTER",request.data)
+        print("AFTER", request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -76,6 +76,8 @@ class ViewCourse(APIView):
         queryset = Course.objects.all().order_by('-updated_at')
         serializer = CourseSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
 class UserCourseView(APIView):
     permission_classes = [AllowAny]
 
@@ -88,17 +90,14 @@ class UserCourseView(APIView):
 class TeacherViewCourse(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        queryset = Course.objects.get(id=1)
-        # teachers = []
-        # for course in queryset:
-        #     teacher = course.teacher
-        #     teachers.append(teacher)
-        # serializer = TeacherSerializer(teachers, many=True)
-        teacher = queryset.cat
-        serializer = CategorySerializer(teacher)
-        return Response(serializer.data)
-        return Response(serializer.data)
+    def get(self, request, id):
+        try:
+            teacher = Teachers.objects.get(user_id=id)
+            courses = Course.objects.filter(teacher=teacher)
+            serializer = CourseSerializer(courses, many=True)
+            return Response(serializer.data)
+        except Teachers.DoesNotExist:
+            return Response({'message': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ViewOneCourse(APIView):
@@ -123,7 +122,7 @@ class CourseUpdate(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, id):
-        print("EDITING",request.data)
+        print("EDITING", request.data)
         try:
             course = Course.objects.get(pk=id)
         except Course.DoesNotExist:
@@ -136,26 +135,31 @@ class CourseUpdate(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class CreateChapter(APIView):
-    permission_classes=[IsAuthenticated]
-    def post(self,request):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
         print(request.data)
-      
-        serializer = ChapterCreateSerializer(data = request.data)
+
+        serializer = ChapterCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class ViewAllChapter(APIView):
-        permission_classes=[AllowAny]
-        def get(self, request, course_id):
-            course = Course.objects.get(id=course_id)
-            chapters = Chapter.objects.filter(course=course).order_by('order')
-            serializer = ChapterSerializer(chapters, many=True)
-            return Response(serializer.data)
-        
+    permission_classes = [AllowAny]
+
+    def get(self, request, course_id):
+        course = Course.objects.get(id=course_id)
+        chapters = Chapter.objects.filter(course=course).order_by('order')
+        serializer = ChapterSerializer(chapters, many=True)
+        return Response(serializer.data)
+
+
 class PublishCourse(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -167,45 +171,63 @@ class PublishCourse(APIView):
             return Response(status=status.HTTP_202_ACCEPTED)
         except Course.DoesNotExist:
             return Response("Course not found", status=status.HTTP_404_NOT_FOUND)
-        
+
+
 class DeleteChapter(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, id):
         chapter = Chapter.objects.get(id=id)
         chapter.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
-
-
 class Enroll(APIView):
-    permission_classes=[IsAuthenticated]
-    def post(self,request, course_id):
-        print(request.user)
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, course_id):
         course = Course.objects.get(pk=course_id)
-        enrolled = Enrollment.objects.filter(course=course,user=request.user)
-        print(enrolled)
-        if enrolled.exists():
+        enrolled = Enrollment.objects.filter(course=course, user=request.user).exists()
+
+        if enrolled:
             return Response({'message': 'You are already enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             enrollment = Enrollment(course=course, user=request.user)
             enrollment.save()
-            course.enrollments += 1
-            course.save() 
             serializer = EnrollmentSerializer(enrollment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
+
+class Unenroll(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, course_id):
+        course = Course.objects.get(pk=course_id)
+        enrollment = Enrollment.objects.filter(course=course, user=request.user)
+
+        if enrollment.exists():
+            enrollment.delete()
+            return Response({'message': 'Successfully unenrolled from the course.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'You are not enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ViewEnrolled(APIView):
-    def get(self,request,course_id):
-        course = Course.objects.get(id=course_id)
-        enrollment = Enrollment.objects.filter(course=course, user=request.user).exists()
-        return Response({'enrolled': enrollment})
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, course_id):
+        course = Course.objects.get(pk=course_id)
+        enrolled = Enrollment.objects.filter(course=course, user=request.user).exists()
+
+        return Response({'enrolled': enrolled})
+
+
 class ViewOneChapter(APIView):
-    def get(self,request,chapter_id):
+    def get(self, request, chapter_id):
         chapter = Chapter.objects.get(id=chapter_id)
         serializer = ChapterSerializer(chapter)
         return Response(serializer.data)
+
 
 class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
@@ -228,3 +250,30 @@ class WishlistView(APIView):
         wishlist = Wishlist.objects.get(user=request.user)
         wishlist.courses.remove(course)
         return Response({'message': 'Course removed from wishlist'})
+
+
+class Review(APIView):
+    def post(self, request, course_id):
+        # course = Course.objects.get(id=course_id)
+        # user = UserAccount.objects.get(id=request.user.id)
+        request.data['course'] = course_id
+        request.data['user'] = request.user.id
+        print(request.data)
+        serializer = CreateReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, course_id):
+
+        query = CourseReview.objects.filter(course_id=course_id).order_by('-rating')
+        print(query)
+        serializer = ReviewSerializer(query, many=True)
+        print(serializer)
+
+        return Response(serializer.data)
+
+
+# Retreive all courses added by a teacher

@@ -151,6 +151,13 @@ const Signup = () => {
                       value={user.name}
                       onChange={handleChange}
                       autoFocus
+                      InputProps={{
+                        sx: {
+                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "green", // Change the border color when focused
+                          },
+                        },
+                      }}
                       error={!!localerror?.name}
                       helperText={localerror?.name}
                     />
@@ -197,7 +204,8 @@ const Signup = () => {
                       type="submit"
                       fullWidth
                       variant="contained"
-                      sx={{ mt: 3, mb: 2 }}
+                      sx={{ mt: 3, mb: 2,bgcolor:'#1d5564',
+                      "&:hover":{bgcolor:'rgba(29,85,100,0.9)'} }}
                     >
                       {loading ? "Signing up..." : "Sign up"}
                     </Button>
@@ -206,7 +214,7 @@ const Signup = () => {
                         
                       </Grid>
                       <Grid item>
-                        <Link to="/login" variant="body2" style={{color:"#1976d2"}}>
+                        <Link to="/login" variant="body2" style={{color:"#1d5564"}}>
                           {"Already have account? Sign In"}
                         </Link>
                       </Grid>

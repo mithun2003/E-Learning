@@ -1,5 +1,5 @@
 import React from "react";
-import {  Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Signup from "../components/Signup/Signup";
 import Activate from "../components/Signup/Activate";
 import HomePages from "../Pages/HomePages";
@@ -28,38 +28,67 @@ import CoursePlay from "../Pages/CoursePlay";
 import CourseList from "../components/Add Course/CourseList";
 import CourseDetails from "../components/Add Course/CourseDetails";
 import WhishList from "../components/WishList/WhishList";
+import TeacherProfile from "../Pages/TeacherProfile";
+import AllCourses from "../Pages/AllCourses";
 
 const MainRoutes = () => {
   return (
     <div>
       {/* <Router> */}
       <Routes>
+
+
+
         <Route exact path="/" element={<HomePages />} />
         <Route exact path="/course/detail/:id" element={<CourseDetailPage />} />
         <Route exact path="/activate/:uid/:token" element={<Activate />} />
+        <Route exact path="/courses" element={<AllCourses />} />
+
+
         <Route element={<PublicRoute />}>
           <Route path="/signup" element={<Signup />} />
           <Route exact path="/login" element={<Login />} />
         </Route>
+
+
         <Route element={<ProtectedRoute />}>
           <Route element={<SideNav />}>
             <Route exact path="/profile" element={<Profile />} />
             <Route exact path="/teacher/course-list" element={<CourseList />} />
-            <Route path="courses/course-detail/:id" element={<CourseDetails/>} />
+            <Route
+              path="courses/course-detail/:id"
+              element={<CourseDetails />}
+            />
           </Route>
+
+
           <Route exact path="/teacher/register" element={<Register />} />
           <Route exact path="/whishlist" element={<WhishList />} />
-          <Route exact path="/course/:course_id/:courseName/:chapter_id" element={<CoursePlay />} />
+          <Route
+            exact
+            path="/course/:course_id/:courseName/:chapter_id"
+            element={<CoursePlay />}
+          />
+          <Route exact path="/teacher-profile/:name" element={<TeacherProfile />} />
+
         </Route>
+
+
       </Routes>
+
+
+
       <Routes>
         <Route element={<AdminProtectedRoutes />}>
           <Route element={<DashboardLayout />}>
             <Route path="/admin" element={<DashboardAppPage />} />
             <Route path="/admin/user" element={<UserPage />} />
             <Route path="/admin/teacher" element={<TeacherPage />} />
-            <Route path="/admin/courses" element={<CoursesPage/>} />
-            <Route path="/admin/courses/course-detail/:id" element={<CourseDetail/>} />
+            <Route path="/admin/courses" element={<CoursesPage />} />
+            <Route
+              path="/admin/courses/course-detail/:id"
+              element={<CourseDetail />}
+            />
             <Route path="/admin/request/teacher" element={<RequestTeacher />} />
             <Route
               path="/admin/request/teacher/:id"

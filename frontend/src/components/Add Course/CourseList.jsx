@@ -79,7 +79,7 @@ export default function CourseList() {
   useEffect(() => {
     console.log("teacher",teacher.id);
     axios
-      .get(`course/teacher/course-list/${teacher.id}`)
+      .get(`course/teacher/course-list/${teacher.user.id}`)
       .then((response) => {
         if (response.data.length === 0) {
           setNotFound(true);
@@ -337,7 +337,7 @@ export default function CourseList() {
                           <TableCell align="left">{enrollments}</TableCell>
                           <TableCell align="left">{duration}</TableCell>
                           <TableCell align="left">{level}</TableCell>
-                          <TableCell align="left">{teacher.name}</TableCell>
+                          <TableCell align="left">{teacher.user.name}</TableCell>
                           <TableCell align="left">{created_at}</TableCell>
                           <TableCell align="left">
                             {is_publish ? "Yes" : "No"}

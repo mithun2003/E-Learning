@@ -14,7 +14,7 @@ import {
   Typography,
   MenuItem,
   TableContainer,
-  TablePagination
+  TablePagination,
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Label from "../../../Admin/label";
@@ -24,6 +24,7 @@ import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { applySortFilter, getComparator, handleChangePage, handleChangeRowsPerPage, handleClick, handleFilterByName, handleRequestSort, handleSelectAllClick } from "./fuction";
+import { baseUrl } from "../../../constants/baseUrl";
 
 // ----------------------------------------------------------------------
 
@@ -64,7 +65,7 @@ const handleBlock = (id) => {
         Swal.showLoading(); // Show loading spinner
   
         axios
-          .post(`/teacher/block/${id}`, null, {
+          .post(`/user/block/${id}`, null, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`
@@ -72,14 +73,17 @@ const handleBlock = (id) => {
           })
           .then(() => {
             setDetails((prevDetails) => {
-              return prevDetails.map((user) => {
-                if (user.id === id) {
+              return prevDetails.map((item) => {
+                if (item.user.id === id) {
                   return {
-                    ...user,
-                    is_block: !user.is_block
+                    ...item,
+                    user: {
+                      ...item.user,
+                      is_block: !item.user.is_block
+                    }
                   };
                 }
-                return user;
+                return item;
               });
             });
             Swal.fire({
@@ -171,7 +175,7 @@ const handleBlock = (id) => {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            User
+            Teacher
           </Typography>
           {/* <Button
             variant="contained"
@@ -205,14 +209,14 @@ const handleBlock = (id) => {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
-                        id,
-                        name,
-                        is_verified,
-                        mobile_number,
-                        country,
-                        is_block,
-                        email,
-                        image
+                        user:{id,
+                          name,
+                          is_teacher,
+                          mobile_number,
+                          country,
+                          is_block,
+                          email,
+                          image}
                       } = row;
                       const selectedUser = selected.indexOf(name) !== -1;
 
@@ -241,7 +245,7 @@ const handleBlock = (id) => {
                                 alt="User image"
                                 src={
                                   image
-                                    ? image
+                                    ? `${baseUrl}${image}`
                                     : null
                                 }
                               />{" "}
@@ -260,7 +264,7 @@ const handleBlock = (id) => {
                           </TableCell> */}
 
                           <TableCell align="left">
-                            {is_verified ? "Yes" : "No"}
+                            {is_teacher ? "Yes" : "No"}
                           </TableCell>
 
                           <TableCell align="left">

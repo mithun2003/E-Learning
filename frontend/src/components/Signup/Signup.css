@@ -46,3 +46,10 @@ body {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+
+
+.css-9d287o-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
+  color:'#1d5564' !important;
+  border-color:'#1d5564';
+}

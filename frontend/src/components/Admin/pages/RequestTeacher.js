@@ -14,13 +14,16 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  Box,
+  CircularProgress
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Label from "../../../Admin/label";
 import Scrollbar from "../../../Admin/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 import { applySortFilter, getComparator, handleChangePage, handleChangeRowsPerPage, handleClick, handleFilterByName, handleRequestSort, handleSelectAllClick } from "./fuction";
+import { baseUrl } from "../../../constants/baseUrl";
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +32,6 @@ const TABLE_HEAD = [
   { id: "email", label: "Email", alignRight: false },
   { id: "mobile_number", label: "Phone Number", alignRight: false },
   { id: "country", label: "Country", alignRight: false },
-  { id: "is_active", label: "Verified", alignRight: false },
   { id: "is_blocked", label: "Status", alignRight: false },
   { id: "" }
   // { id: "" }
@@ -42,6 +44,7 @@ export default function RequestTeacher() {
   const [details, setDetails] = useState([]);
 
   const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const [order, setOrder] = useState("asc");
 
@@ -54,13 +57,16 @@ export default function RequestTeacher() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
+    setLoading(true)
     axios
-      .get("/request/teacher/")
-      .then(response => {
-        setDetails(response.data);
-        console.log(response.data);
-      })
-      .catch(error => console.error(error));
+    .get("/request/teacher/")
+    .then(response => {
+      setDetails(response.data);
+      setLoading(false)
+      console.log(response.data);
+    })
+    .catch(error => {console.error(error);
+    setLoading(false)})
   }, []);
 
 
@@ -98,7 +104,7 @@ export default function RequestTeacher() {
   return (
     <div>
       <Helmet>
-        <title> User </title>
+        <title> Requested Teacher </title>
       </Helmet>
 
       <Container>
@@ -109,7 +115,7 @@ export default function RequestTeacher() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            User
+            Requested Teacher
           </Typography>
           {/* <Button
             variant="contained"
@@ -138,19 +144,25 @@ export default function RequestTeacher() {
                   onRequestSort={handleSort}
                   // onSelectAllClick={handleSelectAll}
                 />
+                  {loading ? (
+          <TableBody>
+            <TableRow>
+              <TableCell align="center" colSpan={6}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <CircularProgress color="primary" />
+                </Box>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2">Loading...</Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          </TableBody>):(
                 <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map(row => {
                       const {
-                        id,
-                        image,
-                        name,
-                        is_block,
-                        email,
-                        mobile_number,
-                        country,
-                        is_active
+                        user:{id,name,image,email,country,mobile_number,is_block},
                       } = row;
                       const selectedUser = selected.indexOf(name) !== -1;
 
@@ -179,7 +191,7 @@ export default function RequestTeacher() {
                                 alt="User image"
                                 src={
                                   image
-                                    ? image
+                                    ? `${baseUrl}${image}`
                                     : null
                                 }
                               />
@@ -203,10 +215,6 @@ export default function RequestTeacher() {
                           </TableCell>
 
                           <TableCell align="left">
-                            {is_active ? "Yes" : "No"}
-                          </TableCell>
-
-                          <TableCell align="left">
                             <Label color={is_block ? "error" : "success"}>
                               {is_block ? "Banned" : "Active"}
                             </Label>
@@ -218,7 +226,7 @@ export default function RequestTeacher() {
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>}
-                </TableBody>
+                </TableBody>)}
 
                 {isNotFound &&
                   <TableBody>

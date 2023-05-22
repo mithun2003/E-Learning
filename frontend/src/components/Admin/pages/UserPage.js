@@ -14,7 +14,9 @@ import {
   MenuItem,
   TableContainer,
   TablePagination,
-  Avatar
+  Avatar,
+  Box,
+  CircularProgress
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Label from "../../../Admin/label";
@@ -24,6 +26,7 @@ import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { applySortFilter, getComparator, handleChangePage, handleChangeRowsPerPage, handleClick, handleFilterByName, handleRequestSort, handleSelectAllClick } from "./fuction";
+import { baseUrl } from "../../../constants/baseUrl";
 
 // ----------------------------------------------------------------------
 
@@ -131,6 +134,7 @@ export default function UserPage() {
 
 
   const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const [order, setOrder] = useState("asc");
 
@@ -143,14 +147,17 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
+    setLoading(true)
     axios
-      .get("/get/users/")
-      .then(response => {
-        setDetails(response.data);
-        // console.log(response);
-        console.log(response.data);
-      })
-      .catch(error => console.error(error));
+    .get("/get/users/")
+    .then(response => {
+      setDetails(response.data);
+      setLoading(false)
+      // console.log(response);
+      console.log(response.data);
+    })
+    .catch(error => { console.error(error);
+    setLoading(false)})
   }, []);
 
 
@@ -229,6 +236,19 @@ export default function UserPage() {
                   onRequestSort={handleSort}
                   // onSelectAllClick={handleSelectAll}
                 />
+                 {loading ? (
+          <TableBody>
+            <TableRow>
+              <TableCell align="center" colSpan={6}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <CircularProgress color="primary" />
+                </Box>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2">Loading...</Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          </TableBody>):(
                 <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -268,7 +288,7 @@ export default function UserPage() {
                               spacing={2}
                               
                             >
-                              <Avatar alt={name} src={image} />
+                              <Avatar alt={name} src={`${baseUrl}${image}`} />
                               <Typography variant="subtitle2" noWrap ml={2}>
                                 {name}
                               </Typography>
@@ -324,7 +344,7 @@ export default function UserPage() {
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>}
-                </TableBody>
+                </TableBody>)}
 
                 {isNotFound &&
                   <TableBody>

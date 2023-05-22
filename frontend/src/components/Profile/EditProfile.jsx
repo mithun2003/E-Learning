@@ -14,12 +14,15 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import axios from "../../axios";
+import { baseUrl } from "../../constants/baseUrl";
 
 export default function EditProfile({ onOpen, onCloseModal, userDetails }) {
     const fileRef = useRef();
-    const [user, setUser] = useState(userDetails);
+    const [user, setUser] = useState();
+    const [image, setImage] = useState(null);
     const token = localStorage.getItem('access')
-    // useEffect(() => {
+    useEffect(() => {
+      setUser(userDetails)
     //     axios
     //     .get(`/view/user/${user?.id}`)
     //     .then((response) => {
@@ -28,10 +31,11 @@ export default function EditProfile({ onOpen, onCloseModal, userDetails }) {
     //       // localStorage.setItem("user",response.data)
     //     })
     //     .catch((error) => console.error(error));
-    // }, []);
+    }, [onOpen]);
     
     const handleImageChange = (e) => {
             const file = URL.createObjectURL(e.target.files[0]);
+            setImage(file)
             const name = e.target.files[0];
             console.log(file);
             console.log(file);
@@ -72,6 +76,8 @@ export default function EditProfile({ onOpen, onCloseModal, userDetails }) {
           Authorization: `Bearer ${token}`
         }
       });
+      localStorage.setItem("user", JSON.stringify(response.data));
+
       onCloseModal();
       if (response.data.message) {
         throw new Error(response.data.message);
@@ -93,7 +99,7 @@ export default function EditProfile({ onOpen, onCloseModal, userDetails }) {
         <form onSubmit={handleSubmit} encType="multipart/form-data">
         <DialogContent>
         <Avatar
-            src={user?.image}
+src={image ? image:`${baseUrl}${user?.image}`}
             sx={{
           m: "auto",
           bgcolor: "#1D5564",

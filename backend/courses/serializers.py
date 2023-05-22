@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
 from account.serializers import *
+
+
 class CategoryCreateSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
@@ -21,10 +23,38 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CourseCreateSerializer(serializers.ModelSerializer):
     print(serializers.ModelSerializer)
+
     class Meta:
         model = Course
         fields = (
-                  'id',
+            'id',
+            'title',
+            'image',
+            'desc',
+            'cat',
+            'enrollments',
+            'duration',
+            'level',
+            'teacher',
+            'is_publish'
+        )
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    teacher = TeacherSerializer()  # serialize the related teacher data
+    cat = CategorySerializer(many=True)  # serialize the related category data
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if obj.image:
+            return "http://localhost:8000/" + obj.image.url
+        else:
+            return None
+
+    class Meta:
+        model = Course
+        # fields = '__all__'
+        fields = ('id',
                   'title',
                   'image',
                   'desc',
@@ -33,26 +63,16 @@ class CourseCreateSerializer(serializers.ModelSerializer):
                   'duration',
                   'level',
                   'teacher',
-                  'is_publish'               
-                  )
+                  'is_publish',
+                  'avg_rating')
 
 
-class CourseSerializer(serializers.ModelSerializer):
-    teacher = TeacherSerializer()  # serialize the related teacher data
-    cat = CategorySerializer(many=True)  # serialize the related category data
-    image = serializers.SerializerMethodField()
-    def get_image(self,obj):
-        if obj.image:
-            return "http://localhost:8000/"+obj.image.url
-        else:
-            return None
-    class Meta:
-        model = Course
-        fields = '__all__'
 class ChapterCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
-        fields = ('id', 'title', 'video', 'order','course')
+        fields = ('id', 'title', 'video', 'order', 'course')
+
+
 class ChapterSerializer(serializers.ModelSerializer):
     video = serializers.SerializerMethodField()
 
@@ -61,25 +81,41 @@ class ChapterSerializer(serializers.ModelSerializer):
             return "http://localhost:8000" + obj.video.url
         else:
             return None
+
     class Meta:
         model = Chapter
         fields = '__all__'
-
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = '__all__'
-        
+
+
 class WishlistCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         fields = ('user', 'courses')
-              
+
+
 class WishlistSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True)
 
     class Meta:
         model = Wishlist
-        fields = ('user', 'courses')
+        fields = ('user', 'course')
+
+
+class CreateReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseReview
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()  # Nested serializer for the course field
+
+    class Meta:
+        model = CourseReview
+        fields = '__all__'

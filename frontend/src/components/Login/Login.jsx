@@ -155,7 +155,13 @@ const Login = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{ 
+                      mt: 3, 
+                      mb: 2 ,
+                      bgcolor:'#1d5564',
+                      "&:hover":{bgcolor:'rgba(29,85,100,0.9)'}
+                  }}
+                    
                   >
                     {loading ? "Signing in..." : "Sign in"}
                   </Button>
@@ -166,7 +172,7 @@ const Login = () => {
                       </Link> */}
                     </Grid>
                     <Grid item>
-                      <Link to="/signup" variant="body2" style={{color:"#1976d2"}}>
+                      <Link to="/signup" variant="body2" style={{color:"#1d5564"}}>
                         {"Don't have an account? Sign Up"}
                       </Link>
                     </Grid>

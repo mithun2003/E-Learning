@@ -1,8 +1,7 @@
 import React from "react";
 import { Box, Typography, Button, Grid, useMediaQuery, useTheme } from "@mui/material";
-import image from "./banner.jpg";
 
-const Home = () => {
+const AllCourses = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
 
@@ -11,27 +10,25 @@ const Home = () => {
   // }, []);
 
   return (
-    <Box className="body">
-      <Grid container spacing={2} alignItems="center" direction={isMobile ? "column-reverse" : "row"} mb='5vh'>
-        <Grid item xs={12} sm={6} md={6} lg={6} sx={{paddingLeft:'4vw'}}>
-          <Box sx={{ m: { xs: 2, sm: 4, md: 6 },paddingLeft:'4vw' }}>
+    <Box className="body" width='100vw' height='70vh' display='flex'>
+      <Grid container spacing={2} alignItems="center" mb='5vh'>
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{paddingLeft:'4vw'}}>
+          <Box sx={{ m: { xs: 2, sm: 4, md: 6 },paddingLeft:'4vw',display:'flex',alignItems:'center',justifyContent:'center' }}>
             <Typography
               variant="h1"
               className="text-7xl text-gray-700"
               style={{
-                marginTop: isMobile ? 0 : 300,
+                // marginTop: isMobile ? 0 : 300,
                 fontFamily:'Gilda Display, serif',
                 fontWeight: 100,
                 color: "#1D5564",
+                maxWidth:isMobile?'70vh':'80vh'
               }}
             >
-              Start learning
-              <br />
-              new things <br />
-              online today
+             Learn the way you want with our courses. 
             </Typography>
 
-            <Button
+            {/* <Button
               sx={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -45,11 +42,11 @@ const Home = () => {
               <Typography variant="h4" className="text-white" sx={{color:"white",fontWeight:100}}>
                 Start Here
               </Typography>
-            </Button>
+            </Button> */}
           </Box>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={6} lg={6}>
+        {/* <Grid item xs={12} sm={6} md={6} lg={6}>
           <Box sx={{ m: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
             <img
               className="shadow"
@@ -64,10 +61,10 @@ const Home = () => {
               alt="placeholder"
             />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );
 };
 
-export default Home;
+export default AllCourses;

@@ -155,14 +155,14 @@ export default function CourseDetails() {
 
                 <div style={{ marginLeft: "20px", marginTop: "2rem" }}>
                   <Typography variant="h6" gutterBottom lineHeight={2.5}>
-                    Name:  {details.title}
+                    Name &nbsp;: &nbsp;  {details.title}
                   </Typography>
 
-                  <Typography variant="body1" gutterBottom lineHeight={2.5} maxWidth='50vh'>
-                    <b>Description:</b>  {details.desc}
+                  <Typography variant="body1" gutterBottom lineHeight={2.5} >
+                    <b>Description &nbsp;: &nbsp;</b>  {details.desc}
                   </Typography>
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                    <b>Level:</b>  {details.level}
+                    <b>Level &nbsp;: &nbsp;</b>  {details.level}
                   </Typography>
   <Typography variant="body1" lineHeight={2.5}>
                  <b> Category :</b>
@@ -176,13 +176,13 @@ export default function CourseDetails() {
 </Typography>
 
                   { details.teacher && <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Teacher:</b>  {details.teacher.name}
+                  <b>Teacher &nbsp;: &nbsp; </b>  {details.teacher.user.name}
                   </Typography>}
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Enrollments:</b>  {details.enrollments}
+                  <b>Enrollments &nbsp;: &nbsp;</b>  {details.enrollments}
                   </Typography>
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Duration:</b>  {details.duration}
+                  <b>Duration &nbsp;: &nbsp;</b>  {details.duration}
                   </Typography>
 
 

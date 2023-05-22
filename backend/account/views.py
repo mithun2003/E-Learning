@@ -18,6 +18,8 @@ from djoser.views import TokenCreateView
 from rest_framework.decorators import permission_classes
 from django.core.mail import send_mail
 from datetime import datetime, timedelta
+
+
 class AdminLoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -70,14 +72,16 @@ class GetOneUser(APIView):
         print(request)
         return Response(serializer.data)
 
+
 class ViewOneUser(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request,user_id):
+    def get(self, request, user_id):
 
         # email = 'root@gmail.com'
         # email = request.GET.get('email')
         user = UserAccount.objects.get(id=user_id)
+        print(user.image,user.image.url)
         serializer = UserSerializer(user)
         print(request)
         return Response(serializer.data)
@@ -96,7 +100,6 @@ class DeleteUser(APIView):
 
 class BlockUser(APIView):
     permission_classes = [IsAuthenticated]
-
     def post(self, request, id):
         try:
             user = UserAccount.objects.get(id=id)
@@ -106,9 +109,11 @@ class BlockUser(APIView):
         except UserAccount.DoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
+
 @permission_classes([AllowAny])
 class Login(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -128,52 +133,130 @@ class Login(APIView):
 
                 return Response({'message': 'Login successful', 'access': str(refresh.access_token), 'refresh': str(refresh)})
             else:
-                return Response({'message': 'Your account is inactive'},status=status.HTTP_404_NOT_FOUND)
+                return Response({'message': 'Your account is inactive'}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class Teacher(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         is_submit = request.data.pop('is_submit', False)
+#         if is_submit == False:
+#             pass
+#         else:
+#             is_submit = True
+#         # Save the value of is_submit to the User model
+#         user = request.user
+#         user.is_submit = is_submit# Add the current datetime
+#         user.save()
+#         # Remove is_submit from request.data
+#         request.data.pop('is_submit', None)
+#         print(request.data)
+#         serializer = TeacherCreateSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class Teacher(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         is_submit = request.data.pop('is_submit', False)
+        mobile_number = request.data.pop('mobile_number', None)[0]
+        country = request.data.pop('country', None)[0]
+        image = request.data.pop('image', None)[0]
+        name = request.data.pop('name', None)[0]
         if is_submit == False:
             pass
         else:
             is_submit = True
-        # Save the value of is_submit to the User model
+        # Save the value of is_submit to the UserAccount model
+        # Add the user id to the request data
+        request.data['user'] = request.user.id
+        print(request.data)
+        print(is_submit,
+              mobile_number,
+              country,
+              image,
+              name)
         user = request.user
-        user.is_submit = is_submit# Add the current datetime
+        user.is_submit = is_submit
+        user.mobile_number = mobile_number
+        user.country = country
+        user.image = image
+        user.name = name
         user.save()
+        print(request.data)
+
         # Remove is_submit from request.data
+        user_data = UserAccount.objects.get(id=user.id)
         request.data.pop('is_submit', None)
+        request.data.pop('mobile_number', None)
+        request.data.pop('country', None)
+        request.data.pop('image', None)
+        request.data.pop('name', None)
+        request.data['user'] = user.id  # Add the user id to the request data
         print(request.data)
         serializer = TeacherCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            teacher = serializer.save(user=user)  # Assign the user instance to the user field
+            query = UserAccount.objects.get(id=user.id)
+            serializer_data = UserSerializer(query)
+            return Response(serializer_data.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# class RequestTeacher(APIView):
+#     permission_classes = [AllowAny]
+
+#     def get(self, request):
+#         # queryset = Teachers.objects.all()
+#         queryset = Teachers.objects.filter(
+#             is_verified=False).order_by('-created_at')
+#         serializer = TeacherSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
 class RequestTeacher(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        # queryset = Teachers.objects.all()
         queryset = Teachers.objects.filter(
-            is_verified=False).order_by('-created_at')
+            user__is_teacher=False,user__is_submit=True, user__is_verified=False
+        ).order_by('-created_at')
         serializer = TeacherSerializer(queryset, many=True)
         return Response(serializer.data)
+class RetrieveOneTeacherView(APIView):
+    permission_classes = [AllowAny]
 
+    def get(self, request, id):
+        try:
+            teacher = Teachers.objects.get(user_id=id)
+        except Teachers.DoesNotExist:
+            return Response({'message': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
 
+        serializer = TeacherSerializer(teacher)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    
+# class OneTeacher(APIView):
+#     permission_classes = [AllowAny]
+
+#     def get(self, request, id):
+#         # id = request.GET.get('id')
+#         teacher = Teachers.objects.get(id=id)
+#         serializer = TeacherSerializer(teacher)
+#         print(request)
+#         return Response(serializer.data)
 class OneTeacher(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, id):
         # id = request.GET.get('id')
-        teacher = Teachers.objects.get(id=id)
+        teacher = Teachers.objects.select_related('user').get(user_id=id)
         serializer = TeacherSerializer(teacher)
         print(request)
         return Response(serializer.data)
@@ -184,17 +267,10 @@ class Verify(APIView):
 
     def post(self, request, id):
         try:
-            teacher = Teachers.objects.get(id=id)
-            if teacher.is_verified:
+            # teacher = Teachers.objects.select_related('user').get(user_id=id)
+            user = UserAccount.objects.get(id=id)
+            if user.is_teacher:
                 return JsonResponse({'message': 'Teacher is already verified'})
-
-            # Perform verification logic
-
-            # Set teacher as verified
-            teacher.is_verified = True
-            teacher.save()
-
-            user = UserAccount.objects.get(email=teacher.email)
             user.is_student = False
             user.is_teacher = True
             user.save()
@@ -203,11 +279,11 @@ class Verify(APIView):
             subject = 'Teacher Verification'
             message = 'Congratulations! You have been verified as a teacher.'
             from_email = 'mithuncy65@gmail.com'
-            to_email = teacher.email
+            to_email = user.email
             send_mail(subject, message, from_email, [to_email])
 
             return JsonResponse({'message': 'Teacher verified successfully'})
-        except Teacher.DoesNotExist:
+        except Teachers.DoesNotExist:
             return JsonResponse({'message': 'Teacher not found'}, status=404)
 
 
@@ -216,8 +292,10 @@ class Reject(APIView):
 
     def post(self, request, id):
         try:
+            user = UserAccount.objects.get(id=id)
+
             teacher = Teachers.objects.get(id=id)
-            if teacher.is_verified:
+            if user.is_teacher:
                 return JsonResponse({'message': 'Cannot reject an already verified teacher'})
 
             # Perform rejection logic
@@ -226,12 +304,11 @@ class Reject(APIView):
             subject = 'Teacher Rejection'
             message = 'We regret to inform you that your teacher application has been rejected.'
             from_email = 'mithuncy65@gmail.com'
-            to_email = teacher.email
+            to_email = user.email
             send_mail(subject, message, from_email, [to_email])
 
             # Delete the teacher
-            user = UserAccount.objects.get(email=teacher.email)
-            user.is_submit=False
+            user.is_submit = False
             user.save()
             teacher.delete()
             return JsonResponse({'message': 'Teacher rejected and deleted successfully'})
@@ -244,20 +321,23 @@ class RetrieveTeacherView(APIView):
 
     def get(self, request):
         queryset = Teachers.objects.filter(
-            is_verified=True).order_by('-created_at')
+            user__is_teacher=True,user__is_submit=True
+        ).order_by('-created_at')
         serializer = TeacherSerializer(queryset, many=True)
         return Response(serializer.data)
-    
-class BlockTeacher(APIView):
-    permission_classes = [IsAuthenticated]
-    def post(self, request, id):
-        try:
-            teacher = Teachers.objects.get(id=id)
-            teacher.is_block = not teacher.is_block  # Toggle the value of `is_block`
-            teacher.save()
-            return Response(status=status.HTTP_202_ACCEPTED)
-        except Teachers.DoesNotExist:
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+
+# class BlockTeacher(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, id):
+#         try:
+#             teacher = Teachers.objects.get(id=id)
+#             teacher.is_block = not teacher.is_block  # Toggle the value of `is_block`
+#             teacher.save()
+#             return Response(status=status.HTTP_202_ACCEPTED)
+#         except Teachers.DoesNotExist:
+#             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
 
 class EditUser(APIView):
@@ -276,13 +356,14 @@ class EditUser(APIView):
         is_teacher = user.is_teacher
 
         if is_teacher:
-            teacher = Teacher.objects.get(user=user)
-            teacher_serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+            teacher = Teachers.objects.get(user=user)
+            teacher_serializer = TeacherSerializer(
+                teacher, data=request.data, partial=True)
             if not teacher_serializer.is_valid():
                 return Response(teacher_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
             teacher_serializer.save()
-        
+
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
