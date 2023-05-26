@@ -1,6 +1,24 @@
+from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from .models import *
 from account.serializers import *
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    def get_image(self, obj):
+        if obj.image:
+            return "http://localhost:8000/" + obj.image.url
+        else:
+            return None
+
+    class Meta:
+        model = Banners
+        fields = ('id','title','image','created_at','active')
+class CreateBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banners
+        fields = ('title','image')
 
 
 class CategoryCreateSerializer(serializers.ModelSerializer):
@@ -64,7 +82,8 @@ class CourseSerializer(serializers.ModelSerializer):
                   'level',
                   'teacher',
                   'is_publish',
-                  'avg_rating')
+                  'avg_rating',
+                  )
 
 
 class ChapterCreateSerializer(serializers.ModelSerializer):
@@ -75,6 +94,29 @@ class ChapterCreateSerializer(serializers.ModelSerializer):
 
 class ChapterSerializer(serializers.ModelSerializer):
     video = serializers.SerializerMethodField()
+    completed = serializers.SerializerMethodField()
+
+    def get_video(self, obj):
+        if obj.video:
+            return "http://localhost:8000" + obj.video.url
+        else:
+            return None
+
+    def get_completed(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+
+            return obj.completed(user)
+        else:
+            return None
+
+    class Meta:
+        model = Chapter
+        fields = ('id', 'title', 'course', 'order', 'video', 'completed')
+
+
+class AdminChapterSerializer(serializers.ModelSerializer):
+    video = serializers.SerializerMethodField()
 
     def get_video(self, obj):
         if obj.video:
@@ -84,7 +126,7 @@ class ChapterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chapter
-        fields = '__all__'
+        fields = ('id', 'title', 'course', 'order', 'video')
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
@@ -115,7 +157,25 @@ class CreateReviewSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     course = CourseSerializer()  # Nested serializer for the course field
-
+    user = UserSerializer()
     class Meta:
         model = CourseReview
         fields = '__all__'
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ('name', 'email', 'message', 'sent_at')
+
+
+class VideoProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoProgress
+        fields = ('user', 'course', 'video', 'is_completed')
+
+
+class CourseProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoProgress
+        fields = ('user', 'course', 'progress')

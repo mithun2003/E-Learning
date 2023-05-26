@@ -10,15 +10,17 @@ import {
 import { baseUrl } from "../../../constants/baseUrl";
 import Courses from "../../Courses/Courses";
 import axios from "../../../axios";
+import { useParams } from "react-router-dom";
 
 const TeacherProfileView = () => {
-const user = JSON.parse(localStorage.getItem('user'))
+  const {teacher_id} = useParams()
+const [teacher,setTeacher] = useState()
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const [course,setCourse] = useState()
   useEffect(()=>{
     axios
-      .get(`/course/teacher/course-list/${user.id}`)
+      .get(`/course/teacher/course-list/${teacher_id}`)
       .then((response) => {
         setCourse(response.data);
       })
@@ -26,6 +28,16 @@ const user = JSON.parse(localStorage.getItem('user'))
         console.error(error);
       });
   },[])
+  useEffect(()=>{
+    axios
+      .get(`/teacher/get/${teacher_id}`)
+      .then((response) => {
+        setTeacher(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  },[teacher_id])
   return (
     <>
     <Box className="body">
@@ -49,7 +61,7 @@ const user = JSON.parse(localStorage.getItem('user'))
                 color: "#1D5564"
               }}
             >
-              {user.name}
+              {teacher?.user?.name}
             </Typography>
             <Typography
               // variant="h1"
@@ -62,7 +74,7 @@ const user = JSON.parse(localStorage.getItem('user'))
                 fontSize:'20px'
               }}
             >
-              {user.email}
+              {teacher?.user?.email}
             </Typography>
 
             {/* <Button
@@ -95,7 +107,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Box sx={{ m: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }} display='flex' justifyContent='center'>
-            <img src={`${baseUrl}${user.image}`} alt={user.name} style={{borderRadius:'50%',width:'30vh',height:'30vh'}}/>
+            <img src={`${baseUrl}${teacher?.user?.image}`} alt={teacher?.user?.name} style={{borderRadius:'50%',width:'30vh',height:'30vh'}}/>
           </Box>
         </Grid>
       </Grid>

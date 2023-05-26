@@ -11,16 +11,17 @@ import React, { useEffect, useState } from "react";
 import axios from '../../axios'
 import StarIcon from '@mui/icons-material/Star';
 import { baseUrl } from "../../constants/baseUrl";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const Courses = ({isTeacher = null,all=null}) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate()
   const [cardData,setCardData] = useState([])
+  const {teacher_id} = useParams()
   useEffect(()=>{
     if (isTeacher){
       axios
-      .get(`/course/teacher/course-list/${user.id}`)
+      .get(`/course/teacher/course-list/${teacher_id}`)
       .then((response) => {
         setCardData(response.data);
       })

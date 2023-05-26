@@ -81,7 +81,6 @@ class ViewOneUser(APIView):
         # email = 'root@gmail.com'
         # email = request.GET.get('email')
         user = UserAccount.objects.get(id=user_id)
-        print(user.image,user.image.url)
         serializer = UserSerializer(user)
         print(request)
         return Response(serializer.data)

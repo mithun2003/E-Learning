@@ -37,18 +37,13 @@ import { Link } from "react-router-dom";
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: "title", label: "Name", alignRight: false },
-  { id: "image", label: "Image", alignRight: false },
-  { id: "cat", label: "Categories", alignRight: false },
-  { id: "enrollments", label: "Enrollments", alignRight: false },
-  { id: "duration", label: "Duration", alignRight: false },
-  { id: "level", label: "Level", alignRight: false },
-  { id: "teacher", label: "Created By", alignRight: false },
-  { id: "created_at", label: "Created At", alignRight: false },
-  { id: "is_publish", label: "Public", alignRight: false },
+  { id: "name", label: "Name", alignRight: false },
+  { id: "email", label: "Email", alignRight: false },
+  { id: "message", label: "Message", alignRight: false },
+  { id: "sent_at", label: "Sent At", alignRight: false },
   { id: "" }
 ];
-export default function CoursesPage() {
+export default function Feedback() {
   const [details, setDetails] = useState([]);
   const { token } = useSelector((state) => state.adminLogin);
   console.log("detail", details);
@@ -63,7 +58,7 @@ export default function CoursesPage() {
 
   useEffect(() => {
     axios
-      .get("/course/course-list")
+      .get("/contact")
       .then((response) => {
         if (response.data.length === 0) {
           setNotFound(true);
@@ -74,133 +69,9 @@ export default function CoursesPage() {
         console.log(response.data);
       })
       .catch((error) => console.error(error));
-  }, [openModal]);
-  // useEffect(() => {
-  //   axios
-  //     .get("/course/course-list")
-  //     .then((response) => {
-  //       if (response.data.length === 0) {
-  //         setNotFound(true);
-  //       } else {
-  //         setDetails(response.data);
-  //         setNotFound(false);
-  //       }
-  //       console.log(response.data);
-  //     })
-  //     .catch((error) => console.error(error));
-  // }, [openModal]);
+  }, []);
 
-  const handlePublish = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Press confirm to Publish/Unpublish",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-      backdrop: false, // Disable backdrop overlay
-      allowOutsideClick: false,
-      showLoaderOnConfirm: true, // Display loading spinner
-      preConfirm: async () => {
-        try {
-          Swal.showLoading(); // Show loading spinner
-  
-          await axios.post(`/course/publish/${id}`, null, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            }
-          });
-  
-          setDetails((prevDetails) => {
-            return prevDetails.map((user) => {
-              if (user.id === id) {
-                return {
-                  ...user,
-                  is_publish: !user.is_publish
-                };
-              }
-              return user;
-            });
-          });
-  
-          return true;
-        } catch (error) {
-          Swal.showValidationMessage("Something went wrong");
-          return false;
-        }
-      }
-    })
-    .then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Success!",
-          text: "Course has been Publish/Unpublish.",
-          icon: "success",
-          backdrop: false // Disable backdrop overlay
-        });
-      }
-    });
-  };
-  
-  
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      backdrop: false // Disable backdrop overlay
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .post(`/course/category/delete/${id}`, null, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            }
-          })
-          .then(() => {
-            if (details.length === "1") {
-              setNotFound(true);
-            }
-            console.log(details.length);
-            const newData = details.filter((cat) => {
-              return cat.id !== id;
-            });
-            setDetails(newData);
-            Swal.fire({
-              title: "Deleted!",
-              text: "The user has been deleted.",
-              icon: "success",
-              backdrop: false // Disable backdrop overlay
-            });
-          })
-          .catch(() => {
-            Swal.fire({
-              title: "Error!",
-              text: "Something went wrong.",
-              icon: "error",
-              backdrop: false // Disable backdrop overlay
-            });
-          });
-      }
-    });
-  };
   const handleRowClick = (event, name) => {
     handleClick(event, name, setSelected, selected);
   
@@ -236,7 +107,7 @@ export default function CoursesPage() {
   return (
     <div>
       <Helmet>
-        <title> Course </title>
+        <title> Feedback </title>
       </Helmet>
 
       <Container>
@@ -247,15 +118,9 @@ export default function CoursesPage() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Course
+            Feedback
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={handleOpenModal}
-          >
-            New Course
-          </Button>
+       
         </Stack>
 
         <Card sx={{ boxShadow: "13px 8px 7px rgba(0, 0, 0, 0.25)" }}>
@@ -283,17 +148,11 @@ export default function CoursesPage() {
                     .map((row) => {
                       const {
                         id,
-                        title,
-                        image,
-                        cat,
-                        enrollments,
-                        duration,
-                        level,
-                        teacher,
-                        created_at,
-                        is_publish
+                        name,
+                        email,
+                        message,
+                        sent_at
                       } = row;
-                      const selectedUser = selected.indexOf(title) !== -1;
 
                       return (
                         <TableRow
@@ -301,7 +160,6 @@ export default function CoursesPage() {
                           key={id}
                           tabIndex={-1}
                           is_student="checkbox"
-                          selected={selectedUser}
                         >
                           {/* <TableCell padding="checkbox">
                             <Checkbox
@@ -318,45 +176,13 @@ export default function CoursesPage() {
                             >
                               {" "}
                               <Typography variant="subtitle2" noWrap ml={2} sx={{textDecoration:'none'}}>
-                              <Link to={`/admin/courses/course-detail/${id}`} style={{textDecoration:'none',color:'blue'}}>
-                                {title}
-                                </Link>
+                                {name} 
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">
-                            <img src={image} alt={title} />
-                          </TableCell>
-                          <TableCell align="left">
-                            {cat.map((category) => (
-                              <div key={category.id}>{category.name}</div>
-                            ))}
-                          </TableCell>
-                          <TableCell align="left">{enrollments}</TableCell>
-                          <TableCell align="left">{duration}</TableCell>
-                          <TableCell align="left">{level}</TableCell>
-                          <TableCell align="left">{teacher.name}</TableCell>
-                          <TableCell align="left">{created_at}</TableCell>
-                          <TableCell align="left">
-                            {is_publish ? "Yes" : "No"}
-                          </TableCell>
-
-                          <TableCell align="right">
-                            <MenuItem onClick={() => handlePublish(id)}>
-                              {is_publish ? (
-                                <Iconify
-                                  icon={"eva:checkmark-outline"}
-                                  sx={{ mr: 2 }}
-                                />
-                              ) : (
-                                <Iconify
-                                  icon={"eva:slash-outline"}
-                                  sx={{ mr: 2 }}
-                                />
-                              )}
-                              {is_publish ? "Unpublish" : "Publish"}
-                            </MenuItem>
-                          </TableCell>
+                          <TableCell align="left">{email}</TableCell>
+                          <TableCell align="left">{message}</TableCell>
+                          <TableCell align="left">{sent_at}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -425,9 +251,7 @@ export default function CoursesPage() {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
           />
-        </Card>
-        <CreateCourse onOpen={openModal} onCloseModal={handleCloseModal}/>
-        
+        </Card>        
       </Container>
     </div>
   );

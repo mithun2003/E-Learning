@@ -47,14 +47,14 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
       .then((response) => {
         setCourse((prevCourse) => ({
           ...prevCourse,
-          ...response.data,
-          teacher: response.data.teacher.user.id,
-          cat: response.data.cat.map((c) => c.id),
+          ...response.data.course,
+          teacher: response.data.course.teacher?.user?.id,
+          cat: response.data.course.cat.map((c) => c.id),
         }));
-        setSelectedCat(response.data.cat.map((category) => category.name));
+        setSelectedCat(response.data.course.cat.map((category) => category.name));
         console.log("category", response.data);
         console.log(course);
-        setCourse({...response.data,teacher: response.data.teacher.user.id,cat:[]})
+        setCourse({...response.data.course,teacher: response.data.course.teacher?.user?.id,cat:[]})
         console.log(course);
       })
       .catch((error) => console.error(error));

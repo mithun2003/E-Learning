@@ -22,6 +22,7 @@ import {
 
 import axios from "../../../axios";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const initialError = {
   title: false,
@@ -149,7 +150,7 @@ const ChapterAdd = ({ onOpen, onCloseModal, id,token}) => {
       closeModal();
       console.log(response.data);
       console.log(formData);
-
+      
       return response.data;
     } catch (error) {
       setFormErrors((prevErrors) => ({
@@ -157,6 +158,13 @@ const ChapterAdd = ({ onOpen, onCloseModal, id,token}) => {
         error: error
       }));
       console.log(formErrors.error);
+      closeModal();
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong.",
+        icon: "error",
+        backdrop: false, // Disable backdrop overlay
+      });
     }
   };
 

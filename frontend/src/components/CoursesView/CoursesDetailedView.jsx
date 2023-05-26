@@ -1,5 +1,13 @@
 import React, { lazy, useEffect, useState } from "react";
-import { Box, Typography, Button, useMediaQuery, Grid, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  useMediaQuery,
+  Grid,
+  IconButton,
+  CircularProgress
+} from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../axios";
 import { useTheme } from "@emotion/react";
@@ -8,25 +16,23 @@ import AboutCourse from "./AboutCourse";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import { logout } from "../../Reducers/LoginReducer";
 import CourseReviews from "./CourseReviews";
-
-
-
+import TeacherDetails from "./TeacherDetails";
 
 export default function CoursesDetailedView() {
   const theme = useTheme();
-  const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem("user"));
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const { id } = useParams();
   const [wishlist, setWishlist] = useState();
   const [course, setCourse] = useState([]);
-  const { isAuthenticated,token } = useSelector((state) => state.login);
+  const { isAuthenticated, token } = useSelector((state) => state.login);
   const [chapter, setChapter] = useState([]);
-  const [enroll,setEnroll] = useState(false)
+  const [enroll, setEnroll] = useState(false);
   const dispatch = useDispatch();
-const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get(`/course/${id}/chapter-list`)
@@ -42,12 +48,13 @@ const navigate = useNavigate()
       .get(`/course/course-detail/${id}`)
       .then((response) => {
         setCourse(response.data);
+        console.log(response.data);
       })
       .catch((error) => console.log(error));
     console.log(course);
   }, []);
   useEffect(() => {
-    fetchWishlist()
+    fetchWishlist();
     console.log(chapter);
   }, []);
 
@@ -55,8 +62,7 @@ const navigate = useNavigate()
     axios
       .get(`/course/enrollment/${id}`)
       .then((response) => {
-        if (response.data.enrolled === true)
-        setEnroll(true);
+        if (response.data.enrolled === true) setEnroll(true);
         console.log(response.data);
       })
       .catch((error) => console.log(error));
@@ -80,19 +86,19 @@ const navigate = useNavigate()
         icon: "error",
         backdrop: false
       }).then(() => {
-        dispatch(logout())
+        dispatch(logout());
       });
     }
 
     if (isAuthenticated) {
       try {
-        await axios.post(`/course/enroll/${course.id}`, null, {
+        await axios.post(`/course/enroll/${id}`, null, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         });
-  
+
         await Swal.fire({
           position: "top-right",
           icon: "success",
@@ -100,9 +106,9 @@ const navigate = useNavigate()
           showConfirmButton: false,
           timer: 2000,
           toast: true,
-          timerProgressBar: true,
+          timerProgressBar: true
         });
-  
+
         const response = await axios.get(`/course/enrollment/${id}`);
         if (response.data.enrolled === true) {
           setEnroll(true);
@@ -115,7 +121,7 @@ const navigate = useNavigate()
           showConfirmButton: false,
           timer: 2000,
           toast: true,
-          timerProgressBar: true,
+          timerProgressBar: true
         });
       }
     } else {
@@ -127,7 +133,7 @@ const navigate = useNavigate()
         showConfirmButton: false,
         timer: 2000,
         toast: true,
-        timerProgressBar: true,
+        timerProgressBar: true
       });
     }
   };
@@ -139,19 +145,19 @@ const navigate = useNavigate()
         icon: "error",
         backdrop: false
       }).then(() => {
-        dispatch(logout())
+        dispatch(logout());
       });
     }
 
     if (isAuthenticated) {
       try {
-        await axios.post(`/course/unenroll/${course.id}`, null, {
+        await axios.post(`/course/unenroll/${id}`, null, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         });
-  
+
         await Swal.fire({
           position: "top-right",
           icon: "success",
@@ -159,9 +165,9 @@ const navigate = useNavigate()
           showConfirmButton: false,
           timer: 2000,
           toast: true,
-          timerProgressBar: true,
+          timerProgressBar: true
         });
-  
+
         const response = await axios.get(`/course/enrollment/${id}`);
         if (response.data.enrolled === false) {
           setEnroll(false);
@@ -174,7 +180,7 @@ const navigate = useNavigate()
           showConfirmButton: false,
           timer: 2000,
           toast: true,
-          timerProgressBar: true,
+          timerProgressBar: true
         });
       }
     } else {
@@ -186,16 +192,16 @@ const navigate = useNavigate()
         showConfirmButton: false,
         timer: 2000,
         toast: true,
-        timerProgressBar: true,
+        timerProgressBar: true
       });
     }
   };
-  
+
   const handleAddToWishlist = async () => {
     try {
-      await axios.post('/course/wishlist/', { course_id: course.id });
-      console.log('Course added to wishlist');
-      fetchWishlist()
+      await axios.post("/course/wishlist/", { course_id: course.course.id });
+      console.log("Course added to wishlist");
+      fetchWishlist();
     } catch (error) {
       console.error(error);
     }
@@ -203,8 +209,8 @@ const navigate = useNavigate()
   const handleRemoveFromWishlist = async (courseId) => {
     try {
       await axios.delete(`/course/wishlist/remove/${id}`);
-      console.log('Course removed from wishlist');
-      setWishlist(null)
+      console.log("Course removed from wishlist");
+      setWishlist(null);
     } catch (error) {
       console.error(error);
     }
@@ -217,7 +223,8 @@ const navigate = useNavigate()
   //   wishlist && wishlist.some((course) => course.id === id && course.user === user.id)
   // };
 
-  const categories = course.cat && course.cat.map((cat) => cat.name).join(", ");
+  const categories =
+    course.course?.cat && course.course.cat.map((cat) => cat.name).join(", ");
 
   return (
     <div style={{ backgroundColor: "#C1D3DF" }}>
@@ -244,7 +251,7 @@ const navigate = useNavigate()
                   color: "#1D5564"
                 }}
               >
-                {course.title}
+                {course.course?.title}
               </Typography>
               <Typography
                 sx={{
@@ -258,14 +265,14 @@ const navigate = useNavigate()
                   fontFamily:
                     "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif",
                   // position: "absolute",
-                  display:'flex',
+                  display: "flex",
                   flexDirection: "row",
-                  alignItems:'center'
+                  alignItems: "center"
                   // width: "500px"
                 }}
               >
-                {course.desc}
- </Typography>
+                {course.course?.desc}
+              </Typography>
               <Typography
                 sx={{
                   marginTop: isMobile ? 0 : 5,
@@ -277,80 +284,123 @@ const navigate = useNavigate()
                   fontFamily:
                     "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif",
                   // position: "absolute",
-                  display:'flex',
+                  display: "flex",
                   flexDirection: "row",
-                  alignItems:'center'
+                  alignItems: "center"
                   // width: "500px"
                 }}
               >
-                <Typography fontWeight={'bold'}>Rating &nbsp;:&nbsp; </Typography>{course.avg_rating}
-                <Typography fontWeight={'bold'} marginLeft={2}>Course By &nbsp;:&nbsp; </Typography><Typography onClick={()=>navigate(`/teacher-profile/${user.name}`)} sx={{textDecoration:'underline',cursor:'pointer'}}>{course.teacher?.user.name}</Typography>
+                <Typography fontWeight={"bold"}>
+                  Rating &nbsp;:&nbsp;{" "}
+                </Typography>
+                {course.course?.avg_rating}
+                <Typography fontWeight={"bold"} marginLeft={2}>
+                  Course By &nbsp;:&nbsp;{" "}
+                </Typography>
+                <Typography
+                  onClick={() =>
+                    navigate(
+                      `/teacher-profile/${course.course?.teacher?.user.name}/${course.course?.teacher?.user.id}`
+                    )
+                  }
+                  sx={{ textDecoration: "underline", cursor: "pointer" }}
+                >
+                  {course.course?.teacher?.user.name}
+                </Typography>
               </Typography>
-              <Box     display='flex'
-    alignItems='center'
-    alignContent= 'center'
-    flexDirection= 'row'
-    flexWrap='wrap'>
+              <Box
+                display="flex"
+                alignItems="center"
+                alignContent="center"
+                flexDirection="row"
+                flexWrap="wrap"
+              >
+                {course?.course?.teacher?.user.id !== user?.id &&
+                  (enroll ? (
+                    <Button
+                      sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 200,
+                        height: 50,
+                        opacity: 0.8,
+                        backgroundColor: "rgba(25, 89, 100, 0.7)",
+                        marginTop: 5,
+                        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
+                      }}
+                      onClick={handleUnenroll}
+                    >
+                      <Typography
+                        variant="h4"
+                        className="text-white"
+                        sx={{ color: "white", fontWeight: 100 }}
+                      >
+                        Unenroll
+                      </Typography>
+                    </Button>
+                  ) : (
+                    <Button
+                      sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 200,
+                        height: 50,
+                        backgroundColor: "#1D5564",
+                        marginTop: 5,
+                        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
+                      }}
+                      onClick={handleEnroll}
+                    >
+                      <Typography
+                        variant="h4"
+                        className="text-white"
+                        sx={{ color: "white", fontWeight: 100 }}
+                      >
+                        Enroll Now
+                      </Typography>
+                    </Button>
+                  ))}
 
-
-{course?.teacher?.user.id !== user.id && (
-  enroll ? (
-    <Button
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 200,
-        height: 50,
-        opacity: 0.8,
-        backgroundColor: "rgba(25, 89, 100, 0.7)",
-        marginTop: 5,
-        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
-      }}
-      onClick={handleUnenroll}
-    >
-      <Typography
-        variant="h4"
-        className="text-white"
-        sx={{ color: "white", fontWeight: 100 }}
+                {wishlist ? (
+                  <IconButton
+                    sx={{ marginTop: "40px" }}
+                    onClick={handleRemoveFromWishlist}
+                  >
+                    <FavoriteOutlinedIcon
+                      sx={{ width: "4rem", height: "3rem" }}
+                    />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    sx={{ marginTop: "40px" }}
+                    onClick={handleAddToWishlist}
+                  >
+                    <FavoriteBorderIcon
+                      sx={{ width: "4rem", height: "3rem" }}
+                    />
+                  </IconButton>
+                )}
+                {enroll && <Box sx={{ position: 'relative', display: 'inline-flex',top:'1.1rem' }}>
+      <CircularProgress variant="determinate" value={course.progress} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        Unenroll
-      </Typography>
-    </Button>
-  ) : (
-    <Button
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 200,
-        height: 50,
-        backgroundColor: "#1D5564",
-        marginTop: 5,
-        "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
-      }}
-      onClick={handleEnroll}
-    >
-      <Typography
-        variant="h4"
-        className="text-white"
-        sx={{ color: "white", fontWeight: 100 }}
-      >
-        Enroll Now
-      </Typography>
-    </Button>
-  )
-)}
-
-
-
-
-              {wishlist ?(<IconButton sx={{marginTop:'40px'}} onClick={handleRemoveFromWishlist}>
-              <FavoriteOutlinedIcon sx={{width:'4rem', height:'3rem'}}/>
-              </IconButton>):
-              (<IconButton sx={{marginTop:'40px'}} onClick={handleAddToWishlist}>
-              <FavoriteBorderIcon sx={{width:'4rem', height:'3rem'}}/>
-              </IconButton>)}
+        <Typography variant="caption" component="div" color="text.secondary">
+        {`${course.progress === undefined ? 0 : course.progress}%`}
+        </Typography>
+      </Box>
+    </Box>}
               </Box>
             </Box>
           </Grid>
@@ -364,15 +414,15 @@ const navigate = useNavigate()
                   width: isMobile ? "fit-content" : "70%",
                   height: "auto",
                   maxWidth: "100%",
-                  boxShadow: 'rgb(0, 0, 0,1.3) 15px 10px 10px',
+                  boxShadow: "rgb(0, 0, 0,1.3) 15px 10px 10px",
                   // marginLeft:'10px'
-                  borderRadius:'8%',
+                  borderRadius: "8%",
                   [theme.breakpoints.up("sm")]: {
                     width: "100%"
                   }
                 }}
                 loading={lazy}
-                src={course.image}
+                src={course.course?.image}
                 alt="placeholder"
               />
             </Box>
@@ -386,16 +436,22 @@ const navigate = useNavigate()
         alignItems="center"
         direction={isMobile ? "column" : "row"}
         bgcolor="white"
-        display={isMobile && 'flex'}
-        sx={{alignItems:isMobile && 'flex-start'}}
+        display={isMobile && "flex"}
+        sx={{ alignItems: isMobile && "flex-start" }}
       >
         <Grid item xs={12} sm={6} md={6} lg={6} sx={{ paddingLeft: "4vw" }}>
-          <NameOfCourses chapter={chapter} courseName={course.title} course_id={course.id}/>
+          <NameOfCourses
+            chapter={chapter}
+            courseName={course.course?.title}
+            course_id={course.course?.id}
+            enroll={enroll}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={6} sx={{ paddingLeft: "4vw" }}>
           <AboutCourse course={course} categories={categories} />
         </Grid>
       </Grid>
+
       <Grid
         container
         spacing={2}
@@ -404,9 +460,9 @@ const navigate = useNavigate()
         bgcolor="white"
       >
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ paddingLeft: "4vw" }}>
-          <CourseReviews courseId={course.id} enroll={enroll}/>
-          </Grid>
-          </Grid>
+          <CourseReviews courseId={course.id} enroll={enroll} />
+        </Grid>
+      </Grid>
     </div>
   );
 }

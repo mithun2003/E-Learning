@@ -6,11 +6,13 @@ import {
   Button,
   Rating,
   Grid,
-  Avatar
+  Avatar,
+  CircularProgress
 } from "@mui/material";
 import axios from "../../axios";
 import { baseUrl } from "../../constants/baseUrl";
 import StarIcon from '@mui/icons-material/Star';
+import { useParams } from "react-router-dom";
 
 const CourseReviews = ({ courseId, enroll }) => {
   const [rating, setRating] = useState(0);
@@ -18,8 +20,10 @@ const CourseReviews = ({ courseId, enroll }) => {
   const [reviews, setReviews] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
   const [showAllReviews, setShowAllReviews] = useState(false);
-const MAX_REVIEWS_TO_DISPLAY = 5;
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
+const MAX_REVIEWS_TO_DISPLAY = 5;
+const {id } = useParams()
 const handleShowAllReviews = () => {
   setShowAllReviews(true);
 };
@@ -47,32 +51,40 @@ const displayedReviews = showAllReviews
 
     // Make API call to add the review
     axios
-      .post(`/course/${courseId}/reviews/`, newReview)
+      .post(`/course/${id}/reviews/`, newReview)
       .then((response) => {
         setReviews([...reviews, response.data]);
         setRating(0);
         setReview("");
+        handleReview()
       })
       .catch((error) => {
         console.error(error);
       });
   };
-
-  useEffect(() => {
-    // Fetch existing reviews for the course
+  const handleReview = ()=>{
     axios
-      .get(`/course/${courseId}/reviews/`)
-      .then((response) => {
-        setReviews(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [courseId]);
+    .get(`/course/${id}/reviews/`)
+    .then((response) => {
+      setReviews(response.data);
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {
+      setIsLoading(false); // Stop loading
+    });
+  }
+  useEffect(() => {
+    setIsLoading(true); // Start loading
+    // Fetch existing reviews for the course
+    handleReview()
+  }, [id]);
 
   return (
-    <div style={{ marginLeft: "4rem", marginRight: "1rem" }}>
-      <Typography variant="h4" gutterBottom>
+    <div style={{ marginLeft: "4rem", marginRight: "1rem" ,marginTop:'2rem'}}>
+      <Typography variant="h4" gutterBottom color='#1d5564'>
         Course Reviews
       </Typography>
 
@@ -92,9 +104,10 @@ const displayedReviews = showAllReviews
           </Button>
         </Box>
       )}
-
-      {/* Display existing reviews */}
-      {displayedReviews.length > 0 ? (
+{isLoading ? (
+        <CircularProgress /> // Show loading spinner while fetching reviews
+      ) : 
+      displayedReviews.length > 0 ? (
         <Box sx={{ mt: 4 }}>
           <Grid
             container
@@ -131,10 +144,10 @@ const displayedReviews = showAllReviews
                       ml={"1rem"}
                     >
                       <Avatar
-                        alt={user.name}
-                        src={user.image && `${baseUrl}${user.image}`}
+                        alt={review.user?.name}
+                        src={review.user && `${baseUrl}${review.user?.image}`}
                       />
-                      <Typography ml={"2rem"}>{user.name}</Typography>
+                      <Typography ml={"2rem"}>{review.user?.name}</Typography>
                     </Box>
                     <Box
                       sx={{

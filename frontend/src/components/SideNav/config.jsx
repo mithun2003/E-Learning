@@ -10,10 +10,10 @@ const navConfig = [
      title: 'Profile',
      path: '/profile',
    },
-  {
-    title: 'Change Password',
-    path: '/user/chage-password',
-  },
+  // {
+  //   title: 'Change Password',
+  //   path: '/user/chage-password',
+  // },
  {
     title: 'Course',
     path: '/teacher/course-list',

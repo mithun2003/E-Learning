@@ -46,24 +46,26 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
     axios
       .get(`/course/course-detail/${id}`)
       .then((response) => {
+        setCourse(response.data.course)
         setCourse((prevCourse) => ({
           ...prevCourse,
-          ...response.data,
-          teacher: response.data.teacher.id,
-          cat: response.data.cat.map((c) => c.id),
+          ...response.data.course,
+          teacher: response.data.course.teacher.user.id,
+          cat: response.data.course.cat.map((c) => c.id),
         }));
-        setSelectedCat(response.data.cat.map((category) => category.name));
+        setSelectedCat(response.data.course.cat.map((category) => category.name));
         console.log("category", response.data);
         console.log(course);
-        setCourse({...response.data,teacher: response.data.teacher.id,cat:[]})
+        setCourse({...response.data.course,teacher: response.data.course.teacher.user.id,cat:[]})
         console.log(course);
       })
       .catch((error) => console.error(error));
-  
-    axios
-      .get("/category")
+      
+      axios
+      .get("/course/category-list")
       .then((response) => {
         setCat(response.data);
+        console.log(course);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -293,6 +295,7 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
               >
               <InputLabel>Level</InputLabel>
               <Select
+              label='Level'
                 name="level"
                 value={course.level}
                 onChange={handleInputChange}
@@ -334,14 +337,15 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
             <FormControl fullWidth sx={{ marginBottom: "16px" }}>
               <InputLabel>Teacher</InputLabel>
               <Select
+              label="Teacher"
                 name="teacher"
-                value={course.teacher}
+                value={course.teacher } // Set the value to the ID of the selected teacher or an empty string if no teacher is selected
                 onChange={handleInputChange}
                 error={formErrors.teacher}
               >
                 {teacher.map((teacher) => (
-                  <MenuItem key={teacher.id} value={teacher.id}>
-                    {teacher.name}
+                  <MenuItem key={teacher.user.id} value={teacher.user.id}>
+                    {teacher.user?.name}
                   </MenuItem>
                 ))}
               </Select>

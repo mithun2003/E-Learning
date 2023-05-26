@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Grid, useMediaQuery, useTheme } from "@mui/material";
 import image from "./banner.jpg";
-
+import axios from '../../axios'
 const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
+  const [details, setDetails] = useState({});
 
-  // useEffect(() => {
-  //   document.body.style.backgroundColor = "#C1D3DF";
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("/banner/user")
+      .then((response) => {
+          setDetails(response.data);
+        
+        console.log(response.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   return (
     <Box className="body">
@@ -58,9 +66,10 @@ const Home = () => {
                 height: "auto",
                 maxWidth: "100%",
                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.3)",
+                borderRadius:'2%'
                 // marginLeft:'10px'
               }}
-              src={image}
+              src={details.image}
               alt="placeholder"
             />
           </Box>

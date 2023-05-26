@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,64 +20,73 @@ import { useMediaQuery } from "@mui/material";
 import DrawerComp from "./DrawerComp";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { baseUrl } from "../../constants/baseUrl";
-
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import axios from "../../axios";
 const pages = ["Courses", "Category", "About"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+// const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery (theme.breakpoints.down(1240));
-  const logoutHandler = () => {
-    const confirmed = window.confirm("Are you sure you want to log out?");
-    if (confirmed) {
-      console.log("logged out");
-      dispatch(logout());
-      navigate("/");
-    }
-  };
-  const  user = JSON.parse(localStorage.getItem("user"));
-
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down(1240));
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [cat, setCat] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [anchorElCat, setAnchorElCat] = useState(null);
   const { isAuthenticated } = useSelector((state) => state.login);
-  const teacher = JSON.parse(localStorage.getItem("teacher"))
+  const teacher = JSON.parse(localStorage.getItem("teacher"));
   const handleWishlist = () => {
-    navigate('/whishlist')
+    navigate("/whishlist");
   };
-
+  useEffect(() => {
+    axios
+      .get("/course/category-list")
+      .then((response) => {
+        setCat(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
   console.log({ user });
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+  // const handleOpenNavMenu = (event) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
+  // const handleOpenUserMenu = (event) => {
+  //   setAnchorElUser(event.currentTarget);
+  // };
+
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null);
+  // };
+
+  // const handleCloseUserMenu = () => {
+  //   setAnchorElUser(null);
+  // };
+  const handleOpenCategoryMenu = (event) => {
+    setAnchorElCat(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleCloseCategoryMenu = () => {
+    setAnchorElCat(null);
   };
   const handleNav = (page) => {
     if (page === "Courses") {
-      navigate('/courses');
-    } 
-    
-  };
-  const handleItemClick = (setting) => {
-    if (setting === "Logout") {
-      logoutHandler();
-    } else if (setting === "Profile") {
-      navigate("/profile");
-    } else if (setting === "Dashboard") {
-      navigate("/");
+      navigate("/courses");
     }
-    
   };
+  // const handleItemClick = (setting) => {
+  //   if (setting === "Logout") {
+  //     logoutHandler();
+  //   } else if (setting === "Profile") {
+  //     navigate("/profile");
+  //   } else if (setting === "Dashboard") {
+  //     navigate("/");
+  //   }
+
+  // };
+
   return (
     <AppBar
       position="static"
@@ -88,91 +97,136 @@ function ResponsiveAppBar() {
         boxShadow: "none"
       }}
     >
-        <Toolbar disableGutters sx={{marginLeft:'5%',marginRight:'5%'}}>
-          {isMobile ?(   
-            <>
-            <DrawerComp pages={pages}/>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            
-            sx={{
-              mr: 2,
-              display: { xs: "flex" },
-              flexGrow: 1,
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-              justifyContent:'center'
-
-            }}
+      <Toolbar disableGutters sx={{ marginLeft: "5%", marginRight: "5%" }}>
+        {isMobile ? (
+          <>
+            <DrawerComp pages={pages} />
+            <Typography
+              variant="h5"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "flex" },
+                flexGrow: 1,
+                fontFamily: "Montserrat, sans-serif",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+                justifyContent: "center"
+              }}
             >
               <Link to="/">
-            <img
-              src={image}
-              alt="Logo"
-              style={{ width: "4.5vh" }}
-              
-              />
+                <img src={image} alt="Logo" style={{ width: "4.5vh" }} />
               </Link>
-          </Typography>
-          
-              </>
-
-          ) : 
-          
-          (
-            <>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none"
-            }}
-
-          >
-            <img
-              src={image}
-              alt="Logo"
-              style={{ width: "50px",cursor:'pointer'}}
-              onClick={()=>navigate('/')}
-              
-            />
-          </Typography>
-          
-       
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={()=>handleNav(page)}
-                sx={{ my: 2, color: "#1D5564", display: "block",fontFamily: 'Montserrat, sans-serif' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+            </Typography>
           </>
-          )}
+        ) : (
+          <>
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "Montserrat, sans-serif",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none"
+              }}
+            >
+              <img
+                src={image}
+                alt="Logo"
+                style={{ width: "50px", cursor: "pointer" }}
+                onClick={() => navigate("/")}
+              />
+            </Typography>
 
-   <IconButton onClick={handleWishlist}>
-          <FavoriteBorderIcon sx={{marginRight:'1rem'}}/>
-   </IconButton>
-          {isAuthenticated ? (
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={user.name} src={user.image && `${baseUrl}${user.image}`} />
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+              {pages.map((page) => (
+                <React.Fragment key={page}>
+                  {page === "Category" ? (
+                    <>
+                      <Button
+                        onClick={handleOpenCategoryMenu}
+                        sx={{
+                          my: 2,
+                          color: "#1D5564",
+                          "& .MuiButton-endIcon": {
+                            marginLeft: 0,
+                            marginRight: 0
+                          },
+                          fontFamily: "Montserrat, sans-serif"
+                        }}
+                        endIcon={<ArrowDropDownIcon />}
+                      >
+                        {page}
+                      </Button>
+                      <Menu
+                        anchorEl={anchorElCat}
+                        open={Boolean(anchorElCat)}
+                        onClose={handleCloseCategoryMenu}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left"
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left"
+                        }}
+                      >
+                        {cat &&
+                          cat.map((category) => (
+                            <MenuItem
+                              key={category.id}
+                              onClick={
+                                handleCloseCategoryMenu
+                              }
+                            >
+                              <Link
+                                to={`/category/${category.id}`}
+                                style={{ textDecoration: "none" }}
+                              >
+                                {category.name}
+                              </Link>
+                            </MenuItem>
+                          ))}
+                      </Menu>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => handleNav(page)}
+                      sx={{
+                        my: 2,
+                        color: "#1D5564",
+                        display: "block",
+                        fontFamily: "Montserrat, sans-serif"
+                      }}
+                    >
+                      {page}
+                    </Button>
+                  )}
+                </React.Fragment>
+              ))}
+            </Box>
+          </>
+        )}
+
+        <IconButton onClick={handleWishlist}>
+          <FavoriteBorderIcon sx={{ marginRight: "1rem" }} />
+        </IconButton>
+        {isAuthenticated ? (
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={() => navigate("/profile")} sx={{ p: 0 }}>
+                <Avatar
+                  alt={user.name}
+                  src={user.image && `${baseUrl}${user.image}`}
+                />
                 {/* <Button
                 variant="outlined"
                   onClick={handleOpenUserMenu}
@@ -180,9 +234,9 @@ function ResponsiveAppBar() {
                 >
                   {user.name}
                 </Button> */}
-                </IconButton>
-              </Tooltip>
-              <Menu
+              </IconButton>
+            </Tooltip>
+            {/* <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
@@ -209,32 +263,31 @@ function ResponsiveAppBar() {
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
-              </Menu>
-            </Box>
-          ) : (
-            <Link
-              to="/login"
-              
-              style={{
-                my: 2,
-                color: "#1D5564",
-                display: "block",
-                fontSize: "16px", 
-                transition: "text-decoration 0.3s",
-                textDecoration: "none" ,
-                marginLeft:'auto'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.textDecoration = "underline"; 
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.textDecoration = "none"; 
-              }}
-            >
-              Login
-            </Link>
-          )}
-        </Toolbar>
+              </Menu> */}
+          </Box>
+        ) : (
+          <Link
+            to="/login"
+            style={{
+              my: 2,
+              color: "#1D5564",
+              display: "block",
+              fontSize: "16px",
+              transition: "text-decoration 0.3s",
+              textDecoration: "none",
+              marginLeft: "auto"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.textDecoration = "underline";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.textDecoration = "none";
+            }}
+          >
+            Login
+          </Link>
+        )}
+      </Toolbar>
       {/* </Container> */}
     </AppBar>
   );

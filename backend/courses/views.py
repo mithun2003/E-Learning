@@ -7,8 +7,65 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 # Create your views here.
 from account.serializers import *
 from account.models import Teachers
-
+from .models import *
 import json
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import BannerSerializer
+
+
+class Banner(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = CreateBannerSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        queryset = Banners.objects.all().order_by('-active')
+        if queryset:
+            serializer = BannerSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class BannerUser(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        query = Banners.objects.filter(active=True).first()
+        if query:
+            serializer = BannerSerializer(query)
+            return Response(serializer.data)
+        else:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class EditBanner(APIView):
+    def post(self, request, id):
+        try:
+            banner = Banners.objects.get(id=id)
+            banner.active = not banner.active
+            banner.save()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except Banners.DoesNotExist:
+            return Response("Banner not found", status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, id):
+        try:
+            banner = Banners.objects.get(id=id)
+            banner.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except Banners.DoesNotExist:
+            return Response("Banner not found", status=status.HTTP_404_NOT_FOUND)
 
 
 class CreateCategory(APIView):
@@ -87,6 +144,8 @@ class UserCourseView(APIView):
         return Response(serializer.data)
 
 
+# Retreive all courses added by a teacher
+
 class TeacherViewCourse(APIView):
     permission_classes = [AllowAny]
 
@@ -100,13 +159,71 @@ class TeacherViewCourse(APIView):
             return Response({'message': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+# class ViewOneCourse(APIView):
+#     permission_classes = [AllowAny]
+
+#     def get(self, request, id):
+#         queryset = Course.objects.get(id=id)
+#         serializer = CourseSerializer(queryset)
+#         try:
+#             progress = VideoProgress.objects.filter(course_id=id, user_id=request.user.id)
+#             progress_data = VideoProgressSerializer(progress)
+#         except VideoProgress.DoesNotExist:
+#             return Response({'message': 'VideoProgress not found'}, status=status.HTTP_404_NOT_FOUND)
+
+#         # return Response(progress_data.data,serializer.data)
+#         return Response({'course': progress_data.data, 'progress': progress_data})
+
+class AdminViewOneCourse(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, id):
+        try:
+            course = Course.objects.get(id=id)
+        except Course.DoesNotExist:
+            return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CourseSerializer(course)
+
+        return Response(serializer.data)
+
+
 class ViewOneCourse(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, id):
-        queryset = Course.objects.get(id=id)
-        serializer = CourseSerializer(queryset)
-        return Response(serializer.data)
+        try:
+            course = Course.objects.get(id=id)
+        except Course.DoesNotExist:
+            return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CourseSerializer(course)
+        user = request.user
+        if user.is_authenticated:
+            completed_videos = VideoProgress.objects.filter(user=user, course=id, is_completed=True).count()
+            total_videos = Chapter.objects.filter(course_id=id).count()
+            if total_videos != 0:
+                progress = (completed_videos / total_videos) * 100
+            else:
+                progress = 0
+            try:
+                course_progress = CourseProgress.objects.get(course_id=id, user_id=user.id)
+                course_progress.progress = progress
+                course_progress.save()
+            except CourseProgress.DoesNotExist:
+                CourseProgress.objects.create(user=user, course_id=id, progress=progress)
+            try:
+                progress = CourseProgress.objects.get(course_id=id, user_id=request.user.id)
+                progress_data = progress.progress
+            except:
+                progress_data = None
+        else:
+            progress_data = None
+        response_data = {
+            'course': serializer.data,
+            'progress': progress_data
+        }
+        return Response(response_data)
 
 
 class DeleteCourse(APIView):
@@ -156,7 +273,17 @@ class ViewAllChapter(APIView):
     def get(self, request, course_id):
         course = Course.objects.get(id=course_id)
         chapters = Chapter.objects.filter(course=course).order_by('order')
-        serializer = ChapterSerializer(chapters, many=True)
+        serializer = ChapterSerializer(chapters, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class ViewAllChapterAdmin(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, course_id):
+        course = Course.objects.get(id=course_id)
+        chapters = Chapter.objects.filter(course=course).order_by('order')
+        serializer = AdminChapterSerializer(chapters, many=True)
         return Response(serializer.data)
 
 
@@ -186,6 +313,7 @@ class Enroll(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, course_id):
+
         course = Course.objects.get(pk=course_id)
         enrolled = Enrollment.objects.filter(course=course, user=request.user).exists()
 
@@ -194,6 +322,8 @@ class Enroll(APIView):
         else:
             enrollment = Enrollment(course=course, user=request.user)
             enrollment.save()
+            course_progress = CourseProgress(user=request.user, course=course)
+            course_progress.save()
             serializer = EnrollmentSerializer(enrollment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -207,6 +337,9 @@ class Unenroll(APIView):
 
         if enrollment.exists():
             enrollment.delete()
+            course_progress = CourseProgress.objects.filter(user=request.user, course=course)
+            if course_progress.exists():
+                course_progress.delete()
             return Response({'message': 'Successfully unenrolled from the course.'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'You are not enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -222,10 +355,19 @@ class ViewEnrolled(APIView):
         return Response({'enrolled': enrolled})
 
 
+class CheckEnroll(APIView):
+    def get(self, request, course_id):
+        enroll = Enrollment.objects.filter(course_id=course_id, user=request.user.id).exists()
+        if enroll:
+            return Response(enroll)
+        else:
+            return Response(enroll)
+
+
 class ViewOneChapter(APIView):
     def get(self, request, chapter_id):
         chapter = Chapter.objects.get(id=chapter_id)
-        serializer = ChapterSerializer(chapter)
+        serializer = ChapterSerializer(chapter, context={'request': request})
         return Response(serializer.data)
 
 
@@ -276,4 +418,80 @@ class Review(APIView):
         return Response(serializer.data)
 
 
-# Retreive all courses added by a teacher
+class ContactMe(APIView):
+    def post(self, request):
+        serializer = ContactSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        query = Contact.objects.all()
+        serializer = ContactSerializer(query, many=True)
+        return Response(serializer.data)
+
+
+class Progress(APIView):
+    def post(self, request, chapter_id):
+        course_id = request.data.get('course_id')
+        user = request.user
+        try:
+            enroll = Enrollment.objects.get(course_id=course_id, user_id=user.id)
+        except Enrollment.DoesNotExist:
+            return Response({'message': 'You have to enroll in this course'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            chapter = Chapter.objects.get(id=chapter_id, course_id=course_id)
+        except Chapter.DoesNotExist:
+            return Response({"error": "Invalid chapter"}, status=status.HTTP_404_NOT_FOUND)
+
+        data = {
+            'user': user.id,
+            'course': course_id,
+            'video': chapter_id,
+            'is_completed': True
+        }
+        existing_progress = VideoProgress.objects.filter(user=user, course=course_id, video=chapter_id)
+        if existing_progress.exists():
+            serializer = VideoProgressSerializer(existing_progress.first())
+        else:
+            serializer = VideoProgressSerializer(data=data)
+            completed_videos = VideoProgress.objects.filter(user=user, course=course_id, is_completed=True).count()
+            total_videos = Chapter.objects.filter(course_id=course_id).count()
+            if total_videos != 0:
+                progress = (completed_videos / total_videos) * 100
+            else:
+                progress = 0
+            try:
+                course_progress = CourseProgress.objects.get(course_id=course_id, user_id=user.id)
+                course_progress.progress = progress
+                course_progress.save()
+            except CourseProgress.DoesNotExist:
+                CourseProgress.objects.create(user=user, course_id=course_id, progress=progress)
+        if not existing_progress.exists():
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'message': 'Video exists'})
+
+    def get(self, request, chapter_id):
+        course_id = request.data.get('course_id')
+        user = request.user
+        query = VideoProgress.objects.filter(user=user, course=course_id, video=chapter_id)
+        serializer = VideoProgressSerializer(query, many=True)
+        return Response(serializer.data)
+
+
+class Course_By_Category(APIView):
+    def get(self, request, cat_id):
+        try:
+            course = Course.objects.filter(cat__id=cat_id)
+            serializer = CourseSerializer(course, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Course.DoesNotExist():
+            return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)

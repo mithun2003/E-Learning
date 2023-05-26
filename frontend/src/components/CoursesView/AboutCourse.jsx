@@ -23,7 +23,7 @@ const AboutCourse = ({course,categories}) => {
             <FiberManualRecordIcon sx={{fontSize:'11px', color:'#212B36'}} />
           </ListItemIcon>
           <Typography variant="body1" component="span" color="#212B36">
-            {course.duration} duration
+            {course.course?.duration} duration
           </Typography>
         </ListItem>
         <ListItem>
@@ -31,7 +31,7 @@ const AboutCourse = ({course,categories}) => {
             <FiberManualRecordIcon sx={{fontSize:'11px', color:'#212B36'}} />
           </ListItemIcon>
           <Typography variant="body1" component="span" color="#212B36">
-            {course.enrollments} students enrolled
+            {course.course?.enrollments} students enrolled
           </Typography>
         </ListItem>
         <ListItem>

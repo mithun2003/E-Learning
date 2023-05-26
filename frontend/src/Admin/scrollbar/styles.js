@@ -8,7 +8,7 @@ export const StyledRootScrollbar = styled('div')(() => ({
   flexGrow: 1,
   height: '100%',
   overflow: 'hidden',
-  maxHeight:'80vh',
+  // maxHeight:'80vh',
   minHeight:'60vh'
 }));
 

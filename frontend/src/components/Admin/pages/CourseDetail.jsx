@@ -47,7 +47,7 @@ export default function CourseDetail() {
   console.log(details);
   useEffect(() => {
       axios
-      .get(`/course/course-detail/${id}`)
+      .get(`/course/admin/course-detail/${id}`)
       .then((response) => {
           setDetails(response.data);
           
@@ -55,18 +55,18 @@ export default function CourseDetail() {
           console.log(details);
       })
       .catch((error) => console.error(error));
-  }, []);
-  useEffect(() => {
-      axios
-      .get(`/course/course-detail/${id}`)
-      .then((response) => {
-          setDetails(response.data);
+  }, [open,id]);
+  // useEffect(() => {
+  //     axios
+  //     .get(`/course/course-detail/${id}`)
+  //     .then((response) => {
+  //         setDetails(response.data);
           
-          console.log(response.data);
-          console.log(details);
-      })
-      .catch((error) => console.error(error));
-  }, [open]);
+  //         console.log(response.data);
+  //         console.log(details);
+  //     })
+  //     .catch((error) => console.error(error));
+  // }, [open]);
 
   const handleOpenModal = () => {
     setOpen(true);
@@ -141,30 +141,30 @@ export default function CourseDetail() {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                {details.title}
+                {details?.title}
               </Typography>
 
               <div style={{ display: "flex",flexDirection:'column', alignItems: "center" }}>
                 <Avatar
-                  src={details.image}
-                  alt={details.title}
+                  src={details?.image}
+                  alt={details?.title}
                   sx={{ width: 'fit-content', height: 'fit-content',borderRadius:0 }}
                 />
 
                 <div style={{ marginLeft: "20px", marginTop: "2rem" }}>
                   <Typography variant="h6" gutterBottom lineHeight={2.5}>
-                    Name:  {details.title}
+                    Name:  {details?.title}
                   </Typography>
 
-                  <Typography variant="body1" gutterBottom lineHeight={2.5} maxWidth='50vh'>
-                    <b>Description:</b>  {details.desc}
+                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                    <b>Description:</b>  {details?.desc}
                   </Typography>
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                    <b>Level:</b>  {details.level}
+                    <b>Level:</b>  {details?.level}
                   </Typography>
   <Typography variant="body1" lineHeight={2.5}>
                  <b> Category :</b>
-              {details.cat && details.cat.map(cat => (
+              {details?.cat && details.cat.map(cat => (
                 // <Typography variant="body1" key={cat.id} gutterBottom lineHeight={2.5}>
                   <span key={cat.id} style={{lineHeight:2.5}}>
                       &nbsp;{cat.name},
@@ -173,14 +173,14 @@ export default function CourseDetail() {
 ))}
 </Typography>
 
-                  { details.teacher && <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Teacher:</b>  {details.teacher.name}
+                  { details?.teacher && <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                  <b>Teacher:</b>  {details?.teacher.user?.name}
                   </Typography>}
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Enrollments:</b>  {details.enrollments}
+                  <b>Enrollments:</b>  {details?.enrollments}
                   </Typography>
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Duration:</b>  {details.duration}
+                  <b>Duration:</b>  {details?.duration}
                   </Typography>
 
 

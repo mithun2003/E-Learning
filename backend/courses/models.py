@@ -3,6 +3,11 @@ from account.models import *
 
 
 # Create your models here.
+class Banners(models.Model):
+    image = models.ImageField(upload_to='banner/')
+    title = models.CharField(max_length=20)
+    active = models.BooleanField(default=True)
+    created_at = models.DateField(auto_now_add=True)
 
 
 class Category(models.Model):
@@ -25,13 +30,27 @@ class Course(models.Model):
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
+    def progress(self):
+        complete = Chapter.objects.filter(course=self, is_completed=True).count()
+        total = Chapter.objects.filter(course=self).count()
+        if total == 0:
+            return 0
+        progress = (complete / total) * 100
+        return progress
+
     def enrollments(self):
         print(self)
         enrollments = Enrollment.objects.filter(course=self).count()
         return enrollments
+
     def avg_rating(self):
-        avg_rating = CourseReview.objects.filter(course = self).aggregate(models.Avg('rating'))
-        return avg_rating['rating__avg']
+        avg_rating = CourseReview.objects.filter(course=self).aggregate(models.Avg('rating'))
+        avg_rating_value = avg_rating['rating__avg']
+        if avg_rating_value is not None:
+            avg_rating_formatted = "{:.2f}".format(avg_rating_value)
+            return avg_rating_formatted
+        return None
+
 
 class Chapter(models.Model):
     title = models.CharField(max_length=100, blank=False)
@@ -40,6 +59,13 @@ class Chapter(models.Model):
     video = models.FileField(upload_to='chapter_videos/', blank=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+
+    def completed(self, user):
+        try:
+            is_completed = VideoProgress.objects.get(video=self, course=self.course, user=user)
+            return is_completed.is_completed
+        except VideoProgress.DoesNotExist:
+            return False
 
     class Meta:
         ordering = ['order']
@@ -65,3 +91,23 @@ class CourseReview(models.Model):
 
     def __str__(self):
         return self.user.name
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    sent_at = models.DateField(auto_now_add=True)
+
+
+class VideoProgress(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    video = models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
+
+
+class CourseProgress(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    progress = models.PositiveIntegerField(default=0)

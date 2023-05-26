@@ -162,6 +162,7 @@ EMAIL_HOST_PASSWORD = "qqpzjwooiivcsmhr"
 
 
 FRONT_END = 'http://localhost:3000'
+ABLY_API_KEY = 'zQALNg.UizBJg:CM0lkDtlKj6Kbp59JaahyX2mfOKhV10x16IfQHlJi5w'
 
 
 DJOSER = {

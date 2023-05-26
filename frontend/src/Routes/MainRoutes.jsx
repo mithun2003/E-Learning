@@ -30,6 +30,8 @@ import CourseDetails from "../components/Add Course/CourseDetails";
 import WhishList from "../components/WishList/WhishList";
 import TeacherProfile from "../Pages/TeacherProfile";
 import AllCourses from "../Pages/AllCourses";
+import Feedback from "../components/Admin/pages/Feedback";
+import BannerPage from "../components/Admin/pages/BannerPage";
 
 const MainRoutes = () => {
   return (
@@ -43,6 +45,7 @@ const MainRoutes = () => {
         <Route exact path="/course/detail/:id" element={<CourseDetailPage />} />
         <Route exact path="/activate/:uid/:token" element={<Activate />} />
         <Route exact path="/courses" element={<AllCourses />} />
+        <Route exact path="/teacher-profile/:name/:teacher_id" element={<TeacherProfile />} />
 
 
         <Route element={<PublicRoute />}>
@@ -60,8 +63,6 @@ const MainRoutes = () => {
               element={<CourseDetails />}
             />
           </Route>
-
-
           <Route exact path="/teacher/register" element={<Register />} />
           <Route exact path="/whishlist" element={<WhishList />} />
           <Route
@@ -69,7 +70,6 @@ const MainRoutes = () => {
             path="/course/:course_id/:courseName/:chapter_id"
             element={<CoursePlay />}
           />
-          <Route exact path="/teacher-profile/:name" element={<TeacherProfile />} />
 
         </Route>
 
@@ -85,6 +85,8 @@ const MainRoutes = () => {
             <Route path="/admin/user" element={<UserPage />} />
             <Route path="/admin/teacher" element={<TeacherPage />} />
             <Route path="/admin/courses" element={<CoursesPage />} />
+            <Route path="/admin/feedback" element={<Feedback />} />
+            <Route path="/admin/banner" element={<BannerPage />} />
             <Route
               path="/admin/courses/course-detail/:id"
               element={<CourseDetail />}

@@ -15,7 +15,7 @@ const ListChapter = ({id,close}) => {
     const [cardData,setCardData] = useState([])
     
     useEffect(()=>{
-      axios.get(`/course/${id}/chapter-list`)
+      axios.get(`/course/admin/${id}/chapter-list`)
       .then((response)=>{
         setCardData(response.data)
         console.log(response.data);
@@ -168,6 +168,8 @@ const ListChapter = ({id,close}) => {
                   image={card.video}
                   // image={`${baseUrl}${card.image}`}
                   sx={{marginBottom:2}}
+                  controlsList="nodownload" // Add this line to remove download option
+
                 />
         </div>
         <p

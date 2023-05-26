@@ -28,7 +28,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import EditCourse from "./Modals/EditCourse";
 import ChapterAdd from "./Modals/ChapterAdd";
-import ListChapter from "./ListChpater";
+import ListChapter from "../Admin/CourseView/ListChapter";
 
 // ----------------------------------------------------------------------
 
@@ -51,24 +51,24 @@ export default function CourseDetails() {
       axios
       .get(`/course/course-detail/${id}`)
       .then((response) => {
-          setDetails(response.data);
+          setDetails(response.data.course);
           
           console.log(response.data);
           console.log(details);
       })
       .catch((error) => console.error(error));
-  }, []);
-  useEffect(() => {
-      axios
-      .get(`/course/course-detail/${id}`)
-      .then((response) => {
-          setDetails(response.data);
+  }, [open,id]);
+  // useEffect(() => {
+  //     axios
+  //     .get(`/course/course-detail/${id}`)
+  //     .then((response) => {
+  //         setDetails(response.data.course);
           
-          console.log(response.data);
-          console.log(details);
-      })
-      .catch((error) => console.error(error));
-  }, [open]);
+  //         console.log(response.data);
+  //         console.log(details);
+  //     })
+  //     .catch((error) => console.error(error));
+  // }, [open]);
 
   const handleOpenModal = () => {
     setOpen(true);
@@ -176,7 +176,7 @@ export default function CourseDetails() {
 </Typography>
 
                   { details.teacher && <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Teacher &nbsp;: &nbsp; </b>  {details.teacher.user.name}
+                  <b>Teacher &nbsp;: &nbsp; </b>  {details.teacher?.user?.name}
                   </Typography>}
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
                   <b>Enrollments &nbsp;: &nbsp;</b>  {details.enrollments}

@@ -7,7 +7,7 @@ class BlockMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
                 # Exclude admin page from middleware
-        if request.path.startswith('/course/') or request.path.startswith('/user/') or request.path.startswith('/teacher/'):
+        if request.path.startswith('/course/') or request.path.startswith('/user/') or request.path.startswith('/teacher/') or request.path.startswith('/banner/') or request.path.startswith('/get/users/'):
             return response
         if request.user.is_authenticated:
             if 'application/json' in response.get('Content-Type', ''):

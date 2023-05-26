@@ -5,6 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CategoryIcon from '@mui/icons-material/Category';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const navConfig = [
   // {
@@ -32,11 +33,22 @@ const navConfig = [
     path: '/admin/courses',
     icon: <SchoolIcon/>,
   },
+
   {
     title: 'Requests for Teacher',
     path: '/admin/request/teacher',
     icon: <NotificationsIcon/>,
     // icon: icon('ic_user'),
+  },
+  {
+    title: 'Feedback',
+    path: '/admin/feedback',
+    icon: <FeedbackIcon/>,
+  },
+  {
+    title: 'Banner',
+    path: '/admin/banner',
+    icon: <FeedbackIcon/>,
   },
   // {
   //   title: 'product',

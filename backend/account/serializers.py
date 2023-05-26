@@ -22,7 +22,6 @@ class UserEditSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class UserSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
-
     def get_image(self, user):
         if user.image:
             image_url = user.image.url

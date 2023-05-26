@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Typography, Grid, Paper, Button } from '@mui/material';
+import { Avatar, Typography, Grid, Paper, Button, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import EditProfile from './EditProfile';
 import axios from '../../axios';
 import TeacherEditProfile from './TeacherEditProfile';
@@ -13,6 +13,8 @@ const Profile = () => {
   const teacher = JSON.parse(localStorage.getItem("teacher"))
   const [userDetails,setUserDetails] = useState()
   const [open,setOpen]= useState(false)
+  const [loading, setLoading] = useState(true);
+const dispatch = useDispatch()
   useEffect(() => {
     document.body.style.backgroundColor = "#fff";
   }, []);
@@ -22,29 +24,39 @@ const Profile = () => {
   const handleClose = () => {
     setOpen(false);
   };
-//   useEffect(() => {
-//     if (teacher){
-//     axios
-//     .get(`/teacher/get/${user.id}`)
-//     .then((response) => {
-//       setUserDetails(response.data);
-//       console.log(response.data);
-//       localStorage.setItem("teacher",JSON.stringify(response.data))
-//     })
-//     .catch((error) => console.error(error));
-//   }
-// }, [open]);
+  useEffect(() => {
+    if (teacher){
+    axios
+    .get(`/teacher/get/${user.id}`)
+    .then((response) => {
+      setUserDetails(response.data);
+      console.log(response.data);
+      localStorage.setItem("teacher",JSON.stringify(response.data))
+    })
+    .catch((error) => console.error(error));
+  }
+}, [open]);
+
 useEffect(() => {
   axios
     .get(`/view/user/${user.id}`)
     .then((response) => {
       setUserDetails(response.data);
+      setLoading(false); // Set loading state to false once data is fetched
+
       console.log(response.data);
     })
     .catch((error) => console.error(error));
 }, [open]);
 
-
+if (loading) {
+  // Render spinner or loading state while fetching user details
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress/>
+    </div>
+  );
+}
   return (
     <>
     {teacher?
@@ -62,7 +74,7 @@ useEffect(() => {
     >
       <Grid container direction="column" alignItems="center" spacing={2}>
         <Grid item>
-          <Avatar
+        <Avatar
             alt={userDetails?.name} src={userDetails && `${baseUrl}${userDetails.image}`} 
             style={{
               width: '10rem',
