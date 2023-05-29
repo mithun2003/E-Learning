@@ -21,6 +21,9 @@ import { logout } from "../../Reducers/LoginReducer";
 import CourseReviews from "./CourseReviews";
 import TeacherDetails from "./TeacherDetails";
 
+import ChatWidget from "./ChatWidget";
+import Chat from "./Chat";
+
 export default function CoursesDetailedView() {
   const theme = useTheme();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -222,7 +225,10 @@ export default function CoursesDetailedView() {
   //   return wishlist.courses.some((course) => course.id === id);
   //   wishlist && wishlist.some((course) => course.id === id && course.user === user.id)
   // };
-
+  const handleNewUserMessage = (newMessage) => {
+    console.log(`New message incoming! ${newMessage}`);
+    // Now send the message throught the backend API
+  };
   const categories =
     course.course?.cat && course.course.cat.map((cat) => cat.name).join(", ");
 
@@ -382,25 +388,42 @@ export default function CoursesDetailedView() {
                     />
                   </IconButton>
                 )}
-                {enroll && <Box sx={{ position: 'relative', display: 'inline-flex',top:'1.1rem' }}>
-      <CircularProgress variant="determinate" value={course.progress} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography variant="caption" component="div" color="text.secondary">
-        {`${course.progress === undefined ? 0 : course.progress}%`}
-        </Typography>
-      </Box>
-    </Box>}
+                {enroll && (
+                  <Box
+                    sx={{
+                      position: "relative",
+                      display: "inline-flex",
+                      top: "1.1rem"
+                    }}
+                  >
+                    <CircularProgress
+                      variant="determinate"
+                      value={course.progress}
+                    />
+                    <Box
+                      sx={{
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        position: "absolute",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        color="text.secondary"
+                      >
+                        {`${
+                          course.progress === undefined ? 0 : course.progress
+                        }%`}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -463,6 +486,21 @@ export default function CoursesDetailedView() {
           <CourseReviews courseId={course.id} enroll={enroll} />
         </Grid>
       </Grid>
+      <Box
+        sx={{
+          bottom: "0",
+          display: "flex",
+          flexDirection: "column",
+          margin: " 0 20px 20px 0",
+          maxWidth: "370px",
+          position: "fixed",
+          right: "0",
+          width: "10vw",
+          zIndex: "9999"
+        }}
+      >
+        {enroll && <Chat />}
+      </Box>
     </div>
   );
 }

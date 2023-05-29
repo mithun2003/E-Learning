@@ -4,6 +4,7 @@ import Footer from '../components/Footer/Footer'
 import CoursesDetailedView from '../components/CoursesView/CoursesDetailedView'
 import Contact from '../components/Contact/Contact'
 
+
 const CourseDetailPage = () => {
   return (
     <div style={{backgroundColor:"#C1D3DF"}}>

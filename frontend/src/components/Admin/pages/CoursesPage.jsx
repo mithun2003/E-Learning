@@ -335,7 +335,7 @@ export default function CoursesPage() {
                           <TableCell align="left">{enrollments}</TableCell>
                           <TableCell align="left">{duration}</TableCell>
                           <TableCell align="left">{level}</TableCell>
-                          <TableCell align="left">{teacher.name}</TableCell>
+                          <TableCell align="left">{teacher?.user.name}</TableCell>
                           <TableCell align="left">{created_at}</TableCell>
                           <TableCell align="left">
                             {is_publish ? "Yes" : "No"}

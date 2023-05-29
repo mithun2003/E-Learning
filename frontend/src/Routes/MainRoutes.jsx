@@ -32,6 +32,7 @@ import TeacherProfile from "../Pages/TeacherProfile";
 import AllCourses from "../Pages/AllCourses";
 import Feedback from "../components/Admin/pages/Feedback";
 import BannerPage from "../components/Admin/pages/BannerPage";
+import Category from "../Pages/CategoryWise";
 
 const MainRoutes = () => {
   return (
@@ -46,6 +47,7 @@ const MainRoutes = () => {
         <Route exact path="/activate/:uid/:token" element={<Activate />} />
         <Route exact path="/courses" element={<AllCourses />} />
         <Route exact path="/teacher-profile/:name/:teacher_id" element={<TeacherProfile />} />
+        <Route exact path="/category-wise/:id" element={<Category />} />
 
 
         <Route element={<PublicRoute />}>

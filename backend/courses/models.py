@@ -1,5 +1,6 @@
 from django.db import models
 from account.models import *
+from chat.models import *
 
 
 # Create your models here.
@@ -29,6 +30,7 @@ class Course(models.Model):
     is_publish = models.BooleanField(default=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
+    # chat_room = models.OneToOneField(ChatRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
     def progress(self):
         complete = Chapter.objects.filter(course=self, is_completed=True).count()
@@ -111,3 +113,6 @@ class CourseProgress(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     progress = models.PositiveIntegerField(default=0)
+
+
+

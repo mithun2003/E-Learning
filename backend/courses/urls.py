@@ -1,6 +1,6 @@
 from django.urls import path
-
 from .views import *
+from django.urls import path
 
 urlpatterns = [
 
@@ -39,3 +39,7 @@ urlpatterns = [
 
     path('category-view/<cat_id>', Course_By_Category.as_view()),
 ]
+
+
+
+

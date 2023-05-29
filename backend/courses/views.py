@@ -8,13 +8,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from account.serializers import *
 from account.models import Teachers
 from .models import *
-import json
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import BannerSerializer
-
+from chat.models import *
+# from channels.layers import get_channel_layer
+# from asgiref.sync import async_to_sync
 
 class Banner(APIView):
     permission_classes = [AllowAny]
@@ -211,7 +212,8 @@ class ViewOneCourse(APIView):
                 course_progress.progress = progress
                 course_progress.save()
             except CourseProgress.DoesNotExist:
-                CourseProgress.objects.create(user=user, course_id=id, progress=progress)
+                progress_data = None
+                # return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
             try:
                 progress = CourseProgress.objects.get(course_id=id, user_id=request.user.id)
                 progress_data = progress.progress
@@ -231,7 +233,10 @@ class DeleteCourse(APIView):
 
     def post(self, request, id):
         course = Course.objects.get(id=id)
+        name = course.title
         course.delete()
+        chat = ChatRoom.objects.get(name = name)
+        chat.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
@@ -242,6 +247,7 @@ class CourseUpdate(APIView):
         print("EDITING", request.data)
         try:
             course = Course.objects.get(pk=id)
+            old_title = course.title
         except Course.DoesNotExist:
             return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -249,7 +255,15 @@ class CourseUpdate(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer.save()
+        updated_course = serializer.save()
+
+        # Update chat room name if it exists
+        if 'title' in request.data:
+            new_title = request.data['title']
+            chat_room = ChatRoom.objects.get(name=old_title)
+            if chat_room:
+                chat_room.name = new_title
+                chat_room.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -324,6 +338,11 @@ class Enroll(APIView):
             enrollment.save()
             course_progress = CourseProgress(user=request.user, course=course)
             course_progress.save()
+            try:
+                chat_room = ChatRoom.objects.get(name=course.title)
+                chat_room.users.add(request.user.id)
+            except ChatRoom.DoesNotExist:
+                return Response({'message': 'Not found.'}, status=status.HTTP_400_BAD_REQUEST)  
             serializer = EnrollmentSerializer(enrollment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

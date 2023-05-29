@@ -341,8 +341,8 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
             
               >
                 {teacher.map((teacher) => (
-                  <MenuItem key={teacher.id} value={teacher.id}>
-                    {teacher.name}
+                  <MenuItem key={teacher?.user.id} value={teacher?.user.id}>
+                    {teacher?.user.name}
                   </MenuItem>
                 ))}
               </Select>

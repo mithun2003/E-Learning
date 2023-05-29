@@ -2,13 +2,12 @@ from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from .models import *
 from account.serializers import *
-
-
+from chat.models import ChatRoom
 class BannerSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     def get_image(self, obj):
         if obj.image:
-            return "http://localhost:8000/" + obj.image.url
+            return "http://localhost:8000" + obj.image.url
         else:
             return None
 
@@ -41,7 +40,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CourseCreateSerializer(serializers.ModelSerializer):
     print(serializers.ModelSerializer)
-
+    chat_room = serializers.SerializerMethodField()
+    
+    def get_chat_room(self, course):
+        teacher = course.teacher
+        chat_room, created = ChatRoom.objects.get_or_create(name=course.title)
+        if created:
+            chat_room.users.add(teacher.user.id)
+        return chat_room.id
+    
     class Meta:
         model = Course
         fields = (
@@ -54,18 +61,28 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             'duration',
             'level',
             'teacher',
-            'is_publish'
+            'is_publish',
+            'chat_room'
         )
 
 
+    
+    
 class CourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()  # serialize the related teacher data
     cat = CategorySerializer(many=True)  # serialize the related category data
     image = serializers.SerializerMethodField()
+    chat_room = serializers.SerializerMethodField()
 
+    def get_chat_room(self, course):
+        chat_room_name = course.title
+        chat_room = ChatRoom.objects.filter(name=chat_room_name).first()
+        chat_room_id = chat_room.id if chat_room else None
+        return chat_room_id
+        
     def get_image(self, obj):
         if obj.image:
-            return "http://localhost:8000/" + obj.image.url
+            return "http://localhost:8000" + obj.image.url
         else:
             return None
 
@@ -83,6 +100,8 @@ class CourseSerializer(serializers.ModelSerializer):
                   'teacher',
                   'is_publish',
                   'avg_rating',
+                  'created_at',
+                  'chat_room'
                   )
 
 

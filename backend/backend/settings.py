@@ -27,12 +27,13 @@ SECRET_KEY = 'django-insecure-c0ok-#s_v35z55^sr0)+@p@i)=$yr97#ehox9m7ycchbzedv*_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,8 +47,11 @@ INSTALLED_APPS = [
     'djoser',
     'account',
     'courses',
+    'chat',
+    'channels',
 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,7 +84,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
-
+ASGI_APPLICATION = 'backend.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+            # "hosts": [("redis://default:OvAbNVKJfkiGbC5Ksb08P3QrxPzQ967D@redis-13666.c305.ap-south-1-1.ec2.cloud.redislabs.com:13666")]
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -96,12 +109,8 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.AllowAny'
-    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
     ),
 }
 
@@ -162,7 +171,6 @@ EMAIL_HOST_PASSWORD = "qqpzjwooiivcsmhr"
 
 
 FRONT_END = 'http://localhost:3000'
-ABLY_API_KEY = 'zQALNg.UizBJg:CM0lkDtlKj6Kbp59JaahyX2mfOKhV10x16IfQHlJi5w'
 
 
 DJOSER = {
@@ -191,7 +199,7 @@ DJOSER = {
 }
 AUTH_USER_MODEL = 'account.UserAccount'
 CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # CORS_ALLOW_HEADERS = [
 #     'content-type',
