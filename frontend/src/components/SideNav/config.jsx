@@ -1,3 +1,5 @@
+import Room from "../Live/Room";
+
 const user = JSON.parse(localStorage.getItem("user"));
 const teacher = JSON.parse(localStorage.getItem("teacher"));
 
@@ -18,8 +20,17 @@ const navConfig = [
     title: 'Course',
     path: '/teacher/course-list',
   },
+//  {
+//     title: 'Go Live',
+//     path: '/create-live/',
+//   },
+{
+  title: 'Go Live',
+
+},
   {
     title: 'logout',
+  
   },
 ]
 

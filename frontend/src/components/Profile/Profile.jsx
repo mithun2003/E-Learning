@@ -7,6 +7,7 @@ import axios from '../../axios';
 import TeacherEditProfile from './TeacherEditProfile';
 import { baseUrl } from '../../constants/baseUrl';
 import TeacherProfile from './TeacherProfile';
+import Label from '../../Admin/label/Label';
 
 const Profile = () => {
   const {user} = useSelector((state) => state.login);
@@ -26,28 +27,43 @@ const dispatch = useDispatch()
   };
   useEffect(() => {
     if (teacher){
-    axios
-    .get(`/teacher/get/${user.id}`)
-    .then((response) => {
-      setUserDetails(response.data);
-      console.log(response.data);
-      localStorage.setItem("teacher",JSON.stringify(response.data))
-    })
-    .catch((error) => console.error(error));
+    // axios
+    // .get(`/teacher/get/${user.id}`)
+    // .then((response) => {
+    //   setUserDetails(response.data);
+    //   console.log(response.data);
+    //   localStorage.setItem("teacher",JSON.stringify(response.data))
+    // })
+    // .catch((error) => console.error(error));
+    fetchTeacher()
   }
-}, [open]);
+}, []);
+
+const fetchTeacher=()=>{
+  axios
+  .get(`/teacher/get/${user.id}`)
+  .then((response) => {
+    setUserDetails(response.data);
+    console.log(response.data);
+    localStorage.setItem("teacher",JSON.stringify(response.data))
+  })
+  .catch((error) => console.error(error));
+}
 
 useEffect(() => {
   axios
     .get(`/view/user/${user.id}`)
     .then((response) => {
       setUserDetails(response.data);
+      if (response.data.is_teacher){
+        fetchTeacher()
+      }
       setLoading(false); // Set loading state to false once data is fetched
 
       console.log(response.data);
     })
     .catch((error) => console.error(error));
-}, [open]);
+}, []);
 
 if (loading) {
   // Render spinner or loading state while fetching user details
@@ -103,6 +119,11 @@ if (loading) {
         {userDetails?.is_submit?null:(<Grid item>
           <Link to='/teacher/register' style={{color:'blue'}}>If you want to become a teacher here?</Link>
         </Grid>)}
+        {userDetails?.is_pending?(<Grid item>
+          <span>Application is on </span>&nbsp;
+          <Label color={userDetails?.is_pending ? "warning" : "success"}>
+                      {userDetails?.is_pending ? "Pending..." : "Verified"}
+              </Label>        </Grid>):null}
       </Grid>
     </Paper>
     <EditProfile onOpen={open} onCloseModal={handleClose} userDetails={userDetails}/>

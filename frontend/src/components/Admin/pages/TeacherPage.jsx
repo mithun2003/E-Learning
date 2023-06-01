@@ -159,6 +159,7 @@ const handleBlock = (id) => {
     filterName
   );
 
+
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (

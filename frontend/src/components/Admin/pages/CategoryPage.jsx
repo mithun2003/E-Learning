@@ -164,6 +164,8 @@ export default function CatergoryPage() {
           setNotFound(true);
         } else {
           setDetails(response.data);
+          console.log(response.data);
+
           setNotFound(false);
         }
         console.log(response.data);

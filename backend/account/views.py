@@ -192,6 +192,8 @@ class Teacher(APIView):
 
         # Remove is_submit from request.data
         user_data = UserAccount.objects.get(id=user.id)
+        user_data.is_pending = True
+        user_data.save()
         request.data.pop('is_submit', None)
         request.data.pop('mobile_number', None)
         request.data.pop('country', None)

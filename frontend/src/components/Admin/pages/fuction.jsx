@@ -76,12 +76,26 @@ export const handleRequestSort = (event, property, order,orderBy, setOrder, setO
     if (query) {
       console.log(array);
       console.log(query);
-      return filter(
-        array,
-        // (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || (_user) => _user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
-        (_user) => _user.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
-
-      );
+      return array.filter((_user) => {
+        if (_user.is_student) {
+          return (
+            _user.name?.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
+            _user.email?.toLowerCase().indexOf(query.toLowerCase()) !== -1
+          );
+        } else if (_user.user) {
+          return (
+            _user.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
+            _user.user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
+          );
+        } else if (_user.title) {
+          return _user.title.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+        } else if (_user.name) {
+          return _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+        } else {
+          return false;
+        }
+      });
     }
     return stabilizedThis.map((el) => el[0]);
-  }
+    }
+    

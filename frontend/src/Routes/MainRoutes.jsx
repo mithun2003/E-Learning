@@ -33,52 +33,63 @@ import AllCourses from "../Pages/AllCourses";
 import Feedback from "../components/Admin/pages/Feedback";
 import BannerPage from "../components/Admin/pages/BannerPage";
 import Category from "../Pages/CategoryWise";
+import TeacherProtected from "../utils/TeacherProtected";
+import Room from "../components/Live/Room";
+import Live from "../components/Live/Live";
+import WhishlistPage from "../Pages/WhishlistPage";
 
 const MainRoutes = () => {
   return (
     <div>
       {/* <Router> */}
       <Routes>
-
-
-
         <Route exact path="/" element={<HomePages />} />
         <Route exact path="/course/detail/:id" element={<CourseDetailPage />} />
         <Route exact path="/activate/:uid/:token" element={<Activate />} />
         <Route exact path="/courses" element={<AllCourses />} />
-        <Route exact path="/teacher-profile/:name/:teacher_id" element={<TeacherProfile />} />
+        <Route
+          exact
+          path="/teacher-profile/:name/:teacher_id"
+          element={<TeacherProfile />}
+        />
         <Route exact path="/category-wise/:id" element={<Category />} />
-
 
         <Route element={<PublicRoute />}>
           <Route path="/signup" element={<Signup />} />
           <Route exact path="/login" element={<Login />} />
         </Route>
 
-
         <Route element={<ProtectedRoute />}>
           <Route element={<SideNav />}>
             <Route exact path="/profile" element={<Profile />} />
-            <Route exact path="/teacher/course-list" element={<CourseList />} />
+
+
+            <Route element={<TeacherProtected />}>
+              <Route
+                exact
+                path="/teacher/course-list"
+                element={<CourseList />}
+              />
+              <Route exact path='/create-live/' element={<Room/>} />
+            </Route>
+
+
             <Route
               path="courses/course-detail/:id"
               element={<CourseDetails />}
             />
           </Route>
+          
+          <Route exact path="/live/:roomName" element={<Live />} />
           <Route exact path="/teacher/register" element={<Register />} />
-          <Route exact path="/whishlist" element={<WhishList />} />
+          <Route exact path="/whishlist" element={<WhishlistPage />} />
           <Route
             exact
             path="/course/:course_id/:courseName/:chapter_id"
             element={<CoursePlay />}
           />
-
         </Route>
-
-
       </Routes>
-
-
 
       <Routes>
         <Route element={<AdminProtectedRoutes />}>

@@ -8,6 +8,8 @@ urlpatterns = [
     path('category-list', ViewCategory.as_view()),
     path('category/publish/<id>', PublishCategory.as_view()),
     path('category/delete/<id>', DeleteCategory.as_view()),
+    path('category-wise/list/<cat_id>', ViewOneCategoryWise.as_view()),
+    path('category/<cat_id>', ViewOneCategory.as_view()),
 
     path('publish/<id>', PublishCourse.as_view()),
     path('course-create', CourseCreate.as_view()),
@@ -34,10 +36,15 @@ urlpatterns = [
     path('enrollment/<course_id>', ViewEnrolled.as_view()),
 
     path('wishlist/', WishlistView.as_view()),
+    path('wishlist/get/<course_id>', WishlistView.as_view()),
+    path('wishlist/remove/<id>', WishlistView.as_view()),
+    path('wishlist-list-all/', WishlistAll.as_view()),
 
     path('<course_id>/reviews/', Review.as_view()),
 
     path('category-view/<cat_id>', Course_By_Category.as_view()),
+    
+    path('quiz/',QuizView.as_view())
 ]
 
 

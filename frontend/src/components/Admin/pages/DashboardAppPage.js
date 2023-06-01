@@ -18,16 +18,49 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from '../sections/@dashboard/app';
-
+import { useEffect, useState } from 'react';
+import axios from '../../../axios'
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+  const [enrollments,setEnrollments] = useState('')
+  const [users,setUsers] = useState('')
+  const [teacher,setTeacher] = useState('')
+  const [courses,setCourses] = useState('')
+  useEffect(()=>{
+    axios.get('/admin/total_enrollments')
+    .then((response)=>{
+      setEnrollments(response.data)
+    })
+    .catch((error)=>console.log(error))
+  },[])
+  useEffect(()=>{
+    axios.get('/admin/total_users')
+    .then((response)=>{
+      setUsers(response.data)
+    })
+    .catch((error)=>console.log(error))
+  },[])
+  useEffect(()=>{
+    axios.get('/admin/total_courses')
+    .then((response)=>{
+      setCourses(response.data)
+    })
+    .catch((error)=>console.log(error))
+  },[])
+  useEffect(()=>{
+    axios.get('/admin/total_teachers')
+    .then((response)=>{
+      setTeacher(response.data)
+    })
+    .catch((error)=>console.log(error))
+  },[])
 
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> Dashboard </title>
       </Helmet>
 
       <Container maxWidth="xl">
@@ -37,22 +70,22 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Users" total={users.user} icon={'mdi:account'}/>
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Courses" total={courses.course} icon={'ant-design:book-filled'}/>
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Item Orders" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
+            <AppWidgetSummary title="Teachers" total={teacher.teacher} icon={'mdi:account'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Enrollments" total={enrollments.data} icon= {'mdi:school-outline'}/>
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
+          {/* <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits
               title="Website Visits"
               subheader="(+43%) than last year"
@@ -212,7 +245,7 @@ export default function DashboardAppPage() {
                 { id: '5', label: 'Sprint Showcase' },
               ]}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </>

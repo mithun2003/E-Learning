@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Box, Checkbox, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import axios from "../../axios";
+import ListQuiz from './ListQuiz';
 
-const ListForPlay = () => {
+const ListForPlay = ({end,progress}) => {
     const [chapter, setChapter] = useState([]);
     const {courseName,course_id} = useParams()
 
@@ -17,7 +18,7 @@ const ListForPlay = () => {
            console.log(response.data);
          })
          .catch((error) => console.log(error));
-     }, [course_id]);
+     }, [course_id,end]);
 
 
 
@@ -88,6 +89,8 @@ const ListForPlay = () => {
             </Link>
           </Box>
         ))}
+        <ListQuiz progress={progress}/>
+
       </Box>
     </>
   )

@@ -29,6 +29,8 @@ import Swal from "sweetalert2";
 import EditCourse from "./Modals/EditCourse";
 import ChapterAdd from "./Modals/ChapterAdd";
 import ListChapter from "../Admin/CourseView/ListChapter";
+import AddQuiz from "./Quiz";
+import Quiz from "./Quiz";
 
 // ----------------------------------------------------------------------
 
@@ -220,6 +222,7 @@ export default function CourseDetails() {
         <ChapterAdd onOpen={openAdd} onCloseModal={handleAddClose} id={id} token={token}/>
         </Stack>
         <ListChapter id={id} close={handleAddClose}/>
+        <Quiz id={id}/>
       </Container>
     </div>
   );

@@ -4,18 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-# Create your views here.
 from account.serializers import *
 from account.models import Teachers
 from .models import *
-
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import BannerSerializer
 from chat.models import *
-# from channels.layers import get_channel_layer
-# from asgiref.sync import async_to_sync
 
 class Banner(APIView):
     permission_classes = [AllowAny]
@@ -88,6 +85,24 @@ class ViewCategory(APIView):
         queryset = Category.objects.all().order_by('-created_at')
         serializer = CategorySerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class ViewOneCategoryWise(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, cat_id):
+        category = Category.objects.get(id=cat_id) # Assuming you have a Category model
+        queryset = category.course_set.all()  # Access the courses through the many-to-many relationship
+        serializer = CourseSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ViewOneCategory(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, cat_id):
+        category = Category.objects.get(id=cat_id) # Assuming you have a Category model
+        serializer = CategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PublishCategory(APIView):
@@ -359,6 +374,8 @@ class Unenroll(APIView):
             course_progress = CourseProgress.objects.filter(user=request.user, course=course)
             if course_progress.exists():
                 course_progress.delete()
+            chat_room = ChatRoom.objects.get(users=request.user, name=course.title)
+            chat_room.users.remove(request.user)  # Remove the user from the chat room instead of deleting it
             return Response({'message': 'Successfully unenrolled from the course.'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'You are not enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -393,25 +410,42 @@ class ViewOneChapter(APIView):
 class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        wishlist = Wishlist.objects.get(user=request.user)
+    def get(self, request,course_id):
+        try:
+            wishlist = Wishlist.objects.get(user = request.user,course__id = course_id)
+        except Wishlist.DoesNotExist:
+            return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = WishlistSerializer(wishlist)
         return Response(serializer.data)
-
+    
     def post(self, request):
         course_id = request.data.get('course_id')
         course = Course.objects.get(pk=course_id)
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        wishlist.courses.add(course)
+        wishlist.course.add(course)
         return Response({'message': 'Course added to wishlist'})
 
-    def delete(self, request):
-        course_id = request.data.get('course_id')
-        course = Course.objects.get(pk=course_id)
+    def delete(self, request,id):
+        # course_id = request.data.get('course_id')
+        course = Course.objects.get(pk=id)
         wishlist = Wishlist.objects.get(user=request.user)
-        wishlist.courses.remove(course)
+        wishlist.course.remove(course)
         return Response({'message': 'Course removed from wishlist'})
 
+class WishlistAll(APIView):
+    def get(self, request):
+        try:
+            wishlist = Wishlist.objects.filter(user=request.user)
+            if wishlist.exists():
+                courses = wishlist.values_list('course', flat=True)  # Get the list of course IDs
+                course_objects = Course.objects.filter(id__in=courses)  # Get the course objects using the IDs
+
+                serializer = CourseSerializer(course_objects, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Wishlist.DoesNotExist:
+            return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class Review(APIView):
     def post(self, request, course_id):
@@ -447,7 +481,7 @@ class ContactMe(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        query = Contact.objects.all()
+        query = Contact.objects.all().order_by('-sent_at')
         serializer = ContactSerializer(query, many=True)
         return Response(serializer.data)
 
@@ -514,3 +548,24 @@ class Course_By_Category(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Course.DoesNotExist():
             return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class QuizView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CreateQuizSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        course_id = request.query_params.get('course_id')
+        print("course id",course_id)
+        course = get_object_or_404(Course, pk=course_id)
+        quizzes = Quiz.objects.filter(course=course)
+        serializer = QuizSerializer(quizzes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

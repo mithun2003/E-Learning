@@ -32,7 +32,7 @@ const Activate = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/");
+    navigate("/login");
   };
 
   return (

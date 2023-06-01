@@ -152,6 +152,7 @@ export default function UserPage() {
     .get("/get/users/")
     .then(response => {
       setDetails(response.data);
+      console.log(response.data);
       setLoading(false)
       // console.log(response);
       console.log(response.data);
@@ -184,12 +185,13 @@ export default function UserPage() {
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - details.length) : 0;
-
   const filteredUsers = applySortFilter(
     details,
     getComparator(order, orderBy),
     filterName
   );
+  
+
 
   const isNotFound = !filteredUsers.length && !!filterName;
 

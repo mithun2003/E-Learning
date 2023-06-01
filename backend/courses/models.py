@@ -81,7 +81,7 @@ class Enrollment(models.Model):
 
 class Wishlist(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Course)
+    course = models.ManyToManyField(Course)
 
 
 class CourseReview(models.Model):
@@ -115,4 +115,13 @@ class CourseProgress(models.Model):
     progress = models.PositiveIntegerField(default=0)
 
 
+class Quiz(models.Model):
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    question = models.TextField()
+    option1 = models.CharField(max_length=100,default='')
+    option2 = models.CharField(max_length=100,default='',null=True,blank=True)
+    option3 = models.CharField(max_length=100,default='',null=True,blank=True)
+    option4 = models.CharField(max_length=100,default='',null=True,blank=True)
+    correct_answer = models.CharField(max_length=100)
+    answer_type = models.CharField(max_length=10, default='checkbox')
 

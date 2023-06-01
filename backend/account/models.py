@@ -36,62 +36,16 @@ class MyAccountManager(BaseUserManager):
         user.save(using=self._db)
         return 
     
-# class UserAccount(AbstractBaseUser):
-#     name = models.CharField(max_length = 50,blank=False)
-#     email  = models.EmailField(max_length = 100, unique = True,blank=False)
-#     is_submit = models.BooleanField(default=False)
-#     # objects = models.Manager()
-#     image = models.ImageField(upload_to='profiles/', blank=True,null=True)
-#     date_joined = models.DateField(auto_now_add = True)
-#     last_login = models.DateField(auto_now=True)
-#     is_student = models.BooleanField(default=True)
-#     is_teacher = models.BooleanField(default=False)
-#     is_active = models.BooleanField(default=True)
-#     is_block = models.BooleanField(default=False)
-#     is_admin = models.BooleanField(default=False)
-#     is_staff = models.BooleanField(default=False)
-#     is_verified = models.BooleanField(default=False)
-#     is_superuser = models.BooleanField(default=False)
 
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['name']
-
-#     objects = MyAccountManager()
-#     def __str__(self):
-#         return self.name
-#     def has_perm(self, perm, obj=None):
-#         return self.is_admin
-    
-#     def has_module_perms(self, app_label):
-#         return True
-    
-    
-
-# class Teachers(models.Model):
-#     name = models.CharField(max_length=100)
-#     email = models.EmailField(unique=True)
-#     image = models.ImageField(upload_to='teachers/', blank=False)
-#     country = models.CharField(max_length=50)
-#     mobile_number = models.CharField(max_length=20)
-#     address = models.CharField(max_length=200)
-#     highest_qualification = models.CharField(max_length=100)
-#     skills = models.TextField()
-#     resume = models.FileField(upload_to='resumes/',blank=False,null=False)
-#     is_verified = models.BooleanField(default=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     is_block = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return self.name
 class UserAccount(AbstractBaseUser):
     name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(max_length=100, unique=True, blank=False)
     mobile_number = models.CharField(max_length=20)
     country = models.CharField(max_length=50)
     image = models.ImageField(upload_to='profiles/', blank=True, null=True)
-    date_joined = models.DateField(auto_now_add=True)
-    last_login = models.DateField(auto_now=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = CustomDateTimeField()
+    is_pending = models.BooleanField(default=False)
     is_submit = models.BooleanField(default=False)
     is_student = models.BooleanField(default=True)
     is_teacher = models.BooleanField(default=False)

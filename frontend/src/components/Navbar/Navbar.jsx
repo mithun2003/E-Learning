@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import image from "./logo.png";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../Reducers/LoginReducer";
 import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
@@ -29,6 +29,8 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
+  const location = useLocation(); // Add this line to use the location
+
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const user = JSON.parse(localStorage.getItem("user"));
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -188,8 +190,8 @@ function ResponsiveAppBar() {
                               }
                             >
                               <Link
-                                to={`/category/${category.id}`}
-                                style={{ textDecoration: "none" }}
+                                to={`/category-wise/${category.id}`}
+                                style={{ textDecoration: "none",color:'#1d5564' }}
                               >
                                 {category.name}
                               </Link>
@@ -204,6 +206,8 @@ function ResponsiveAppBar() {
                         my: 2,
                         color: "#1D5564",
                         display: "block",
+                        textDecoration: location.pathname === "/courses" && page==='Courses' ? "underline" : "none",
+
                         fontFamily: "Montserrat, sans-serif"
                       }}
                     >

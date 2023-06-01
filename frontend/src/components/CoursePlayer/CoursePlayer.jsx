@@ -15,6 +15,7 @@ import {
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ListForPlay from "./ListForPlay";
 import { useTheme } from "@emotion/react";
+import ListQuiz from "./ListQuiz";
 // import logo from '../../assets/images/logo.png';
 const CoursePlayer = () => {
   const theme = useTheme();
@@ -24,7 +25,7 @@ const CoursePlayer = () => {
   const [chapter, setChapter] = useState([]);
   const [course, setCourse] = useState([]);
   const [isPlaying, setIsPlaying] = useState(true);
-
+  const [end,setEnd] = useState(false)
   useEffect(() => {
     axios
       .get(`/course/course-detail/${course_id}`)
@@ -34,7 +35,7 @@ const CoursePlayer = () => {
       })
       .catch((error) => console.log(error));
     console.log(course);
-  }, []);
+  }, [end]);
 
   const handleEnroll = ()=>{
     axios
@@ -62,9 +63,11 @@ const CoursePlayer = () => {
     } catch (error) {
       console.log(error);
     }
+    setEnd(false)
   };
 
   const handleVideoEnded = () => {
+    setEnd(true)
     handleVideoCompletion();
   };
 
@@ -88,7 +91,8 @@ const CoursePlayer = () => {
         setChapter(response.data);
       })
       .catch((error) => console.log(error));
-  }, [chapter_id]);
+  }, [chapter_id,end]);
+
   const handleGoBack = () => {
     navigate(`/course/detail/${course_id}`);
   };
@@ -180,6 +184,7 @@ const CoursePlayer = () => {
             backgroundColor: "black",
             width: "100vw"
           }}
+          
           onEnded={handleVideoEnded}
           config={{
             file: {
@@ -188,9 +193,10 @@ const CoursePlayer = () => {
               }
             }
           }}
+          autoPlay
         />
       </Box>
-      <ListForPlay />
+      <ListForPlay end={end} progress={course.progress}/>
     </>
   );
 };

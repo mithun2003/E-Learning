@@ -41,15 +41,16 @@ export default function Nav({ openNav, onCloseNav }) {
  const person = JSON.parse(localStorage.getItem('user'))
   const isDesktop = useResponsive('up', 'lg');
   const  user = JSON.parse(localStorage.getItem("user"));
-
+  const  teacher = JSON.parse(localStorage.getItem("teacher"));
+  
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
   }, [pathname]);
-  const filteredNavConfig = user.is_teacher
+  const filteredNavConfig = teacher
   ? navConfig
-  : navConfig.filter(item => item.title !== 'Course');
+  : navConfig.filter(item => item.title !== 'Course' && item.title !=='Go Live');
   console.log(navConfig)
   const renderContent = (
     <Scrollbar

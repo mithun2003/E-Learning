@@ -5,9 +5,9 @@ from account.views import AdminLoginView
 from courses.views import ContactMe, Banner,EditBanner,BannerUser
 from django.conf.urls.static import static
 from django.conf import settings
-import chat.routing
+# import chat.routing
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('', include('account.urls')),
@@ -20,8 +20,12 @@ urlpatterns = [
     
     
     path('chat/', include('chat.urls')),
-    path('ws/', include(chat.routing.websocket_urlpatterns)),
+    
+    
+    path('live/', include('live.urls')),
 
+
+    path('admin/',include('Admin.urls'))
     
 
 ]

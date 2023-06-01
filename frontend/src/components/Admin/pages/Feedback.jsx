@@ -15,6 +15,8 @@ import {
   MenuItem,
   TableContainer,
   TablePagination,
+  TableHead,
+  TableSortLabel,
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Iconify from "../../../Admin/iconify";
@@ -133,15 +135,20 @@ export default function Feedback() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={details.length}
-                  // numSelected={selected.length}
-                  onRequestSort={handleSort}
-                  // onSelectAllClick={handleSelectAll}
-                />
+              <TableHead>
+                  <TableRow>
+                    {TABLE_HEAD.map((headCell) => (
+                      <TableCell
+                        key={headCell.id}
+                        align={headCell.alignRight ? "right" : "left"}
+                      >
+                        <TableSortLabel hideSortIcon>
+                          {headCell.label}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
                 <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

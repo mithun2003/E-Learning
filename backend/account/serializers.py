@@ -1,4 +1,4 @@
-from djoser.email import ActivationEmail
+from djoser.email import ActivationEmail,ConfirmationEmail
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -86,7 +86,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class CustomActivationEmail(ActivationEmail):
-    template_name = "email/activation.html"
+    template_name = "activation.html"
 
     def get_context_data(self):
         # ActivationEmail can be deleted
@@ -98,3 +98,6 @@ class CustomActivationEmail(ActivationEmail):
         context["token"] = default_token_generator.make_token(user)
         context["url"] = settings.ACTIVATION_URL.format(**context)
         return context
+
+class ConfirmationEmail(ConfirmationEmail):
+    template_name = 'ConfirmationEmail.html'

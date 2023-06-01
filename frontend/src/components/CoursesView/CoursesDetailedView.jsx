@@ -36,6 +36,7 @@ export default function CoursesDetailedView() {
   const [enroll, setEnroll] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     axios
       .get(`/course/${id}/chapter-list`)
@@ -52,6 +53,7 @@ export default function CoursesDetailedView() {
       .then((response) => {
         setCourse(response.data);
         console.log(response.data);
+        setIsLoading(false)
       })
       .catch((error) => console.log(error));
     console.log(course);
@@ -73,7 +75,7 @@ export default function CoursesDetailedView() {
 
   const fetchWishlist = async () => {
     try {
-      const response = await axios.get(`/course/wishlist/${id}`);
+      const response = await axios.get(`/course/wishlist/get/${id}`);
       console.log(response.data);
       setWishlist(response.data);
     } catch (error) {
@@ -150,55 +152,68 @@ export default function CoursesDetailedView() {
       }).then(() => {
         dispatch(logout());
       });
-    }
-
-    if (isAuthenticated) {
-      try {
-        await axios.post(`/course/unenroll/${id}`, null, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        await Swal.fire({
-          position: "top-right",
-          icon: "success",
-          title: "You unenrolled this course",
-          showConfirmButton: false,
-          timer: 2000,
-          toast: true,
-          timerProgressBar: true
-        });
-
-        const response = await axios.get(`/course/enrollment/${id}`);
-        if (response.data.enrolled === false) {
-          setEnroll(false);
-        }
-      } catch (error) {
-        Swal.fire({
-          position: "top-right",
-          icon: "error",
-          title: "Something went wrong",
-          showConfirmButton: false,
-          timer: 2000,
-          toast: true,
-          timerProgressBar: true
-        });
-      }
     } else {
-      Swal.fire({
-        title: "",
-        position: "top-right",
-        text: "You have to login for enrolling.",
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You want to Unenroll from this course",
         icon: "warning",
-        showConfirmButton: false,
-        timer: 2000,
-        toast: true,
-        timerProgressBar: true
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes"
       });
+  
+      if (result.isConfirmed) {
+        if (isAuthenticated) {
+          try {
+            await axios.post(`/course/unenroll/${id}`, null, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              }
+            });
+  
+            await Swal.fire({
+              position: "top-right",
+              icon: "success",
+              title: "You have successfully unenrolled from this course",
+              showConfirmButton: false,
+              timer: 2000,
+              toast: true,
+              timerProgressBar: true
+            });
+  
+            const response = await axios.get(`/course/enrollment/${id}`);
+            if (response.data.enrolled === false) {
+              setEnroll(false);
+            }
+          } catch (error) {
+            Swal.fire({
+              position: "top-right",
+              icon: "error",
+              title: "Something went wrong",
+              showConfirmButton: false,
+              timer: 2000,
+              toast: true,
+              timerProgressBar: true
+            });
+          }
+        } else {
+          Swal.fire({
+            position: "top-right",
+            title: "",
+            text: "You have to log in to enroll.",
+            icon: "warning",
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            timerProgressBar: true
+          });
+        }
+      }
     }
   };
+  
 
   const handleAddToWishlist = async () => {
     try {
@@ -299,7 +314,7 @@ export default function CoursesDetailedView() {
                 <Typography fontWeight={"bold"}>
                   Rating &nbsp;:&nbsp;{" "}
                 </Typography>
-                {course.course?.avg_rating}
+                {course.course?.avg_rating===null?0:course.course?.avg_rating}
                 <Typography fontWeight={"bold"} marginLeft={2}>
                   Course By &nbsp;:&nbsp;{" "}
                 </Typography>
@@ -371,7 +386,9 @@ export default function CoursesDetailedView() {
 
                 {wishlist ? (
                   <IconButton
-                    sx={{ marginTop: "40px" }}
+                    sx={{ marginTop: "40px",     
+                    color:'#1d5564',
+                  }}
                     onClick={handleRemoveFromWishlist}
                   >
                     <FavoriteOutlinedIcon
@@ -380,7 +397,11 @@ export default function CoursesDetailedView() {
                   </IconButton>
                 ) : (
                   <IconButton
-                    sx={{ marginTop: "40px" }}
+                    sx={{ marginTop: "40px",
+                    color:'#1d5564',
+
+                  
+                  }}
                     onClick={handleAddToWishlist}
                   >
                     <FavoriteBorderIcon
@@ -418,7 +439,7 @@ export default function CoursesDetailedView() {
                         color="text.secondary"
                       >
                         {`${
-                          course.progress === undefined ? 0 : course.progress
+                          course.progress
                         }%`}
                       </Typography>
                     </Box>
@@ -430,6 +451,9 @@ export default function CoursesDetailedView() {
 
           <Grid item xs={12} sm={6} md={6} lg={6}>
             <Box sx={{ m: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
+            {isLoading ? (
+          <CircularProgress />
+        ) : (
               <img
                 className="shadow"
                 style={{
@@ -444,10 +468,11 @@ export default function CoursesDetailedView() {
                     width: "100%"
                   }
                 }}
-                loading={lazy}
+                loading={"eager"}
                 src={course.course?.image}
                 alt="placeholder"
-              />
+              />)
+}
             </Box>
           </Grid>
         </Grid>
@@ -483,7 +508,7 @@ export default function CoursesDetailedView() {
         bgcolor="white"
       >
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ paddingLeft: "4vw" }}>
-          <CourseReviews courseId={course.id} enroll={enroll} />
+          <CourseReviews courseId={course.course?.id} enroll={enroll} />
         </Grid>
       </Grid>
       <Box
@@ -499,7 +524,7 @@ export default function CoursesDetailedView() {
           zIndex: "9999"
         }}
       >
-        {enroll && <Chat />}
+        {(enroll || course.course?.teacher?.user?.id === user.id )&& <Chat />}
       </Box>
     </div>
   );

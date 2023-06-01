@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Typography, Button, Grid, useMediaQuery, useTheme,CircularProgress} from "@mui/material";
 import image from "./banner.jpg";
 import axios from '../../axios'
 const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const [details, setDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get("/banner/user")
       .then((response) => {
           setDetails(response.data);
-        
+          setIsLoading(false)
         console.log(response.data);
       })
       .catch((error) => console.error(error));
@@ -59,6 +60,9 @@ const Home = () => {
 
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Box sx={{ m: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
+          {isLoading ? (
+          <CircularProgress />
+        ) : (
             <img
               className="shadow"
               style={{
@@ -70,8 +74,8 @@ const Home = () => {
                 // marginLeft:'10px'
               }}
               src={details.image}
-              alt="placeholder"
-            />
+              alt={details.name}
+            />)}
           </Box>
         </Grid>
       </Grid>

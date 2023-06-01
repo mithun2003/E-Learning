@@ -3,8 +3,11 @@ from rest_framework import serializers
 from .models import *
 from account.serializers import *
 from chat.models import ChatRoom
+
+
 class BannerSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+
     def get_image(self, obj):
         if obj.image:
             return "http://localhost:8000" + obj.image.url
@@ -13,11 +16,13 @@ class BannerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Banners
-        fields = ('id','title','image','created_at','active')
+        fields = ('id', 'title', 'image', 'created_at', 'active')
+
+
 class CreateBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banners
-        fields = ('title','image')
+        fields = ('title', 'image')
 
 
 class CategoryCreateSerializer(serializers.ModelSerializer):
@@ -41,14 +46,14 @@ class CategorySerializer(serializers.ModelSerializer):
 class CourseCreateSerializer(serializers.ModelSerializer):
     print(serializers.ModelSerializer)
     chat_room = serializers.SerializerMethodField()
-    
+
     def get_chat_room(self, course):
         teacher = course.teacher
         chat_room, created = ChatRoom.objects.get_or_create(name=course.title)
         if created:
             chat_room.users.add(teacher.user.id)
         return chat_room.id
-    
+
     class Meta:
         model = Course
         fields = (
@@ -66,8 +71,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
         )
 
 
-    
-    
 class CourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()  # serialize the related teacher data
     cat = CategorySerializer(many=True)  # serialize the related category data
@@ -79,7 +82,7 @@ class CourseSerializer(serializers.ModelSerializer):
         chat_room = ChatRoom.objects.filter(name=chat_room_name).first()
         chat_room_id = chat_room.id if chat_room else None
         return chat_room_id
-        
+
     def get_image(self, obj):
         if obj.image:
             return "http://localhost:8000" + obj.image.url
@@ -161,11 +164,19 @@ class WishlistCreateSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    courses = CourseSerializer(many=True)
+    course = CourseSerializer(many=True)
 
     class Meta:
         model = Wishlist
         fields = ('user', 'course')
+
+class UserWishlistSerializer(serializers.ModelSerializer):
+    # course = CourseSerializer()
+    course = CourseSerializer(many=True)
+
+    class Meta:
+        model = Wishlist
+        fields = ('course',)
 
 
 class CreateReviewSerializer(serializers.ModelSerializer):
@@ -177,6 +188,7 @@ class CreateReviewSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     course = CourseSerializer()  # Nested serializer for the course field
     user = UserSerializer()
+
     class Meta:
         model = CourseReview
         fields = '__all__'
@@ -198,3 +210,15 @@ class CourseProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = VideoProgress
         fields = ('user', 'course', 'progress')
+
+
+class CreateQuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
+
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = '__all__'

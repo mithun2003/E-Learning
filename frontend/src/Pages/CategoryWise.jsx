@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import ResponsiveAppBar from '../components/Navbar/Navbar'
-import AllCourse from '../components/AllCourses/AllCourses'
-import Courses from '../components/Courses/Courses';
+
 import Contact from '../components/Contact/Contact';
 import Footer from '../components/Footer/Footer';
 import CategoryWise from '../components/CategoryWise/CategoryWise';
+import CatCourseList from '../components/CategoryWise/CatCourseList';
 
 const Category = () => {
     useEffect(() => {
@@ -14,7 +14,7 @@ const Category = () => {
     <>
     <ResponsiveAppBar/>
     <CategoryWise/>
-    <Courses all={true}/>
+    <CatCourseList/>
     <Contact/>
     <Footer/>
     </>

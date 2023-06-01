@@ -7,7 +7,8 @@ import { StyledNavItem, StyledNavItemIcon } from "../../Admin/nav-section/styles
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { logout } from "../../Reducers/LoginReducer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Room from "../Live/Room";
 // ----------------------------------------------------------------------
 
 NavSection.propTypes = {
@@ -35,6 +36,22 @@ function NavItem({ item }) {
   const dispatch = useDispatch();
   const teacher = JSON.parse(localStorage.getItem("teacher"))
 
+  const [open,setOpen]= useState(false)
+
+  const handleOpen = () => {
+    setOpen(true);
+};
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const generateRandomNumber = () => {
+    const randomNumber = Math.floor(10000000 + Math.random() * 90000000); // Generate an 8-digit random number
+    return randomNumber.toString(); // Convert the random number to a string
+  };
+  const openNewWindow = (url) => {
+    window.open(url, "_blank","width=1000,height=500"); // Open the URL in a new window
+  };
  
   // const {success} = useSelector((state)=>state.adminLogin)
   const logoutHandler = () => {
@@ -65,6 +82,11 @@ function NavItem({ item }) {
     if (title === "logout") {
       logoutHandler();
     }
+    if (title=="Go Live"){
+      // const randomPath = '/live/' + generateRandomNumber();
+      // openNewWindow(randomPath);
+      handleOpen();
+    }
   };
   return (
     <>
@@ -72,7 +94,7 @@ function NavItem({ item }) {
   component={RouterLink}
   to={path}
   sx={
-    title !== 'logout'
+    title !== 'logout' && title !=="Go Live"
       ? {
           '&.active': {
             color: 'text.primary',
@@ -96,6 +118,8 @@ function NavItem({ item }) {
       />
       {info && info}
     </StyledNavItem>
+    <Room isOpen={open} isClose={handleClose} />
+
       {/* <Button>Logout</Button> */}
       </>
   );

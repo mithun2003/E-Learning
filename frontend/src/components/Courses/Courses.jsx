@@ -4,7 +4,8 @@ import {
   Card,
   CardMedia,
   Grid,
-  Typography
+  Typography,
+  CircularProgress
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 // import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -18,12 +19,15 @@ const Courses = ({isTeacher = null,all=null}) => {
   const navigate = useNavigate()
   const [cardData,setCardData] = useState([])
   const {teacher_id} = useParams()
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(()=>{
     if (isTeacher){
       axios
       .get(`/course/teacher/course-list/${teacher_id}`)
       .then((response) => {
         setCardData(response.data);
+        setIsLoading(false)
       })
       .catch((error) => {
         console.error(error);
@@ -32,7 +36,9 @@ const Courses = ({isTeacher = null,all=null}) => {
     axios.get("/course/user/course-list")
     .then((response)=>{
       setCardData(response.data)
-      console.log(cardData);
+      console.log(response.data);
+      setIsLoading(false)
+
     })
     .catch((error)=>console.log(error));
   }
@@ -100,8 +106,14 @@ const displayCourses = all?cardData: cardData.slice(0,6)
         </Box>
       </Box>
         <Box display='flex' justifyContent='center'>
+      {isLoading ? (
+      <Grid container spacing={2} sx={{marginLeft:{sm:"2.5rem",lg:"3.5rem"},marginBottom:3,paddingRight:'3%',justifyContent:'center'}} my={3}>
+          <CircularProgress />
+          </Grid>
+        ) : (
+          <>
       <Grid container spacing={2} sx={{marginLeft:{sm:"2.5rem",lg:"3.5rem"},marginBottom:3,paddingRight:'3%'}} my={3}>
-      {displayCourses.map((card) => (
+          {displayCourses.map((card) => (
         <Grid item xs={12} sm={6} md={4} lg={3}>
         <Box display='flex' justifyContent='center'>
       <Card
@@ -180,7 +192,7 @@ const displayCourses = all?cardData: cardData.slice(0,6)
               fontSize: 12
             }}
           >
-            4.8
+            {card.avg_rating===null?0:card.avg_rating}
           </p>
           
           <StarIcon sx={{color:'#ff5d02',width:'20',height:'18'}}/>
@@ -336,6 +348,9 @@ const displayCourses = all?cardData: cardData.slice(0,6)
       </Grid>
       ))}
       </Grid>
+      </>
+      )}
+      {/* </Grid> */}
       </Box>
     </Box>
   );
