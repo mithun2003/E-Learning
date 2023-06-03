@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from datetime import timedelta
 import corsheaders
+import environ
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c0ok-#s_v35z55^sr0)+@p@i)=$yr97#ehox9m7ycchbzedv*_'
+# # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = 'django-insecure-c0ok-#s_v35z55^sr0)+@p@i)=$yr97#ehox9m7ycchbzedv*_'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+# # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 ALLOWED_HOSTS = []
 
 
@@ -103,13 +107,23 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'E-Learning',
+#         'USER': 'postgres',
+#         'PASSWORD': 'kali',
+#         'HOST': 'localhost'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'E-Learning',
-        'USER': 'postgres',
-        'PASSWORD': 'kali',
-        'HOST': 'localhost'
+        'NAME': env('DATABASES_DEFAULT_NAME'),
+        'USER': env('DATABASES_DEFAULT_USER'),
+        'PASSWORD': env('DATABASES_DEFAULT_PASSWORD'),
+        'HOST': env('DATABASES_DEFAULT_HOST'),
     }
 }
 
@@ -167,13 +181,20 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST_USER = 'mithunc.y65@gmail.com'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = "qqpzjwooiivcsmhr"
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST_USER = 'mithunc.y65@gmail.com'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_PASSWORD = "qqpzjwooiivcsmhr"
 
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 FRONT_END = 'http://localhost:3000'
 
