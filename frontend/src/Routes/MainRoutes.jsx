@@ -37,6 +37,7 @@ import TeacherProtected from "../utils/TeacherProtected";
 import Room from "../components/Live/Room";
 import Live from "../components/Live/Live";
 import WhishlistPage from "../Pages/WhishlistPage";
+import CoursesEnrolled from "../components/EnrolledCourses/CoursesEnrolled";
 
 const MainRoutes = () => {
   return (
@@ -64,6 +65,7 @@ const MainRoutes = () => {
             <Route exact path="/profile" element={<Profile />} />
 
 
+            <Route exact path="/enroll/courses-all" element={<CoursesEnrolled />} />
             <Route element={<TeacherProtected />}>
               <Route
                 exact

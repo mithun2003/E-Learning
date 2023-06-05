@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from datetime import timedelta
-import corsheaders
 import environ
 env = environ.Env()
 environ.Env.read_env()
@@ -54,6 +52,7 @@ INSTALLED_APPS = [
     'courses',
     'chat',
     'live',
+    'quiz',
     'Admin',
 
 ]

@@ -6,7 +6,6 @@ import {
   Stack,
   Paper,
   Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -62,20 +61,7 @@ export default function CourseList() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [NotFound, setNotFound] = useState(false);
   const teacher = JSON.parse(localStorage.getItem("teacher"))
-  // useEffect(() => {
-  //   axios
-  //     .get("/course/course-list")
-  //     .then((response) => {
-  //       if (response.data.length === 0) {
-  //         setNotFound(true);
-  //       } else {
-  //         setDetails(response.data);
-  //         setNotFound(false);
-  //       }
-  //       console.log(response.data);
-  //     })
-  //     .catch((error) => console.error(error));
-  // }, []);
+
   useEffect(() => {
     console.log("teacher",teacher.id);
     axios

@@ -8,39 +8,35 @@ import {
   CircularProgress
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-// import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import axios from '../../axios'
 import StarIcon from '@mui/icons-material/Star';
 import { baseUrl } from "../../constants/baseUrl";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 const WhishList = () => {
-  const user = JSON.parse(localStorage.getItem('user'))
-  const navigate = useNavigate()
   const [cardData,setCardData] = useState()
-  const {teacher_id} = useParams()
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound,setIsNotFound] = useState(false)
-  useEffect(()=>{
+  useEffect(() => {
     axios.get("/course/wishlist-list-all/")
-    .then((response)=>{
-      setCardData(response.data)
-      console.log(response.data);
-      console.log(response.data);
-      setIsLoading(false)
-   
-    })
-    .catch((error)=>{
-      console.log(error)
-      setIsLoading(false)
-      setIsNotFound(true)
-    });
-  },[])
+      .then((response) => {
+        setCardData(response.data);
+        console.log(response.data);
+        setIsLoading(false);
+        if (response.data.length === 0) {  // Check if response data is an empty array
+          setIsNotFound(true);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
+        setIsNotFound(true);
+      });
+  }, []);
   return (
     <Box
       sx={{ width: "100vw", height: "100%", backgroundColor: "white", paddingBottom:3
     }}
-      // mb={5}
     >
       <Box
         sx={{
@@ -67,7 +63,6 @@ const WhishList = () => {
           sx={{
             display: "flex",
             alignItems: "flex-end",
-            // pl: 8,
             pt: 4,
             pb: 5,
             mr:{xs:'6vw',md:'1vw'},
@@ -92,9 +87,7 @@ const WhishList = () => {
       key={card.id}
         sx={{
           background: "#ffffff",
-          //  borderRadius: 10,
           boxShadow: "0 1px 4px 0 rgba(0,0,0,0.25)",
-          // padding: "20px 13px",
           paddingBottom:'20px',
           width:'fit-content',
           marginLeft:'2rem',
@@ -113,22 +106,12 @@ const WhishList = () => {
             justifyContent: "center"
           }}
         >
-          {/* <div
-            style={{
-              backgroundImage:'url()',
-              borderRadius: 10,
-              flexShrink: 0,
-              height: 192,
-              width: 288,
-              marginBottom:20
-            }}
-          /> */}
+     
           <CardMedia
                   component="img"
                   alt="Placeholder Image"
                   height="220"
                   image={card.image}
-                  // image={`${baseUrl}${card.image}`}
                   sx={{marginBottom:2}}
                   width='35vh'
                 />
@@ -168,19 +151,6 @@ const WhishList = () => {
           </p>
           
           <StarIcon sx={{color:'#ff5d02',width:'20',height:'18'}}/>
-          {/* <svg
-            width="20"
-            height="18"
-            viewBox="0 0 20 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ flexShrink: 0, marginLeft: 8 }}
-          >
-            <path
-              d="M18.7808 6.78057L13.27 6.02384L10.8065 1.30499C10.7392 1.17579 10.6285 1.0712 10.4918 1.00762C10.1489 0.847664 9.73213 0.980965 9.56067 1.30499L7.09718 6.02384L1.58637 6.78057C1.43443 6.80108 1.29552 6.86876 1.18917 6.9713C1.0606 7.09616 0.989746 7.26415 0.992188 7.43835C0.994629 7.61254 1.07016 7.7787 1.20219 7.9003L5.18934 11.5733L4.24736 16.7597C4.22527 16.8803 4.2394 17.0044 4.28815 17.1179C4.3369 17.2313 4.41831 17.3296 4.52316 17.4015C4.62801 17.4735 4.7521 17.5162 4.88135 17.5249C5.01061 17.5336 5.13986 17.508 5.25446 17.4508L10.1836 15.0022L15.1127 17.4508C15.2473 17.5185 15.4036 17.541 15.5533 17.5164C15.931 17.4549 16.1849 17.1165 16.1198 16.7597L15.1778 11.5733L19.165 7.9003C19.2735 7.79981 19.3451 7.66856 19.3668 7.52501C19.4254 7.16612 19.1606 6.8339 18.7808 6.78057V6.78057Z"
-              fill="#FF5D02"
-            />
-          </svg> */}
 
           <svg
             width="12"
@@ -331,7 +301,6 @@ const WhishList = () => {
           </Grid>
         </>
         )}
-      {/* </Grid> */}
       </Box>
     </Box>
   );

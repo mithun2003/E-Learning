@@ -4,7 +4,6 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { useTheme } from "@emotion/react";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
 const Footer = () => {
     const theme = useTheme()
@@ -57,17 +56,7 @@ const Footer = () => {
                 skills today
               </Typography>
               </div>
-              {/* <img
-                src={image}
-                alt="Logo"
-                style={{
-                    position: "absolute",
-                    left: 287,
-                    top: 186,
-                    width: 93,
-                    height: 90
-                }}
-                /> */}
+             
                 </Box>
 
                 </Grid>

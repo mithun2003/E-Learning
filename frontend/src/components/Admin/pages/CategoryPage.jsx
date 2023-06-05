@@ -27,7 +27,16 @@ import Scrollbar from "../../../Admin/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { applySortFilter, getComparator, handleChangePage, handleChangeRowsPerPage, handleClick, handleFilterByName, handleRequestSort, handleSelectAllClick } from "./fuction";
+import {
+  applySortFilter,
+  getComparator,
+  handleChangePage,
+  handleChangeRowsPerPage,
+  handleClick,
+  handleFilterByName,
+  handleRequestSort,
+  handleSelectAllClick
+} from "./fuction";
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +47,6 @@ const TABLE_HEAD = [
 
   { id: "" }
 ];
-
 
 export default function CatergoryPage() {
   const [details, setDetails] = useState([]);
@@ -121,12 +129,12 @@ export default function CatergoryPage() {
       )
       .then((response) => {
         if (response.data.length === 0) {
-            setNotFound(true);
-          }
+          setNotFound(true);
+        }
         console.log(response);
         console.log(newCategoryName);
         setDetails([...details, response.data]);
-        setNotFound(false)
+        setNotFound(false);
         setNewCategoryName("");
         handleCloseModal();
         setError(null);
@@ -194,9 +202,9 @@ export default function CatergoryPage() {
             }
           })
           .then(() => {
-            if (details.length === '1') {
-                setNotFound(true);
-              }
+            if (details.length === "1") {
+              setNotFound(true);
+            }
             console.log(details.length);
             const newData = details.filter((cat) => {
               return cat.id !== id;
@@ -284,9 +292,9 @@ export default function CatergoryPage() {
             onFilterName={handleFilter}
           />
 
-          <Scrollbar >
+          <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
-              <Table >
+              <Table>
                 <UserListHead
                   order={order}
                   orderBy={orderBy}
@@ -296,7 +304,7 @@ export default function CatergoryPage() {
                   onRequestSort={handleSort}
                   // onSelectAllClick={handleSelectAll}
                 />
-                <TableBody >
+                <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
@@ -310,15 +318,7 @@ export default function CatergoryPage() {
                           tabIndex={-1}
                           is_student="checkbox"
                           selected={selectedUser}
-                          
                         >
-                          {/* <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleRowClick(event, name)}
-                            />
-                          </TableCell> */}
-
                           <TableCell component="th" scope="row" padding="none">
                             <Stack
                               direction="row"

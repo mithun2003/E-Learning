@@ -32,9 +32,7 @@ export default function Header({ onOpenNav }) {
             display: { lg: 'none' },
             backgroundColor:'transparent',
             alignItems:'flex-start',
-            // '&:hover':{
-            //     backgroundColor:'white'
-            // }
+           
           }}
         >
           <Iconify icon="eva:menu-2-fill" />

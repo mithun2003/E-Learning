@@ -7,12 +7,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from account.serializers import *
 from account.models import Teachers
 from .models import *
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import BannerSerializer
 from chat.models import *
+from quiz.models import *
 
 class Banner(APIView):
     permission_classes = [AllowAny]
@@ -91,16 +91,20 @@ class ViewOneCategoryWise(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, cat_id):
-        category = Category.objects.get(id=cat_id) # Assuming you have a Category model
-        queryset = category.course_set.all()  # Access the courses through the many-to-many relationship
+        # Assuming you have a Category model
+        category = Category.objects.get(id=cat_id)
+        # Access the courses through the many-to-many relationship
+        queryset = category.course_set.all()
         serializer = CourseSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ViewOneCategory(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request, cat_id):
-        category = Category.objects.get(id=cat_id) # Assuming you have a Category model
+        # Assuming you have a Category model
+        category = Category.objects.get(id=cat_id)
         serializer = CategorySerializer(category)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -155,7 +159,8 @@ class UserCourseView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        queryset = Course.objects.filter(is_publish=True).order_by('-updated_at')
+        queryset = Course.objects.filter(
+            is_publish=True).order_by('-updated_at')
         serializer = CourseSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -216,21 +221,34 @@ class ViewOneCourse(APIView):
         serializer = CourseSerializer(course)
         user = request.user
         if user.is_authenticated:
-            completed_videos = VideoProgress.objects.filter(user=user, course=id, is_completed=True).count()
+            completed_videos = VideoProgress.objects.filter(
+                user=user, course=id, is_completed=True).count()
             total_videos = Chapter.objects.filter(course_id=id).count()
-            if total_videos != 0:
-                progress = (completed_videos / total_videos) * 100
+            total_quiz = Quiz.objects.filter(course_id=id).count()
+            try:
+                quiz = QuizAttempt.objects.filter(
+                    user=user, course_id=id, is_completed=True)
+                if quiz:
+                    total_quiz = 0
+            except QuizAttempt.DoesNotExist:
+                total_quiz = Quiz.objects.filter(course_id=id).count()
+
+            total = total_videos+total_quiz
+            if total != 0:
+                progress = (completed_videos / total) * 100
             else:
                 progress = 0
             try:
-                course_progress = CourseProgress.objects.get(course_id=id, user_id=user.id)
+                course_progress = CourseProgress.objects.get(
+                    course_id=id, user_id=user.id)
                 course_progress.progress = progress
                 course_progress.save()
             except CourseProgress.DoesNotExist:
                 progress_data = None
                 # return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
             try:
-                progress = CourseProgress.objects.get(course_id=id, user_id=request.user.id)
+                progress = CourseProgress.objects.get(
+                    course_id=id, user_id=request.user.id)
                 progress_data = progress.progress
             except:
                 progress_data = None
@@ -250,7 +268,7 @@ class DeleteCourse(APIView):
         course = Course.objects.get(id=id)
         name = course.title
         course.delete()
-        chat = ChatRoom.objects.get(name = name)
+        chat = ChatRoom.objects.get(name=name)
         chat.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
 
@@ -266,7 +284,8 @@ class CourseUpdate(APIView):
         except Course.DoesNotExist:
             return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = CourseCreateSerializer(course, data=request.data, partial=True)
+        serializer = CourseCreateSerializer(
+            course, data=request.data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -302,7 +321,8 @@ class ViewAllChapter(APIView):
     def get(self, request, course_id):
         course = Course.objects.get(id=course_id)
         chapters = Chapter.objects.filter(course=course).order_by('order')
-        serializer = ChapterSerializer(chapters, many=True, context={'request': request})
+        serializer = ChapterSerializer(
+            chapters, many=True, context={'request': request})
         return Response(serializer.data)
 
 
@@ -344,7 +364,8 @@ class Enroll(APIView):
     def post(self, request, course_id):
 
         course = Course.objects.get(pk=course_id)
-        enrolled = Enrollment.objects.filter(course=course, user=request.user).exists()
+        enrolled = Enrollment.objects.filter(
+            course=course, user=request.user).exists()
 
         if enrolled:
             return Response({'message': 'You are already enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -357,7 +378,7 @@ class Enroll(APIView):
                 chat_room = ChatRoom.objects.get(name=course.title)
                 chat_room.users.add(request.user.id)
             except ChatRoom.DoesNotExist:
-                return Response({'message': 'Not found.'}, status=status.HTTP_400_BAD_REQUEST)  
+                return Response({'message': 'Not found.'}, status=status.HTTP_400_BAD_REQUEST)
             serializer = EnrollmentSerializer(enrollment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -367,15 +388,19 @@ class Unenroll(APIView):
 
     def post(self, request, course_id):
         course = Course.objects.get(pk=course_id)
-        enrollment = Enrollment.objects.filter(course=course, user=request.user)
+        enrollment = Enrollment.objects.filter(
+            course=course, user=request.user)
 
         if enrollment.exists():
             enrollment.delete()
-            course_progress = CourseProgress.objects.filter(user=request.user, course=course)
+            course_progress = CourseProgress.objects.filter(
+                user=request.user, course=course)
             if course_progress.exists():
                 course_progress.delete()
-            chat_room = ChatRoom.objects.get(users=request.user, name=course.title)
-            chat_room.users.remove(request.user)  # Remove the user from the chat room instead of deleting it
+            chat_room = ChatRoom.objects.get(
+                users=request.user, name=course.title)
+            # Remove the user from the chat room instead of deleting it
+            chat_room.users.remove(request.user)
             return Response({'message': 'Successfully unenrolled from the course.'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'You are not enrolled in this course.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -386,18 +411,49 @@ class ViewEnrolled(APIView):
 
     def get(self, request, course_id):
         course = Course.objects.get(pk=course_id)
-        enrolled = Enrollment.objects.filter(course=course, user=request.user).exists()
+        enrolled = Enrollment.objects.filter(
+            course=course, user=request.user).exists()
 
         return Response({'enrolled': enrolled})
 
 
 class CheckEnroll(APIView):
     def get(self, request, course_id):
-        enroll = Enrollment.objects.filter(course_id=course_id, user=request.user.id).exists()
+        enroll = Enrollment.objects.filter(
+            course_id=course_id, user=request.user.id).exists()
         if enroll:
             return Response(enroll)
         else:
             return Response(enroll)
+
+class CourseEnrolled(APIView):
+    def get(self, request,user_id):
+        try:
+            # enroll = Enrollment.objects.all()
+            enroll = Enrollment.objects.filter(user_id=user_id)
+            print(enroll)
+            if enroll:
+                # Get the list of course IDs
+                courses = enroll.values_list('course', flat=True)
+                # Get the course objects using the IDs
+                course_objects = Course.objects.filter(id__in=courses)
+
+                serializer = CourseSerializer(course_objects, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Enrollment.DoesNotExist:
+            return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
+class EnrolledStudents(APIView):
+    def get(self,request,course_id):
+        enroll = Enrollment.objects.filter(course_id=course_id)
+        if enroll:
+            user = enroll.values_list('user',flat=True)
+            users = UserAccount.objects.filter(id__in=user)
+            serializer = UserSerializer(users,many=True)
+            return Response(serializer.data)
+        else:
+            return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ViewOneChapter(APIView):
@@ -410,14 +466,15 @@ class ViewOneChapter(APIView):
 class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request,course_id):
+    def get(self, request, course_id):
         try:
-            wishlist = Wishlist.objects.get(user = request.user,course__id = course_id)
+            wishlist = Wishlist.objects.get(
+                user=request.user, course__id=course_id)
         except Wishlist.DoesNotExist:
             return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = WishlistSerializer(wishlist)
         return Response(serializer.data)
-    
+
     def post(self, request):
         course_id = request.data.get('course_id')
         course = Course.objects.get(pk=course_id)
@@ -425,20 +482,23 @@ class WishlistView(APIView):
         wishlist.course.add(course)
         return Response({'message': 'Course added to wishlist'})
 
-    def delete(self, request,id):
+    def delete(self, request, id):
         # course_id = request.data.get('course_id')
         course = Course.objects.get(pk=id)
         wishlist = Wishlist.objects.get(user=request.user)
         wishlist.course.remove(course)
         return Response({'message': 'Course removed from wishlist'})
 
+
 class WishlistAll(APIView):
     def get(self, request):
         try:
             wishlist = Wishlist.objects.filter(user=request.user)
             if wishlist.exists():
-                courses = wishlist.values_list('course', flat=True)  # Get the list of course IDs
-                course_objects = Course.objects.filter(id__in=courses)  # Get the course objects using the IDs
+                # Get the list of course IDs
+                courses = wishlist.values_list('course', flat=True)
+                # Get the course objects using the IDs
+                course_objects = Course.objects.filter(id__in=courses)
 
                 serializer = CourseSerializer(course_objects, many=True)
                 return Response(serializer.data)
@@ -446,6 +506,7 @@ class WishlistAll(APIView):
                 return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
         except Wishlist.DoesNotExist:
             return Response({'message': 'wishlist not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class Review(APIView):
     def post(self, request, course_id):
@@ -463,7 +524,8 @@ class Review(APIView):
 
     def get(self, request, course_id):
 
-        query = CourseReview.objects.filter(course_id=course_id).order_by('-rating')
+        query = CourseReview.objects.filter(
+            course_id=course_id).order_by('-rating')
         print(query)
         serializer = ReviewSerializer(query, many=True)
         print(serializer)
@@ -491,10 +553,6 @@ class Progress(APIView):
         course_id = request.data.get('course_id')
         user = request.user
         try:
-            enroll = Enrollment.objects.get(course_id=course_id, user_id=user.id)
-        except Enrollment.DoesNotExist:
-            return Response({'message': 'You have to enroll in this course'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
             chapter = Chapter.objects.get(id=chapter_id, course_id=course_id)
         except Chapter.DoesNotExist:
             return Response({"error": "Invalid chapter"}, status=status.HTTP_404_NOT_FOUND)
@@ -505,23 +563,35 @@ class Progress(APIView):
             'video': chapter_id,
             'is_completed': True
         }
-        existing_progress = VideoProgress.objects.filter(user=user, course=course_id, video=chapter_id)
+        existing_progress = VideoProgress.objects.filter(
+            user=user, course=course_id, video=chapter_id)
         if existing_progress.exists():
             serializer = VideoProgressSerializer(existing_progress.first())
         else:
             serializer = VideoProgressSerializer(data=data)
-            completed_videos = VideoProgress.objects.filter(user=user, course=course_id, is_completed=True).count()
+            completed_videos = VideoProgress.objects.filter(
+                user=user, course=course_id, is_completed=True).count()
             total_videos = Chapter.objects.filter(course_id=course_id).count()
-            if total_videos != 0:
-                progress = (completed_videos / total_videos) * 100
+            try:
+                quiz = QuizAttempt.objects.filter(
+                    user=user, course_id=course_id, is_completed=True)
+                if quiz:
+                    total_quiz = 0
+            except QuizAttempt.DoesNotExist:
+                total_quiz = Quiz.objects.filter(course_id=course_id).count()
+            total = total_videos+total_quiz
+            if total != 0:
+                progress = (completed_videos / total) * 100
             else:
                 progress = 0
             try:
-                course_progress = CourseProgress.objects.get(course_id=course_id, user_id=user.id)
+                course_progress = CourseProgress.objects.get(
+                    course_id=course_id, user_id=user.id)
                 course_progress.progress = progress
                 course_progress.save()
             except CourseProgress.DoesNotExist:
-                CourseProgress.objects.create(user=user, course_id=course_id, progress=progress)
+                CourseProgress.objects.create(
+                    user=user, course_id=course_id, progress=progress)
         if not existing_progress.exists():
             if serializer.is_valid():
                 serializer.save()
@@ -535,7 +605,8 @@ class Progress(APIView):
     def get(self, request, chapter_id):
         course_id = request.data.get('course_id')
         user = request.user
-        query = VideoProgress.objects.filter(user=user, course=course_id, video=chapter_id)
+        query = VideoProgress.objects.filter(
+            user=user, course=course_id, video=chapter_id)
         serializer = VideoProgressSerializer(query, many=True)
         return Response(serializer.data)
 
@@ -550,22 +621,3 @@ class Course_By_Category(APIView):
             return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-class QuizView(APIView):
-    # permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = CreateQuizSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request):
-        course_id = request.query_params.get('course_id')
-        print("course id",course_id)
-        course = get_object_or_404(Course, pk=course_id)
-        quizzes = Quiz.objects.filter(course=course)
-        serializer = QuizSerializer(quizzes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)

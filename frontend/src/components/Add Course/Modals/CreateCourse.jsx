@@ -3,20 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Chip,
-  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   FormHelperText,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
 } from "@mui/material";
@@ -77,21 +72,7 @@ const CreateCourse = ({onOpen,onCloseModal}) => {
         setSelectedCat([])
         onCloseModal()
     }
-    // const handleCategoryChange = (e) => {
-    //     const { value } = e.target;
-    //     console.log(e.target);
-    //     const newCat = [...course.cat];
-    //     const index = newCat.indexOf(value);
-    //     if (index === -1) {
-    //       newCat.push(value);
-    //     } else {
-    //       newCat.splice(index, 1);
-    //     }
-    //     setCourse((prevState) => ({
-    //       ...prevState,
-    //       cat: newCat,
-    //     }));
-    //   };
+
     const handleCategoryChange = (event) => {
       const {value} = event.target;
       console.log(event.target)

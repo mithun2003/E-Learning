@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Container,
-  Box,
-  Card,
-  CardContent,
   Avatar,
   TextField,
   Dialog,
@@ -173,12 +169,7 @@ export default function TeacherEditProfile({
             fullWidth
             // required
             sx={{ marginBottom: "16px" }}
-            // error={formErrors.highest_qualification}
-            // helperText={
-            //   formErrors.highest_qualification
-            //     ? "Please enter your highest_qualification."
-            //     : ""
-            // }
+       
           />
           <TextField
             label="Skills"
@@ -186,11 +177,7 @@ export default function TeacherEditProfile({
             value={details?.skills}
             onChange={handleInputChange}
             fullWidth
-            // required
-            // error={formErrors.skills}
-            // helperText={
-            //   formErrors.skills ? "Please enter your skills." : ""
-            // }
+      
             sx={{
               marginBottom: "16px"
             }}
@@ -203,10 +190,7 @@ export default function TeacherEditProfile({
             fullWidth
             row={4}
             sx={{ marginBottom: "16px" }}
-            // error={formErrors.address}
-            // helperText={
-            //   formErrors.address ? "Please enter your address." : ""
-            // }
+           
           />
         </DialogContent>
         <DialogActions>

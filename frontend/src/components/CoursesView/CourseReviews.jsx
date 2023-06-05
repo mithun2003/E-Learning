@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import axios from "../../axios";
 import { baseUrl } from "../../constants/baseUrl";
-import StarIcon from '@mui/icons-material/Star';
+import StarIcon from "@mui/icons-material/Star";
 import { useParams } from "react-router-dom";
 
 const CourseReviews = ({ courseId, enroll }) => {
@@ -22,18 +22,18 @@ const CourseReviews = ({ courseId, enroll }) => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
-const MAX_REVIEWS_TO_DISPLAY = 5;
-const {id } = useParams()
-const handleShowAllReviews = () => {
-  setShowAllReviews(true);
-};
-const handleShowLessReviews = () => {
+  const MAX_REVIEWS_TO_DISPLAY = 5;
+  const { id } = useParams();
+  const handleShowAllReviews = () => {
+    setShowAllReviews(true);
+  };
+  const handleShowLessReviews = () => {
     setShowAllReviews(false);
   };
-// Filter the reviews to display
-const displayedReviews = showAllReviews
-  ? reviews
-  : reviews.slice(0, MAX_REVIEWS_TO_DISPLAY);
+  // Filter the reviews to display
+  const displayedReviews = showAllReviews
+    ? reviews
+    : reviews.slice(0, MAX_REVIEWS_TO_DISPLAY);
 
   const handleRatingChange = (event, value) => {
     setRating(value);
@@ -56,35 +56,35 @@ const displayedReviews = showAllReviews
         setReviews([...reviews, response.data]);
         setRating(0);
         setReview("");
-        handleReview()
+        handleReview();
       })
       .catch((error) => {
         console.error(error);
       });
   };
-  const handleReview = ()=>{
+  const handleReview = () => {
     axios
-    .get(`/course/${id}/reviews/`)
-    .then((response) => {
-      setReviews(response.data);
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => {
-      setIsLoading(false); // Stop loading
-    });
-  }
+      .get(`/course/${id}/reviews/`)
+      .then((response) => {
+        setReviews(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false); // Stop loading
+      });
+  };
   useEffect(() => {
     setIsLoading(true); // Start loading
     // Fetch existing reviews for the course
-    handleReview()
+    handleReview();
   }, [id]);
 
   return (
-    <div style={{ marginLeft: "4rem", marginRight: "1rem" ,marginTop:'2rem'}}>
-      <Typography variant="h4" gutterBottom color='#1d5564'>
+    <div style={{ marginLeft: "4rem", marginRight: "1rem", marginTop: "2rem" }}>
+      <Typography variant="h4" gutterBottom color="#1d5564">
         Course Reviews
       </Typography>
 
@@ -104,10 +104,9 @@ const displayedReviews = showAllReviews
           </Button>
         </Box>
       )}
-{isLoading ? (
+      {isLoading ? (
         <CircularProgress /> // Show loading spinner while fetching reviews
-      ) : 
-      displayedReviews.length > 0 ? (
+      ) : displayedReviews.length > 0 ? (
         <Box sx={{ mt: 4 }}>
           <Grid
             container
@@ -133,7 +132,7 @@ const displayedReviews = showAllReviews
                     bgcolor: "gainsboro",
                     borderRight: "1px solid #9f9b9b",
                     // height:'15vh'
-                    marginRight:'1rem'
+                    marginRight: "1rem"
                   }}
                 >
                   <Box ml="1rem">
@@ -179,14 +178,16 @@ const displayedReviews = showAllReviews
             ))}
           </Grid>
           {reviews.length > MAX_REVIEWS_TO_DISPLAY ? (
-      <Button
-        variant="contained"
-        onClick={showAllReviews ? handleShowLessReviews : handleShowAllReviews}
-        sx={{marginBottom:'2rem'}}
-      >
-        {showAllReviews ? "Show Less" : "Show More"}
-      </Button>
-    ) : null}
+            <Button
+              variant="contained"
+              onClick={
+                showAllReviews ? handleShowLessReviews : handleShowAllReviews
+              }
+              sx={{ marginBottom: "2rem" }}
+            >
+              {showAllReviews ? "Show Less" : "Show More"}
+            </Button>
+          ) : null}
         </Box>
       ) : (
         <Typography variant="body2" color="textSecondary">

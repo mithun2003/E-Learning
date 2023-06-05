@@ -17,24 +17,22 @@ import { Link } from "react-router-dom";
 import axios from "../../axios";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Swal from 'sweetalert2';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourse, } from '../../Reducers/CourseReducer';
 
-const ListQuiz = ({progress}) => {
+const ListQuiz = () => {
   const { course_id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [cardData, setCardData] = useState([]);
   const [answers, setAnswers] = useState({});
-//   const [course, setCourse] = useState([]);
+  const dispatch = useDispatch();
+  const course = useSelector((state) => state.course.courseData);
 
-//   useEffect(() => {
-//     axios
-//       .get(`/course/course-detail/${course_id}`)
-//       .then((response) => {
-//         setCourse(response.data);
-//         console.log(response.data);
-//       })
-//       .catch((error) => console.log(error));
-//     console.log(course);
-//   }, [isOpen]);
+  const handleProgress=() => {
+    dispatch(fetchCourse(course_id));
+    console.log(course);
+  };
+
 
   useEffect(() => {
     axios
@@ -56,22 +54,25 @@ const ListQuiz = ({progress}) => {
   };
 
   const handleAnswerChange = (questionId, value) => {
+    
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
       [questionId]: value,
     }));
   };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log(answers);
     let correctAnswers = 0;
-    console.log(answers)
+    console.log(answers);
     cardData.forEach((quiz) => {
       if (quiz.answer_type === 'checkbox') {
         if (answers[quiz.id] === quiz.correct_answer) {
           correctAnswers++;
         }
       } else {
-        if (answers[quiz.correct_answer] === quiz.correct_answer) {
+        const correctAnswer = quiz.correct_answer.toLowerCase();
+        const selectedAnswer = answers[quiz.correct_answer]?.toLowerCase();
+        if (selectedAnswer === correctAnswer) {
           correctAnswers++;
         }
       }
@@ -79,34 +80,20 @@ const ListQuiz = ({progress}) => {
   
     const completionPercentage = (correctAnswers / cardData.length) * 100;
   
-    // let completionMessage = '';
-    // if (completionPercentage === 100) {
-    //     setCompletionMessage(`Congratulations! You completed the course perfectly!,${correctAnswers}`);
-    //   } else if (completionPercentage >= 45) {
-    //     setCompletionMessage(`Well done! You completed the course successfully,${correctAnswers}`);
-    //   } else {
-    //     setCompletionMessage(`You need to review the course again,${correctAnswers}`);
-    //   }
-  
     Swal.fire({
-        icon: completionPercentage < 50 ? 'warning' : 'success',
-        title: 'Quiz Completed!',
-        text: completionPercentage >=50?`Congratulations! You completed the course perfectly! (points : ${correctAnswers} out of ${cardData.length})`:`You need to review the course again  (points : ${correctAnswers} out of ${cardData.length})`
-
+      icon: completionPercentage < 50 ? 'warning' : 'success',
+      title: 'Quiz Completed!',
+      text: completionPercentage >= 50
+        ? `Congratulations! You completed the course perfectly! (points : ${correctAnswers} out of ${cardData.length})`
+        : `You need to review the course again  (points : ${correctAnswers} out of ${cardData.length})`,
     });
-
-        setAnswers({})
-    
+  
+    setAnswers({});
   };
-  const handleprogress = ()=>{
-    if (progress!==100){
-        Swal.fire({
-            icon: 'warning',
-            title: 'Incomplete Course',
-            text: 'Please complete the course before attempting the quizzes.',
-          });
-
-        }
+  const handleAttempt=()=>{
+    const response=axios.post(`/course/quiz/attempt/${course_id}`,answers)
+    console.log(response.data);
+    handleProgress()
   }
 
   return (
@@ -131,7 +118,7 @@ const ListQuiz = ({progress}) => {
         }}
         ml={{ xs: '2vh', sm: '4vh', md: '10vh', lg: '10vh' }}
         mb={1}
-        onClick={progress===100 ? handleClick : handleprogress} // toggle the dropdown on click
+        onClick={ handleClick } // toggle the dropdown on click
       >
         <Typography
           variant="body2"
@@ -152,7 +139,7 @@ const ListQuiz = ({progress}) => {
           }}
         />
       </Box>
-      {progress===100 && (<Collapse in={isOpen}>
+<Collapse in={isOpen}>
         {cardData.map((quiz,index) => (
           <Box
             key={quiz.id}
@@ -245,31 +232,17 @@ const ListQuiz = ({progress}) => {
           ml={{ xs: '2vh', sm: '4vh', md: '10vh', lg: '10vh' }}
           mb={1}
         >
-          <Button variant="contained" sx={{position:'relative',top:'5vh'}} onClick={handleSubmit}>
+          <Button variant="contained" sx={{position:'relative',top:'5vh'}} onClick={()=>{
+            handleSubmit()
+            handleAttempt()
+          }}>
             Submit
           </Button>
         </Box>
-        {/* {completionMessage && (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            py={3}
-            pl={6}
-            pr={4}
-            width="80%"
-            position="relative"
-            ml={{ xs: '2vh', sm: '4vh', md: '10vh', lg: '10vh' }}
-            mb={1}
-          >
-            <Typography variant="body2" fontWeight="medium" color="textPrimary">
-              {completionMessage}
-            </Typography>
-          </Box>
-        )} */}
-      </Collapse>)
-}
-    </div>
+     
+      </Collapse>
+
+  </div>
   );
 };
 

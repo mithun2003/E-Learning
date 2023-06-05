@@ -18,7 +18,6 @@ const Contact = () => {
   const [message, setMessage] = useState(initialState);
   const [error, setError] = useState(initialError);
   const [fails,setFails]=useState()
-  const dispatch = useDispatch();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setMessage((prevMessage) => ({
@@ -53,23 +52,7 @@ const Contact = () => {
     try {
       const response = await axios.post("contact/", message);
       setMessage(initialState)
-      // const data = response?.data;
-      // console.log(data);
-      // // Check if user is blocked
-      // if (data.is_blocked) {
-      //   Swal.fire({
-      //     title: "Error!",
-      //     text: "You are blocked",
-      //     icon: "error",
-      //     backdrop: false
-      //   }).then(() => {
-      //     dispatch(logout());
-      //   });
-      //   console.log("USER IS BLOCKED");
-      // } else {
-      //   setMessage(initialState);
-      //   setError(initialError);
-      // }
+   
     } catch (error) {
       console.log(error.response.data);
       setFails(error.response.data)

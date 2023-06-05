@@ -58,15 +58,7 @@ const AddQuiz = ({ open, onClose, id }) => {
       if (!option1.trim()) {
         errors.option1 = "Please enter option 1";
       }
-      // if (!option2.trim()) {
-      //   errors.option2 = "Please enter option 2";
-      // }
-      // if (!option3.trim()) {
-      //   errors.option3 = "Please enter option 3";
-      // }
-      // if (!option4.trim()) {
-      //   errors.option4 = "Please enter option 4";
-      // }
+
     }
 
     if (!correctAnswer.trim()) {

@@ -1,10 +1,17 @@
-import React, { useRef, useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
-import Swal from 'sweetalert2';
-import axios from '../../axios';
+import React, { useRef, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField
+} from "@mui/material";
+import Swal from "sweetalert2";
+import axios from "../../axios";
 
 const Room = ({ isOpen, isClose }) => {
-  const [roomName, setRoomName] = useState('');
+  const [roomName, setRoomName] = useState("");
   const [image, setImage] = useState(null);
   const fileRef = useRef();
   const [errors, setErrors] = useState({
@@ -25,7 +32,7 @@ const Room = ({ isOpen, isClose }) => {
     e.preventDefault();
 
     const newError = {
-      name: roomName === '',
+      name: roomName === "",
       image: image === null
     };
     setErrors(newError);
@@ -40,25 +47,25 @@ const Room = ({ isOpen, isClose }) => {
     const file = fileRef.current.files[0];
 
     const formData = new FormData();
-    formData.append('name', roomName);
-    formData.append('room_code', generateRandomNumber());
+    formData.append("name", roomName);
+    formData.append("room_code", generateRandomNumber());
     if (fileRef.current.files.length > 0) {
-      formData.append('thumbnail', file, file?.name);
+      formData.append("thumbnail", file, file?.name);
     }
 
     try {
-      const token = localStorage.getItem('access')
-      const response = await axios.post("/live/", formData,{
+      const token = localStorage.getItem("access");
+      const response = await axios.post("/live/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`
         }
       });
-      const randomPath = '/live/' + formData.get('room_code');
-      if (response){
-        sessionStorage.setItem("is_host",'true');
-        setImage('')
-        setRoomName('')
+      const randomPath = "/live/" + formData.get("room_code");
+      if (response) {
+        sessionStorage.setItem("is_host", "true");
+        setImage("");
+        setRoomName("");
         openNewWindow(randomPath);
         isClose();
       }
@@ -75,11 +82,11 @@ const Room = ({ isOpen, isClose }) => {
     }
   };
 
-const handleClose=()=>{
-  setImage('')
-        setRoomName('')
-        isClose()
-}
+  const handleClose = () => {
+    setImage("");
+    setRoomName("");
+    isClose();
+  };
 
   const handleImageChange = (e) => {
     const file = URL.createObjectURL(e.target.files[0]);

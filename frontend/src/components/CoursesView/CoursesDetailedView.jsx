@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -8,7 +8,7 @@ import {
   IconButton,
   CircularProgress
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "../../axios";
 import { useTheme } from "@emotion/react";
 import NameOfCourses from "./NameOfCourses";
@@ -19,10 +19,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import { logout } from "../../Reducers/LoginReducer";
 import CourseReviews from "./CourseReviews";
-import TeacherDetails from "./TeacherDetails";
-
-import ChatWidget from "./ChatWidget";
 import Chat from "./Chat";
+import { fetchCourse, setNull } from "../../Reducers/CourseReducer";
 
 export default function CoursesDetailedView() {
   const theme = useTheme();
@@ -30,13 +28,24 @@ export default function CoursesDetailedView() {
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const { id } = useParams();
   const [wishlist, setWishlist] = useState();
-  const [course, setCourse] = useState([]);
   const { isAuthenticated, token } = useSelector((state) => state.login);
   const [chapter, setChapter] = useState([]);
   const [enroll, setEnroll] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = useSelector((state) => state.course.isLoading);
+  const location = useLocation();
+
+  useEffect(() => {
+    return () => {
+      dispatch(setNull());
+    };
+  }, [dispatch, location]);
+  useEffect(() => {
+    dispatch(fetchCourse(id));
+    fetchWishlist();
+  }, [dispatch, id]);
+  const course = useSelector((state) => state.course.courseData);
   useEffect(() => {
     axios
       .get(`/course/${id}/chapter-list`)
@@ -48,19 +57,7 @@ export default function CoursesDetailedView() {
   }, []);
 
   useEffect(() => {
-    axios
-      .get(`/course/course-detail/${id}`)
-      .then((response) => {
-        setCourse(response.data);
-        console.log(response.data);
-        setIsLoading(false)
-      })
-      .catch((error) => console.log(error));
-    console.log(course);
-  }, []);
-  useEffect(() => {
     fetchWishlist();
-    console.log(chapter);
   }, []);
 
   useEffect(() => {
@@ -83,6 +80,17 @@ export default function CoursesDetailedView() {
     }
   };
 
+  const handleEnrollmentStatus = async () => {
+    const response = await axios.get(`/course/enrollment/${id}`);
+    const isEnrolled = response.data.enrolled;
+
+    if (isEnrolled) {
+      setEnroll(true);
+    } else {
+      setEnroll(false);
+    }
+  };
+
   const handleEnroll = async () => {
     if (user.is_blocked === true) {
       Swal.fire({
@@ -93,9 +101,7 @@ export default function CoursesDetailedView() {
       }).then(() => {
         dispatch(logout());
       });
-    }
-
-    if (isAuthenticated) {
+    } else if (isAuthenticated) {
       try {
         await axios.post(`/course/enroll/${id}`, null, {
           headers: {
@@ -114,10 +120,7 @@ export default function CoursesDetailedView() {
           timerProgressBar: true
         });
 
-        const response = await axios.get(`/course/enrollment/${id}`);
-        if (response.data.enrolled === true) {
-          setEnroll(true);
-        }
+        await handleEnrollmentStatus();
       } catch (error) {
         Swal.fire({
           position: "top-right",
@@ -142,6 +145,7 @@ export default function CoursesDetailedView() {
       });
     }
   };
+
   const handleUnenroll = async () => {
     if (user.is_blocked === true) {
       Swal.fire({
@@ -162,7 +166,7 @@ export default function CoursesDetailedView() {
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes"
       });
-  
+
       if (result.isConfirmed) {
         if (isAuthenticated) {
           try {
@@ -172,7 +176,7 @@ export default function CoursesDetailedView() {
                 Authorization: `Bearer ${token}`
               }
             });
-  
+
             await Swal.fire({
               position: "top-right",
               icon: "success",
@@ -182,11 +186,8 @@ export default function CoursesDetailedView() {
               toast: true,
               timerProgressBar: true
             });
-  
-            const response = await axios.get(`/course/enrollment/${id}`);
-            if (response.data.enrolled === false) {
-              setEnroll(false);
-            }
+
+            await handleEnrollmentStatus();
           } catch (error) {
             Swal.fire({
               position: "top-right",
@@ -213,11 +214,9 @@ export default function CoursesDetailedView() {
       }
     }
   };
-  
-
   const handleAddToWishlist = async () => {
     try {
-      await axios.post("/course/wishlist/", { course_id: course.course.id });
+      await axios.post("/course/wishlist/", { course_id: course?.course?.id });
       console.log("Course added to wishlist");
       fetchWishlist();
     } catch (error) {
@@ -233,19 +232,10 @@ export default function CoursesDetailedView() {
       console.error(error);
     }
   };
-  // const isCourseInWishlist = () => {
-  //   if (!wishlist || !wishlist.courses) {
-  //     return false;
-  //   }
-  //   return wishlist.courses.some((course) => course.id === id);
-  //   wishlist && wishlist.some((course) => course.id === id && course.user === user.id)
-  // };
-  const handleNewUserMessage = (newMessage) => {
-    console.log(`New message incoming! ${newMessage}`);
-    // Now send the message throught the backend API
-  };
+
   const categories =
-    course.course?.cat && course.course.cat.map((cat) => cat.name).join(", ");
+    course?.course?.cat &&
+    course?.course?.cat.map((cat) => cat.name).join(", ");
 
   return (
     <div style={{ backgroundColor: "#C1D3DF" }}>
@@ -272,7 +262,7 @@ export default function CoursesDetailedView() {
                   color: "#1D5564"
                 }}
               >
-                {course.course?.title}
+                {course?.course?.title}
               </Typography>
               <Typography
                 sx={{
@@ -292,7 +282,7 @@ export default function CoursesDetailedView() {
                   // width: "500px"
                 }}
               >
-                {course.course?.desc}
+                {course?.course?.desc}
               </Typography>
               <Typography
                 sx={{
@@ -314,19 +304,21 @@ export default function CoursesDetailedView() {
                 <Typography fontWeight={"bold"}>
                   Rating &nbsp;:&nbsp;{" "}
                 </Typography>
-                {course.course?.avg_rating===null?0:course.course?.avg_rating}
+                {course?.course?.avg_rating === null
+                  ? 0
+                  : course?.course?.avg_rating}
                 <Typography fontWeight={"bold"} marginLeft={2}>
                   Course By &nbsp;:&nbsp;{" "}
                 </Typography>
                 <Typography
                   onClick={() =>
                     navigate(
-                      `/teacher-profile/${course.course?.teacher?.user.name}/${course.course?.teacher?.user.id}`
+                      `/teacher-profile/${course?.course?.teacher?.user.name}/${course?.course?.teacher?.user.id}`
                     )
                   }
                   sx={{ textDecoration: "underline", cursor: "pointer" }}
                 >
-                  {course.course?.teacher?.user.name}
+                  {course?.course?.teacher?.user.name}
                 </Typography>
               </Typography>
               <Box
@@ -386,9 +378,7 @@ export default function CoursesDetailedView() {
 
                 {wishlist ? (
                   <IconButton
-                    sx={{ marginTop: "40px",     
-                    color:'#1d5564',
-                  }}
+                    sx={{ marginTop: "40px", color: "#1d5564" }}
                     onClick={handleRemoveFromWishlist}
                   >
                     <FavoriteOutlinedIcon
@@ -397,11 +387,7 @@ export default function CoursesDetailedView() {
                   </IconButton>
                 ) : (
                   <IconButton
-                    sx={{ marginTop: "40px",
-                    color:'#1d5564',
-
-                  
-                  }}
+                    sx={{ marginTop: "40px", color: "#1d5564" }}
                     onClick={handleAddToWishlist}
                   >
                     <FavoriteBorderIcon
@@ -419,7 +405,7 @@ export default function CoursesDetailedView() {
                   >
                     <CircularProgress
                       variant="determinate"
-                      value={course.progress}
+                      value={course?.progress}
                     />
                     <Box
                       sx={{
@@ -438,9 +424,7 @@ export default function CoursesDetailedView() {
                         component="div"
                         color="text.secondary"
                       >
-                        {`${
-                          course.progress
-                        }%`}
+                        {`${course?.progress}%`}
                       </Typography>
                     </Box>
                   </Box>
@@ -451,28 +435,28 @@ export default function CoursesDetailedView() {
 
           <Grid item xs={12} sm={6} md={6} lg={6}>
             <Box sx={{ m: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
-            {isLoading ? (
-          <CircularProgress />
-        ) : (
-              <img
-                className="shadow"
-                style={{
-                  // width: { xs: "100%", sm: "70%" },
-                  width: isMobile ? "fit-content" : "70%",
-                  height: "auto",
-                  maxWidth: "100%",
-                  boxShadow: "rgb(0, 0, 0,1.3) 15px 10px 10px",
-                  // marginLeft:'10px'
-                  borderRadius: "8%",
-                  [theme.breakpoints.up("sm")]: {
-                    width: "100%"
-                  }
-                }}
-                loading={"eager"}
-                src={course.course?.image}
-                alt="placeholder"
-              />)
-}
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <img
+                  className="shadow"
+                  style={{
+                    // width: { xs: "100%", sm: "70%" },
+                    width: isMobile ? "fit-content" : "70%",
+                    height: "auto",
+                    maxWidth: "100%",
+                    boxShadow: "rgb(0, 0, 0,1.3) 15px 10px 10px",
+                    // marginLeft:'10px'
+                    borderRadius: "8%",
+                    [theme.breakpoints.up("sm")]: {
+                      width: "100%"
+                    }
+                  }}
+                  loading={"eager"}
+                  src={course?.course?.image}
+                  alt="placeholder"
+                />
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -490,8 +474,8 @@ export default function CoursesDetailedView() {
         <Grid item xs={12} sm={6} md={6} lg={6} sx={{ paddingLeft: "4vw" }}>
           <NameOfCourses
             chapter={chapter}
-            courseName={course.course?.title}
-            course_id={course.course?.id}
+            courseName={course?.course?.title}
+            course_id={course?.course?.id}
             enroll={enroll}
           />
         </Grid>
@@ -508,7 +492,7 @@ export default function CoursesDetailedView() {
         bgcolor="white"
       >
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ paddingLeft: "4vw" }}>
-          <CourseReviews courseId={course.course?.id} enroll={enroll} />
+          <CourseReviews courseId={course?.course?.id} enroll={enroll} />
         </Grid>
       </Grid>
       <Box
@@ -524,7 +508,7 @@ export default function CoursesDetailedView() {
           zIndex: "9999"
         }}
       >
-        {(enroll || course.course?.teacher?.user?.id === user.id )&& <Chat />}
+        {(enroll || course?.course?.teacher?.user?.id === user.id) && <Chat />}
       </Box>
     </div>
   );

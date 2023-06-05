@@ -14,7 +14,7 @@ import {
   Avatar,
   Typography
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import axios from "../../../axios";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../../../Reducers/LoginReducer";
@@ -31,15 +31,23 @@ const countries = [
   "China",
   "India"
 ];
-
+const intital_error = {
+  name: false,
+  country: false,
+  mobile_number: false,
+  highest_qualification: false,
+  skills: false,
+  address: false,
+  image: false,
+  resume: false,
+  error: []
+}
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [load, setLoad] = useState(null);
   const [image, setImage] = useState(null);
   const  user = JSON.parse(localStorage.getItem("user"));
-  // const { user } = useSelector((state) => state.login);
   const fileRef = useRef();
   console.log(user);
   useEffect(() => {
@@ -57,17 +65,7 @@ const Register = () => {
     resume: null,
     is_submit: false
   });
-  const [formErrors, setFormErrors] = useState({
-    name: false,
-    country: false,
-    mobile_number: false,
-    highest_qualification: false,
-    skills: false,
-    address: false,
-    image: false,
-    resume: false,
-    error: []
-  });
+  const [formErrors, setFormErrors] = useState(intital_error);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -160,18 +158,7 @@ const Register = () => {
         // User is not blocked, proceed with success action
         navigate("/profile");
         localStorage.setItem('user',JSON.stringify(response.data))
-        setFormErrors({
-          name: false,
-          country: false,
-          mobile_number: false,
-          highest_qualification: false,
-          skills: false,
-          address: false,
-          image: false,
-          resume: false,
-          error: []
-        });
-
+        setFormErrors(intital_error);
         // Update user state to mark form submission as complete
         const updatedUser = { ...user, is_submit: true };
         dispatch(setUser(updatedUser));
@@ -392,13 +379,7 @@ const Register = () => {
                 error={formErrors.image}
                 ref={fileRef}
               />
-              {/* {formData.image && (
-                <img
-                  src={URL.createObjectURL(formData.image)}
-                  alt="Selected Image"
-                  style={{ width: "100%", marginBottom: "16px" }}
-                />
-              )} */}
+           
               {formErrors.image && (
                 <p style={{ color: "red", marginBottom: "8px" }}>
                   This field is require

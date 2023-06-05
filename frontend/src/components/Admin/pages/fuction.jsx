@@ -1,4 +1,3 @@
-import { filter } from "lodash";
 
 export const handleRequestSort = (event, property, order,orderBy, setOrder, setOrderBy) => {
     const isAsc = orderBy === property && order === "asc";

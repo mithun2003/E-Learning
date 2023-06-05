@@ -1,16 +1,10 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-// @mui
 import { styled, alpha } from '@mui/material/styles';
 import { Box, Link,Drawer, Typography, Avatar } from '@mui/material';
-// mock
-// import account from '../../../_mock/account';
-// hooks
 import useResponsive from '../Admin/hooks/useResponsive';
-// components
 import Scrollbar from '../../Admin/scrollbar';
-// import NavSection from '../../../../components/Admin/nav-section';
 //
 import navConfig from './config';
 import { useSelector } from 'react-redux';

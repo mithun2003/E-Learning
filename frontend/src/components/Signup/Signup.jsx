@@ -5,7 +5,7 @@ import { saveUserAsync } from "../../Reducers/SignupReducer";
 import Button from "@mui/material/Button";
 // import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -21,74 +21,69 @@ const Signup = () => {
     password: "",
     re_password: ""
   });
-  const [localerror,setLocalError] = useState('')
-  const { loading, success,error } = useSelector((state) => state.register);
+  const [localerror, setLocalError] = useState("");
+  const { loading, success, error } = useSelector((state) => state.register);
   useEffect(() => {
     setLocalError(error);
   }, [error]);
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setLocalError(error)
-    // if (user.password===user.re_password){
-        dispatch(saveUserAsync(user));
+    e.preventDefault();
+    setLocalError(error);
+    dispatch(saveUserAsync(user));
     // }
-    
   };
   useEffect(() => {
     document.body.style.backgroundColor = "#1D5564";
-    document.body.style.height = "0"; 
-
+    document.body.style.height = "0";
   }, []);
   const handleChange = (event) => {
-        setLocalError('')
-    
+    setLocalError("");
+
     setUser({ ...user, [event.target.name]: event.target.value });
   };
   return (
-    <div className="body" >
-      {success ? ( 
-      <Container component="main" maxWidth="lg">
+    <div className="body">
+      {success ? (
+        <Container component="main" maxWidth="lg">
           <Box
             sx={{
               marginTop: 15
             }}
-            >
+          >
             <Grid container sx={{ height: "10vh" }}>
-            {/* <CssBaseline /> */}
-            <Grid
-              item
-              xs={false}
-              sm={5}
-              md={10}
-              sx={{
-                
-                backgroundRepeat: "no-repeat",
-                backgroundColor: "#c1d3df",
-                backgroundSize: "cover",
-                backgroundPosition: "center"
-              }}
+              {/* <CssBaseline /> */}
+              <Grid
+                item
+                xs={false}
+                sm={5}
+                md={10}
+                sx={{
+                  backgroundRepeat: "no-repeat",
+                  backgroundColor: "#c1d3df",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}
               />
-              
-                <Box
-                  sx={{
-                    my: 8,
-                    mx: 4,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                
-              <span className="email">
-                Please check your email and click the activation link to complete the
-                sign-up process.
-              </span>
+
+              <Box
+                sx={{
+                  my: 8,
+                  mx: 4,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}
+              >
+                <span className="email">
+                  Please check your email and click the activation link to
+                  complete the sign-up process.
+                </span>
+              </Box>
+            </Grid>
           </Box>
-          </Grid>
-          </Box>
-          </Container>
-        ) : (
-        <Container component="main" maxWidth="lg" >
+        </Container>
+      ) : (
+        <Container component="main" maxWidth="lg">
           <Box
             sx={{
               marginTop: 30
@@ -108,8 +103,8 @@ const Signup = () => {
                   backgroundSize: "cover",
                   backgroundPosition: "center"
                 }}
-                />
-                
+              />
+
               <Grid
                 item
                 xs={12}
@@ -118,7 +113,7 @@ const Signup = () => {
                 component={Paper}
                 elevation={6}
                 square
-                >
+              >
                 <Box
                   sx={{
                     my: 8,
@@ -128,12 +123,11 @@ const Signup = () => {
                     alignItems: "center"
                   }}
                 >
-                
                   <Typography component="h1" variant="h5">
                     Sign Up
                   </Typography>
-                  <p style={{color:"red"}}>
-                    {localerror ? localerror.non_field_errors:null}
+                  <p style={{ color: "red" }}>
+                    {localerror ? localerror.non_field_errors : null}
                   </p>
                   <Box
                     component="form"
@@ -153,10 +147,11 @@ const Signup = () => {
                       autoFocus
                       InputProps={{
                         sx: {
-                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "green", // Change the border color when focused
-                          },
-                        },
+                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                            {
+                              borderColor: "green" // Change the border color when focused
+                            }
+                        }
                       }}
                       error={!!localerror?.name}
                       helperText={localerror?.name}
@@ -204,17 +199,23 @@ const Signup = () => {
                       type="submit"
                       fullWidth
                       variant="contained"
-                      sx={{ mt: 3, mb: 2,bgcolor:'#1d5564',
-                      "&:hover":{bgcolor:'rgba(29,85,100,0.9)'} }}
+                      sx={{
+                        mt: 3,
+                        mb: 2,
+                        bgcolor: "#1d5564",
+                        "&:hover": { bgcolor: "rgba(29,85,100,0.9)" }
+                      }}
                     >
                       {loading ? "Signing up..." : "Sign up"}
                     </Button>
                     <Grid container>
-                      <Grid item xs>
-                        
-                      </Grid>
+                      <Grid item xs></Grid>
                       <Grid item>
-                        <Link to="/login" variant="body2" style={{color:"#1d5564"}}>
+                        <Link
+                          to="/login"
+                          variant="body2"
+                          style={{ color: "#1d5564" }}
+                        >
                           {"Already have account? Sign In"}
                         </Link>
                       </Grid>
@@ -225,8 +226,7 @@ const Signup = () => {
             </Grid>
           </Box>
         </Container>
-                    )}
-      
+      )}
     </div>
   );
 };

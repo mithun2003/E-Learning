@@ -43,11 +43,7 @@ const Chat = () => {
     console.log(course);
   }, [id]);
 
-  // Fetch messages when the course data changes
-  // useEffect(() => {
-  //   console.log(course);
-  //   fetchMessages();
-  // }, [course]);
+
 
   // Fetch messages from the API
   const fetchMessages = async () => {
@@ -97,30 +93,7 @@ const Chat = () => {
     }
   }, [roomName]);
   
-  // Send a new message
-  // const sendMessage = async (senderId, message) => {
-  //   try {
-  //     const response = await axios.post("/chat/", {
-  //       room_name: roomName,
-  //       sender_id: senderId,
-  //       message: message
-  //     });
 
-  //     const { success, message: responseMessage, data } = response.data;
-
-  //     if (success) {
-  //       console.log(data);
-  //       setMessages((prevMessages) => {
-  //         return [...prevMessages, data];
-  //       });
-  //       console.log(messages);
-  //     } else {
-  //       console.log("Error: ", responseMessage);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error: ", error);
-  //   }
-  // }; 
 
   const sendMessage = (senderId, message) => {
     const messageObject = {

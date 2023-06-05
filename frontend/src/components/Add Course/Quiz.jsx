@@ -67,14 +67,7 @@ const Quiz = ({ id }) => {
               Quizzes
             </Typography>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              pt: 4,
-              pb: 5
-            }}
-          ></Box>
+     
           <Box
             sx={{
               display: "flex",
@@ -159,7 +152,7 @@ const Quiz = ({ id }) => {
                     >
                       Options:
                     </Typography>
-                    <ul>
+                    <ul style={{marginLeft:'2rem'}}>
                       <li>{card.option1}</li>
                       <li>{card.option2}</li>
                      <li>{card.option3}</li>

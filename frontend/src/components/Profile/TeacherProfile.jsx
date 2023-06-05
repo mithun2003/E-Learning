@@ -27,7 +27,6 @@ export default function TeacherProfile() {
 
   const [isResumeOpen, setIsResumeOpen] = useState(false); // State to control the visibility of the resume dialog
   const { user } = useSelector((state) => state.login);
-  const navigate = useNavigate();
   const [open,setOpen]= useState(false)
   useEffect(() => {
     document.body.style.backgroundColor = "#fff";

@@ -23,14 +23,7 @@ export default function EditProfile({ onOpen, onCloseModal, userDetails }) {
     const token = localStorage.getItem('access')
     useEffect(() => {
       setUser(userDetails)
-    //     axios
-    //     .get(`/view/user/${user?.id}`)
-    //     .then((response) => {
-    //       setUser(response.data);
-    //       console.log(response.data);
-    //       // localStorage.setItem("user",response.data)
-    //     })
-    //     .catch((error) => console.error(error));
+
     }, [onOpen]);
     
     const handleImageChange = (e) => {

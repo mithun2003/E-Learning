@@ -6,7 +6,6 @@ import {
   Stack,
   Paper,
   Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -21,7 +20,6 @@ import {
   DialogActions,
   TextField,
   TableHead,
-  Box,
   TableSortLabel
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
@@ -29,10 +27,7 @@ import Iconify from "../../../Admin/iconify";
 import Scrollbar from "../../../Admin/scrollbar";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import {
-  handleChangePage,
-  handleChangeRowsPerPage,
-} from "./fuction";
+import { handleChangePage, handleChangeRowsPerPage } from "./fuction";
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
@@ -114,21 +109,21 @@ export default function BannerPage() {
     e.preventDefault();
     if (image) {
       const file = fileRef.current.files[0];
-  
+
       const formData = new FormData();
       if (fileRef.current.files.length > 0) {
         console.log("image appended");
         formData.append("image", file, file?.name);
       }
       formData.append("title", title);
-  
+
       try {
         await axios.post("/banner/", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
         });
-  
+
         const getResponse = await axios.get("/banner");
         setDetails(getResponse.data);
         Swal.fire({
@@ -150,11 +145,11 @@ export default function BannerPage() {
       setError("Please select an image.");
     }
   };
-  
+
   const handleOpenModal = () => {
     setOpen(true);
   };
- useEffect(() => {
+  useEffect(() => {
     axios
       .get("/banner/")
       .then((response) => {
@@ -247,8 +242,6 @@ export default function BannerPage() {
         </Stack>
 
         <Card sx={{ boxShadow: "13px 8px 7px rgba(0, 0, 0, 0.25)" }}>
- 
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -313,16 +306,16 @@ export default function BannerPage() {
                               {active ? "Yes" : "No"}
                             </TableCell>
                             <TableCell align="right">
-                            <MenuItem
-                              sx={{ color: "error.main" }}
-                              onClick={() => handleDelete(id)}
-                            >
-                              <Iconify
-                                icon={"eva:trash-2-outline"}
-                                sx={{ mr: 2, mb: 2 }}
-                              />
-                              Delete
-                            </MenuItem>
+                              <MenuItem
+                                sx={{ color: "error.main" }}
+                                onClick={() => handleDelete(id)}
+                              >
+                                <Iconify
+                                  icon={"eva:trash-2-outline"}
+                                  sx={{ mr: 2, mb: 2 }}
+                                />
+                                Delete
+                              </MenuItem>
                               <MenuItem onClick={() => handlePublish(id)}>
                                 {active ? (
                                   <Iconify
@@ -369,7 +362,6 @@ export default function BannerPage() {
                     </TableRow>
                   </TableBody>
                 )}
-                
               </Table>
             </TableContainer>
           </Scrollbar>
@@ -384,7 +376,7 @@ export default function BannerPage() {
             onRowsPerPageChange={handleRowsPerPageChange}
           />
         </Card>
-   
+
         <Dialog open={open} onClose={() => setOpen(false)}>
           <DialogTitle>Add Banner</DialogTitle>
           <form onSubmit={handleAdd} encType="multipart/form-data">
@@ -406,7 +398,7 @@ export default function BannerPage() {
                   sx={{ marginBottom: "16px", marginTop: "1rem" }}
                   ref={fileRef}
                 />
-               
+
                 {image ? <img src={image}></img> : null}
               </Stack>
             </DialogContent>

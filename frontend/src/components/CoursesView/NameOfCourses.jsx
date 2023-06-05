@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 
-const NameOfCourses = ({ chapter,courseName,course_id,enroll }) => {
+const NameOfCourses = ({ chapter, courseName, course_id, enroll }) => {
   return (
     <>
       <Box
@@ -14,7 +14,7 @@ const NameOfCourses = ({ chapter,courseName,course_id,enroll }) => {
         <Typography
           variant="h5"
           sx={{ mt: 4 }}
-          ml={{ xs:'2vh',sm: "4vh", md: "10vh", lg: "10vh" }}
+          ml={{ xs: "2vh", sm: "4vh", md: "10vh", lg: "10vh" }}
           color="textPrimary"
           mb={3}
         >
@@ -39,10 +39,24 @@ const NameOfCourses = ({ chapter,courseName,course_id,enroll }) => {
               borderRadius: "8px",
               position: "relative" // add position relative to container
             }}
-            ml={{ xs:'2vh',sm: "4vh", md: "10vh", lg: "10vh" }}
+            ml={{ xs: "2vh", sm: "4vh", md: "10vh", lg: "10vh" }}
             mb={1}
           >
-            {enroll ? (<Link to={`/course/${course_id}/${courseName}/${chapter.id}`}>
+            {enroll ? (
+              <Link to={`/course/${course_id}/${courseName}/${chapter.id}`}>
+                <Typography
+                  variant="body2"
+                  fontWeight="medium"
+                  color="textPrimary"
+                  sx={{
+                    mr: "15vh",
+                    fontSize: { xs: "10px", sm: "12px", lg: "14px" }
+                  }}
+                >
+                  {chapter.order}.&nbsp;&nbsp;{chapter.title}
+                </Typography>
+              </Link>
+            ) : (
               <Typography
                 variant="body2"
                 fontWeight="medium"
@@ -54,17 +68,7 @@ const NameOfCourses = ({ chapter,courseName,course_id,enroll }) => {
               >
                 {chapter.order}.&nbsp;&nbsp;{chapter.title}
               </Typography>
-            </Link>):(<Typography
-                variant="body2"
-                fontWeight="medium"
-                color="textPrimary"
-                sx={{
-                  mr: "15vh",
-                  fontSize: { xs: "10px", sm: "12px", lg: "14px" }
-                }}
-              >
-                {chapter.order}.&nbsp;&nbsp;{chapter.title}
-              </Typography>)}
+            )}
           </Box>
         ))}
       </Box>

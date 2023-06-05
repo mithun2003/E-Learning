@@ -2,16 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Chip,
-  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -81,30 +77,14 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
 
     onCloseModal();
   };
-  // const handleCategoryChange = (e) => {
-  //   const { value } = e.target;
-  //   let newCat = [...arr];
-  //   const index = newCat.indexOf(value);
-  //   if (index === -1) {
-  //     newCat.push(value);
-  //   } else {
-  //     newCat.splice(index, 1);
-  //   }
-    
-  //   setArr(newCat);
-  //   console.log(course);
-  // };
+
   const handleCategoryChange = (event) => {
     const { value } = event.target;
     setSelectedCat(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
-     // Generate catId using the updated value of selectedCat
-  // const catId = (typeof value === "string" ? value.split(",") : value).map((name) => {
-  //   const category = cat.find((cat) => cat.name === name);
-  //   return category.id;
-  // });
+
   const catId = (typeof value === "string" ? value.split(",") : value).map((name) => {
     const category = cat.find((cat) => cat.name === name);
     return category ? category.id : null; // Return null if category is not found
@@ -113,23 +93,6 @@ const EditCourse = ({ onOpen, onCloseModal, id }) => {
   console.log(catId);
   };
   
-  
-//   const handleCategoryChange = (e) => {
-//     const { value } = e.target;
-//     let newCat = [...course.cat];
-//     const index = newCat.indexOf(value);
-//     if (index === -1) {
-//       newCat.push(value);
-//     } else {
-//       newCat.splice(index, 1);
-//     }
-    
-//     setCourse((prevState) => ({
-//       ...prevState,
-//       cat: newCat
-//     }));
-//     console.log(course);
-//   };
   const handleImageChange = (e) => {
     const file = URL.createObjectURL(e.target.files[0]);
     const name = e.target.files[0];

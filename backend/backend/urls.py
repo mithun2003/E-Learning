@@ -12,6 +12,7 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('', include('account.urls')),
     path('course/', include('courses.urls')),
+    path('course/', include('quiz.urls')),
     path('contact/', ContactMe.as_view()),
     path('banner/', Banner.as_view()),
     path('banner/user', BannerUser.as_view()),

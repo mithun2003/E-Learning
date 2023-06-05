@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../axios";
 import ReactPlayer from "react-player";
@@ -11,32 +11,27 @@ import {
   Typography,
   useMediaQuery
 } from "@mui/material";
-// import { ReactVideo } from "reactjs-media";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ListForPlay from "./ListForPlay";
 import { useTheme } from "@emotion/react";
-import ListQuiz from "./ListQuiz";
-// import logo from '../../assets/images/logo.png';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCourse} from "../../Reducers/CourseReducer";
 const CoursePlayer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const navigate = useNavigate();
-  const { courseName, course_id, chapter_id } = useParams();
+  const {  course_id, chapter_id } = useParams();
   const [chapter, setChapter] = useState([]);
-  const [course, setCourse] = useState([]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [end,setEnd] = useState(false)
+  const dispatch = useDispatch();
+  
   useEffect(() => {
-    axios
-      .get(`/course/course-detail/${course_id}`)
-      .then((response) => {
-        setCourse(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
-    console.log(course);
-  }, [end]);
-
+ 
+      dispatch(fetchCourse(course_id));
+    }, [dispatch, course_id, end]);
+    const course = useSelector((state) => state.course.courseData);
+    
   const handleEnroll = ()=>{
     axios
       .get(`/course/enroll/check/${course_id}`)
@@ -52,7 +47,6 @@ const CoursePlayer = () => {
   useEffect(() => {
     handleEnroll()
   }, [course_id]);
-
 
   const handleVideoCompletion = async () => {
     try {
@@ -147,7 +141,7 @@ const CoursePlayer = () => {
                 marginRight: "1rem"
               }}
             >
-              <CircularProgress variant="determinate" value={course.progress} />
+              <CircularProgress variant="determinate" value={course?.progress} />
               <Box
                 sx={{
                   top: 0,
@@ -165,7 +159,7 @@ const CoursePlayer = () => {
                   component="div"
                   color="text.secondary"
                 >
-                  {`${course.progress === undefined ? 0 : course.progress}%`}
+                  {`${course?.progress === undefined ? 0 : course?.progress}%`}
                 </Typography>
               </Box>
             </Box>
@@ -196,7 +190,7 @@ const CoursePlayer = () => {
           autoPlay
         />
       </Box>
-      <ListForPlay end={end} progress={course.progress}/>
+      <ListForPlay end={end}/>
     </>
   );
 };

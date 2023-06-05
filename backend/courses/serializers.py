@@ -152,12 +152,14 @@ class AdminChapterSerializer(serializers.ModelSerializer):
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
     class Meta:
         model = Enrollment
         fields = '__all__'
 
 
 class WishlistCreateSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Wishlist
         fields = ('user', 'courses')
@@ -212,13 +214,3 @@ class CourseProgressSerializer(serializers.ModelSerializer):
         fields = ('user', 'course', 'progress')
 
 
-class CreateQuizSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Quiz
-        fields = '__all__'
-
-
-class QuizSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Quiz
-        fields = '__all__'

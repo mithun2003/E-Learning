@@ -3,8 +3,6 @@ import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget-2'
 import 'react-chat-widget-2/lib/styles.css';
 import axios from '../../axios';
 import { useParams } from 'react-router-dom';
-import { baseUrl } from '../../constants/baseUrl';
-import logo from '../Navbar/logo.png'
 
 const ChatWidget = () => {
     // State variables

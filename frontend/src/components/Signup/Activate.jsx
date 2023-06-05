@@ -47,7 +47,10 @@ const Activate = () => {
             ) : activated ? (
               <>
                 <h1>Account Activated</h1>
-                <p>Your account has been successfully activated. You can now log in.</p>
+                <p>
+                  Your account has been successfully activated. You can now log
+                  in.
+                </p>
                 <Button
                   onClick={handleSubmit}
                   variant="contained"
@@ -60,7 +63,10 @@ const Activate = () => {
               <>
                 <h1>Activation Error</h1>
                 <br />
-                <p>There was an error activating your account. Please try again later.</p>
+                <p>
+                  There was an error activating your account. Please try again
+                  later.
+                </p>
               </>
             )}
           </span>

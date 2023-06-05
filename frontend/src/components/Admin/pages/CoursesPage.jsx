@@ -14,7 +14,7 @@ import {
   Typography,
   MenuItem,
   TableContainer,
-  TablePagination,
+  TablePagination
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Iconify from "../../../Admin/iconify";
@@ -108,14 +108,14 @@ export default function CoursesPage() {
       preConfirm: async () => {
         try {
           Swal.showLoading(); // Show loading spinner
-  
+
           await axios.post(`/course/publish/${id}`, null, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`
             }
           });
-  
+
           setDetails((prevDetails) => {
             return prevDetails.map((user) => {
               if (user.id === id) {
@@ -127,15 +127,14 @@ export default function CoursesPage() {
               return user;
             });
           });
-  
+
           return true;
         } catch (error) {
           Swal.showValidationMessage("Something went wrong");
           return false;
         }
       }
-    })
-    .then((result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Success!",
@@ -146,8 +145,7 @@ export default function CoursesPage() {
       }
     });
   };
-  
-  
+
   const handleOpenModal = () => {
     setOpenModal(true);
   };
@@ -204,7 +202,6 @@ export default function CoursesPage() {
   };
   const handleRowClick = (event, name) => {
     handleClick(event, name, setSelected, selected);
-  
   };
   const handleSelectAll = (event) => {
     handleSelectAllClick(event, setSelected, selected, details);
@@ -318,9 +315,20 @@ export default function CoursesPage() {
                               spacing={2}
                             >
                               {" "}
-                              <Typography variant="subtitle2" noWrap ml={2} sx={{textDecoration:'none'}}>
-                              <Link to={`/admin/courses/course-detail/${id}`} style={{textDecoration:'none',color:'blue'}}>
-                                {title}
+                              <Typography
+                                variant="subtitle2"
+                                noWrap
+                                ml={2}
+                                sx={{ textDecoration: "none" }}
+                              >
+                                <Link
+                                  to={`/admin/courses/course-detail/${id}`}
+                                  style={{
+                                    textDecoration: "none",
+                                    color: "blue"
+                                  }}
+                                >
+                                  {title}
                                 </Link>
                               </Typography>
                             </Stack>
@@ -336,7 +344,9 @@ export default function CoursesPage() {
                           <TableCell align="left">{enrollments}</TableCell>
                           <TableCell align="left">{duration}</TableCell>
                           <TableCell align="left">{level}</TableCell>
-                          <TableCell align="left">{teacher?.user.name}</TableCell>
+                          <TableCell align="left">
+                            {teacher?.user.name}
+                          </TableCell>
                           <TableCell align="left">{created_at}</TableCell>
                           <TableCell align="left">
                             {is_publish ? "Yes" : "No"}
@@ -427,8 +437,7 @@ export default function CoursesPage() {
             onRowsPerPageChange={handleRowsPerPageChange}
           />
         </Card>
-        <CreateCourse onOpen={openModal} onCloseModal={handleCloseModal}/>
-        
+        <CreateCourse onOpen={openModal} onCloseModal={handleCloseModal} />
       </Container>
     </div>
   );

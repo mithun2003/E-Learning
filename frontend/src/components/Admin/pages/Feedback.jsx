@@ -5,25 +5,20 @@ import {
   Table,
   Stack,
   Paper,
-  Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
   Container,
   Typography,
-  MenuItem,
   TableContainer,
   TablePagination,
   TableHead,
-  TableSortLabel,
+  TableSortLabel
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
-import Iconify from "../../../Admin/iconify";
 import Scrollbar from "../../../Admin/scrollbar";
-import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
+import { UserListToolbar } from "../sections/@dashboard/user";
 import { useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import {
   handleRequestSort,
   handleSelectAllClick,
@@ -34,8 +29,6 @@ import {
   applySortFilter,
   getComparator
 } from "./fuction";
-import CreateCourse from "../Modals/CreateCourse";
-import { Link } from "react-router-dom";
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -73,10 +66,8 @@ export default function Feedback() {
       .catch((error) => console.error(error));
   }, []);
 
-
   const handleRowClick = (event, name) => {
     handleClick(event, name, setSelected, selected);
-  
   };
   const handleSelectAll = (event) => {
     handleSelectAllClick(event, setSelected, selected, details);
@@ -122,7 +113,6 @@ export default function Feedback() {
           <Typography variant="h4" gutterBottom>
             Feedback
           </Typography>
-       
         </Stack>
 
         <Card sx={{ boxShadow: "13px 8px 7px rgba(0, 0, 0, 0.25)" }}>
@@ -135,7 +125,7 @@ export default function Feedback() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-              <TableHead>
+                <TableHead>
                   <TableRow>
                     {TABLE_HEAD.map((headCell) => (
                       <TableCell
@@ -153,13 +143,7 @@ export default function Feedback() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {
-                        id,
-                        name,
-                        email,
-                        message,
-                        sent_at
-                      } = row;
+                      const { id, name, email, message, sent_at } = row;
 
                       return (
                         <TableRow
@@ -182,8 +166,13 @@ export default function Feedback() {
                               spacing={2}
                             >
                               {" "}
-                              <Typography variant="subtitle2" noWrap ml={2} sx={{textDecoration:'none'}}>
-                                {name} 
+                              <Typography
+                                variant="subtitle2"
+                                noWrap
+                                ml={2}
+                                sx={{ textDecoration: "none" }}
+                              >
+                                {name}
                               </Typography>
                             </Stack>
                           </TableCell>
@@ -258,7 +247,7 @@ export default function Feedback() {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
           />
-        </Card>        
+        </Card>
       </Container>
     </div>
   );

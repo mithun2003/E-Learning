@@ -5,7 +5,6 @@ import {
   Table,
   Stack,
   Paper,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -211,12 +210,7 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-          {/* <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            New User
-          </Button> */}
+          
         </Stack>
 
         <Card>
@@ -275,13 +269,7 @@ export default function UserPage() {
                           selected={selectedUser}
                           
                         >
-                          {/* <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={event => handleRowClick(event, name)}
-
-                            />
-                          </TableCell> */}
+                     
 
                           <TableCell component="th" scope="row" padding="none">
                             <Stack

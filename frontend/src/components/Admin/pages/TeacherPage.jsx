@@ -14,7 +14,7 @@ import {
   Typography,
   MenuItem,
   TableContainer,
-  TablePagination,
+  TablePagination
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import Label from "../../../Admin/label";
@@ -23,7 +23,16 @@ import Scrollbar from "../../../Admin/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { applySortFilter, getComparator, handleChangePage, handleChangeRowsPerPage, handleClick, handleFilterByName, handleRequestSort, handleSelectAllClick } from "./fuction";
+import {
+  applySortFilter,
+  getComparator,
+  handleChangePage,
+  handleChangeRowsPerPage,
+  handleClick,
+  handleFilterByName,
+  handleRequestSort,
+  handleSelectAllClick
+} from "./fuction";
 import { baseUrl } from "../../../constants/baseUrl";
 
 // ----------------------------------------------------------------------
@@ -39,14 +48,12 @@ const TABLE_HEAD = [
   // { id: "" }
 ];
 
-
 export default function TeacherPage() {
   const [details, setDetails] = useState([]);
   const { token } = useSelector((state) => state.adminLogin);
   console.log("detail", details);
 
-
-const handleBlock = (id) => {
+  const handleBlock = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "Press confirm to block/unblock",
@@ -63,7 +70,7 @@ const handleBlock = (id) => {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.showLoading(); // Show loading spinner
-  
+
         axios
           .post(`/user/block/${id}`, null, {
             headers: {
@@ -104,7 +111,7 @@ const handleBlock = (id) => {
       }
     });
   };
-  
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState("asc");
@@ -126,9 +133,6 @@ const handleBlock = (id) => {
       })
       .catch((error) => console.error(error));
   }, []);
-
-
-
 
   const handleRowClick = (event, name) => {
     handleClick(event, name, setSelected, selected);
@@ -159,7 +163,6 @@ const handleBlock = (id) => {
     filterName
   );
 
-
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
@@ -178,15 +181,10 @@ const handleBlock = (id) => {
           <Typography variant="h4" gutterBottom>
             Teacher
           </Typography>
-          {/* <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            New User
-          </Button> */}
+    
         </Stack>
 
-        <Card sx={{boxShadow: "13px 8px 7px rgba(0, 0, 0, 0.25)"}}>
+        <Card sx={{ boxShadow: "13px 8px 7px rgba(0, 0, 0, 0.25)" }}>
           <UserListToolbar
             // numSelected={selected.length}
             filterName={filterName}
@@ -194,7 +192,7 @@ const handleBlock = (id) => {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800,overflowX:'hidden'}}>
+            <TableContainer sx={{ minWidth: 800, overflowX: "hidden" }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -210,14 +208,16 @@ const handleBlock = (id) => {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       const {
-                        user:{id,
+                        user: {
+                          id,
                           name,
                           is_teacher,
                           mobile_number,
                           country,
                           is_block,
                           email,
-                          image}
+                          image
+                        }
                       } = row;
                       const selectedUser = selected.indexOf(name) !== -1;
 
@@ -229,13 +229,7 @@ const handleBlock = (id) => {
                           is_student="checkbox"
                           selected={selectedUser}
                         >
-                          {/* <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleRowClick(event, name)}
-                            />
-                          </TableCell> */}
-
+                      
                           <TableCell component="th" scope="row" padding="none">
                             <Stack
                               direction="row"
@@ -244,11 +238,7 @@ const handleBlock = (id) => {
                             >
                               <Avatar
                                 alt="User image"
-                                src={
-                                  image
-                                    ? `${baseUrl}${image}`
-                                    : null
-                                }
+                                src={image ? `${baseUrl}${image}` : null}
                               />{" "}
                               <Typography variant="subtitle2" noWrap ml={2}>
                                 {name}
@@ -275,7 +265,6 @@ const handleBlock = (id) => {
                           </TableCell>
 
                           <TableCell align="right">
-                           
                             <MenuItem onClick={() => handleBlock(id)}>
                               {is_block ? (
                                 <Iconify

@@ -34,6 +34,8 @@ urlpatterns = [
     path('unenroll/<course_id>', Unenroll.as_view()),
 
     path('enrollment/<course_id>', ViewEnrolled.as_view()),
+    path('enrollment/user/<user_id>', CourseEnrolled.as_view()),
+    path('enrollment/course/<course_id>', EnrolledStudents.as_view()),
 
     path('wishlist/', WishlistView.as_view()),
     path('wishlist/get/<course_id>', WishlistView.as_view()),
@@ -44,7 +46,7 @@ urlpatterns = [
 
     path('category-view/<cat_id>', Course_By_Category.as_view()),
     
-    path('quiz/',QuizView.as_view())
+
 ]
 
 

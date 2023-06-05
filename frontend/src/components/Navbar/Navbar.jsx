@@ -52,20 +52,7 @@ function ResponsiveAppBar() {
       .catch((error) => console.error(error));
   }, []);
   console.log({ user });
-  // const handleOpenNavMenu = (event) => {
-  //   setAnchorElNav(event.currentTarget);
-  // };
-  // const handleOpenUserMenu = (event) => {
-  //   setAnchorElUser(event.currentTarget);
-  // };
 
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
-
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null);
-  // };
   const handleOpenCategoryMenu = (event) => {
     setAnchorElCat(event.currentTarget);
   };
@@ -78,16 +65,7 @@ function ResponsiveAppBar() {
       navigate("/courses");
     }
   };
-  // const handleItemClick = (setting) => {
-  //   if (setting === "Logout") {
-  //     logoutHandler();
-  //   } else if (setting === "Profile") {
-  //     navigate("/profile");
-  //   } else if (setting === "Dashboard") {
-  //     navigate("/");
-  //   }
-
-  // };
+  
 
   return (
     <AppBar
@@ -185,13 +163,14 @@ function ResponsiveAppBar() {
                           cat.map((category) => (
                             <MenuItem
                               key={category.id}
-                              onClick={
-                                handleCloseCategoryMenu
-                              }
+                              onClick={handleCloseCategoryMenu}
                             >
                               <Link
                                 to={`/category-wise/${category.id}`}
-                                style={{ textDecoration: "none",color:'#1d5564' }}
+                                style={{
+                                  textDecoration: "none",
+                                  color: "#1d5564"
+                                }}
                               >
                                 {category.name}
                               </Link>
@@ -206,7 +185,10 @@ function ResponsiveAppBar() {
                         my: 2,
                         color: "#1D5564",
                         display: "block",
-                        textDecoration: location.pathname === "/courses" && page==='Courses' ? "underline" : "none",
+                        textDecoration:
+                          location.pathname === "/courses" && page === "Courses"
+                            ? "underline"
+                            : "none",
 
                         fontFamily: "Montserrat, sans-serif"
                       }}
@@ -231,43 +213,10 @@ function ResponsiveAppBar() {
                   alt={user.name}
                   src={user.image && `${baseUrl}${user.image}`}
                 />
-                {/* <Button
-                variant="outlined"
-                  onClick={handleOpenUserMenu}
-                  sx={{ my: 2, color: "#1D5564", display: "block", borderColor: "#1D5564"}}
-                >
-                  {user.name}
-                </Button> */}
+              
               </IconButton>
             </Tooltip>
-            {/* <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem
-                    key={setting}
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      handleItemClick(setting);
-                    }}
-                  >
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu> */}
+         
           </Box>
         ) : (
           <Link
@@ -292,7 +241,6 @@ function ResponsiveAppBar() {
           </Link>
         )}
       </Toolbar>
-      {/* </Container> */}
     </AppBar>
   );
 }

@@ -1,27 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../axios";
 import {
   Card,
-  Table,
   Stack,
-  Paper,
   Avatar,
   Button,
-  Checkbox,
-  TableRow,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  MenuItem,
-  TableContainer,
-  TablePagination,
-  CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
+  CardContent
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
@@ -29,59 +16,42 @@ import Swal from "sweetalert2";
 import EditCourse from "./Modals/EditCourse";
 import ChapterAdd from "./Modals/ChapterAdd";
 import ListChapter from "../Admin/CourseView/ListChapter";
-import AddQuiz from "./Quiz";
 import Quiz from "./Quiz";
-
-// ----------------------------------------------------------------------
-
-
-// ----------------------------------------------------------------------
-// console.log(USERLIST);
+import StudentsEnrolled from "./StudentsEnrolled";
 
 export default function CourseDetails() {
   const [details, setDetails] = useState({});
   const { token } = useSelector((state) => state.adminLogin);
   const navigate = useNavigate();
   const { id } = useParams();
-  const [open,setOpen]= useState(false)
-  const [openAdd,setOpenAdd]= useState(false)
+  const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
   console.log(details);
   useEffect(() => {
     document.body.style.backgroundColor = "#fff";
   }, []);
   useEffect(() => {
-      axios
+    axios
       .get(`/course/course-detail/${id}`)
       .then((response) => {
-          setDetails(response.data.course);
-          
-          console.log(response.data);
-          console.log(details);
+        setDetails(response.data.course);
+
+        console.log(response.data);
+        console.log(details);
       })
       .catch((error) => console.error(error));
-  }, [open,id]);
-  // useEffect(() => {
-  //     axios
-  //     .get(`/course/course-detail/${id}`)
-  //     .then((response) => {
-  //         setDetails(response.data.course);
-          
-  //         console.log(response.data);
-  //         console.log(details);
-  //     })
-  //     .catch((error) => console.error(error));
-  // }, [open]);
+  }, [open, id]);
 
   const handleOpenModal = () => {
     setOpen(true);
-};
+  };
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleAddOpenModal = () => {
     setOpenAdd(true);
-};
+  };
 
   const handleAddClose = () => {
     setOpenAdd(false);
@@ -99,23 +69,23 @@ export default function CourseDetails() {
       cancelButtonText: "Cancel",
       backdrop: false, // Disable backdrop overlay
       reverseButtons: true,
-      showLoaderOnConfirm: true,
+      showLoaderOnConfirm: true
     });
-  
+
     if (result.isConfirmed) {
       try {
         Swal.showLoading();
         await axios.post(`/course/course-delete/${id}`, null, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         });
         await Swal.fire({
           icon: "success",
           title: "Course Deleted",
           text: "The course deleted successfully!!.",
-          backdrop: false, // Disable backdrop overlay
+          backdrop: false // Disable backdrop overlay
         });
         navigate("/admin/courses");
       } catch (error) {
@@ -124,12 +94,12 @@ export default function CourseDetails() {
           title: "Error!",
           text: "Something went wrong.",
           icon: "error",
-          backdrop: false, // Disable backdrop overlay
+          backdrop: false // Disable backdrop overlay
         });
       }
     }
   };
-  
+
   return (
     <div>
       <Helmet>
@@ -148,52 +118,66 @@ export default function CourseDetails() {
                 {details.title}
               </Typography>
 
-              <div style={{ display: "flex",flexDirection:'column', alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}
+              >
                 <Avatar
                   src={details.image}
                   alt={details.title}
-                  sx={{ width: 'fit-content', height: 'fit-content',borderRadius:0 }}
+                  sx={{
+                    width: "fit-content",
+                    height: "fit-content",
+                    borderRadius: 0
+                  }}
                 />
 
                 <div style={{ marginLeft: "20px", marginTop: "2rem" }}>
                   <Typography variant="h6" gutterBottom lineHeight={2.5}>
-                    Name &nbsp;: &nbsp;  {details.title}
+                    Name &nbsp;: &nbsp; {details.title}
                   </Typography>
 
-                  <Typography variant="body1" gutterBottom lineHeight={2.5} >
-                    <b>Description &nbsp;: &nbsp;</b>  {details.desc}
+                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                    <b>Description &nbsp;: &nbsp;</b> {details.desc}
                   </Typography>
                   <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                    <b>Level &nbsp;: &nbsp;</b>  {details.level}
+                    <b>Level &nbsp;: &nbsp;</b> {details.level}
                   </Typography>
-  <Typography variant="body1" lineHeight={2.5}>
-                 <b> Category :</b>
-              {details.cat && details.cat.map(cat => (
-                // <Typography variant="body1" key={cat.id} gutterBottom lineHeight={2.5}>
-                  <span key={cat.id} style={{lineHeight:2.5}}>
-                      &nbsp;{cat.name},
-                  </span>
-                // {/* </Typography> */}
-))}
-</Typography>
-
-                  { details.teacher && <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Teacher &nbsp;: &nbsp; </b>  {details.teacher?.user?.name}
-                  </Typography>}
-                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Enrollments &nbsp;: &nbsp;</b>  {details.enrollments}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
-                  <b>Duration &nbsp;: &nbsp;</b>  {details.duration}
+                  <Typography variant="body1" lineHeight={2.5}>
+                    <b> Category :</b>
+                    {details.cat &&
+                      details.cat.map((cat) => (
+                        // <Typography variant="body1" key={cat.id} gutterBottom lineHeight={2.5}>
+                        <span key={cat.id} style={{ lineHeight: 2.5 }}>
+                          &nbsp;{cat.name},
+                        </span>
+                        // {/* </Typography> */}
+                      ))}
                   </Typography>
 
+                  {details.teacher && (
+                    <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                      <b>Teacher &nbsp;: &nbsp; </b>{" "}
+                      {details.teacher?.user?.name}
+                    </Typography>
+                  )}
+                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                    <b>Enrollments &nbsp;: &nbsp;</b> {details.enrollments}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom lineHeight={2.5}>
+                    <b>Duration &nbsp;: &nbsp;</b> {details.duration}
+                  </Typography>
 
                   <Button
                     variant="contained"
-                    sx={{backgroundColor:'#21b726',
-                    '&:hover': { bgcolor: '#21b726',opacity:"0.9" },
-                    marginLeft: "10px" 
-                      }}
+                    sx={{
+                      backgroundColor: "#21b726",
+                      "&:hover": { bgcolor: "#21b726", opacity: "0.9" },
+                      marginLeft: "10px"
+                    }}
                     onClick={handleAddOpenModal}
                   >
                     Add Chapter
@@ -218,11 +202,17 @@ export default function CourseDetails() {
               </div>
             </CardContent>
           </Card>
-        <EditCourse onOpen={open} onCloseModal={handleClose} id={id}/>
-        <ChapterAdd onOpen={openAdd} onCloseModal={handleAddClose} id={id} token={token}/>
+          <EditCourse onOpen={open} onCloseModal={handleClose} id={id} />
+          <ChapterAdd
+            onOpen={openAdd}
+            onCloseModal={handleAddClose}
+            id={id}
+            token={token}
+          />
         </Stack>
-        <ListChapter id={id} close={handleAddClose}/>
-        <Quiz id={id}/>
+        <ListChapter id={id} close={handleAddClose} />
+        <Quiz id={id} />
+        <StudentsEnrolled />
       </Container>
     </div>
   );

@@ -30,15 +30,8 @@ class Course(models.Model):
     is_publish = models.BooleanField(default=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    # chat_room = models.OneToOneField(ChatRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
-    def progress(self):
-        complete = Chapter.objects.filter(course=self, is_completed=True).count()
-        total = Chapter.objects.filter(course=self).count()
-        if total == 0:
-            return 0
-        progress = (complete / total) * 100
-        return progress
+
 
     def enrollments(self):
         print(self)
@@ -114,14 +107,4 @@ class CourseProgress(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     progress = models.PositiveIntegerField(default=0)
 
-
-class Quiz(models.Model):
-    course = models.ForeignKey(Course,on_delete=models.CASCADE)
-    question = models.TextField()
-    option1 = models.CharField(max_length=100,default='')
-    option2 = models.CharField(max_length=100,default='',null=True,blank=True)
-    option3 = models.CharField(max_length=100,default='',null=True,blank=True)
-    option4 = models.CharField(max_length=100,default='',null=True,blank=True)
-    correct_answer = models.CharField(max_length=100)
-    answer_type = models.CharField(max_length=10, default='checkbox')
 
