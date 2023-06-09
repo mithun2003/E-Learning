@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'live',
     'quiz',
     'Admin',
-
+    'environ',
 ]
 
 
