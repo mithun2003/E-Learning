@@ -67,7 +67,7 @@ const Chat = () => {
     if (roomName) {
       const room_id = course.course?.chat_room
       console.log(room_id)
-      const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${room_id}/`);
+      const newSocket = new WebSocket(`wss://studypoint.shop/ws/chat/${room_id}/`);
       console.log(newSocket)
       newSocket.onopen = (event) => {
         console.log('WebSocket connection opened');
