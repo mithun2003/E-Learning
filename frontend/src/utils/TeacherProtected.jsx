@@ -3,9 +3,10 @@ import { useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
 
 const TeacherProtected = () => {
-  const authState = useSelector(state => state.login)
+  // const authState = useSelector(state => state.login)
+  const authState = JSON.parse(localStorage.getItem('teacher'))
   return (
-      authState.user.is_teacher ? <Outlet/> : <Navigate to='/'/>
+      authState.user ? <Outlet/> : <Navigate to='/'/>
     )
 }
 

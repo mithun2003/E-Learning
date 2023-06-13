@@ -3,16 +3,20 @@ from rest_framework import serializers
 from .models import *
 from account.serializers import *
 from chat.models import ChatRoom
+from django.conf import settings
 
 
 class BannerSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     def get_image(self, obj):
-        if obj.image:
-            return "http://localhost:8000" + obj.image.url
-        else:
-            return None
+            if obj.image:
+                if settings.DEBUG:
+                    return "http://localhost:8000" + obj.image.url
+                else:
+                    return "https://e-learning003.netlify.app" + obj.image.url
+            else:
+                return None
 
     class Meta:
         model = Banners
@@ -83,11 +87,15 @@ class CourseSerializer(serializers.ModelSerializer):
         chat_room_id = chat_room.id if chat_room else None
         return chat_room_id
 
+
     def get_image(self, obj):
-        if obj.image:
-            return "http://localhost:8000" + obj.image.url
-        else:
-            return None
+            if obj.image:
+                if settings.DEBUG:
+                    return "http://localhost:8000" + obj.image.url
+                else:
+                    return "https://e-learning003.netlify.app" + obj.image.url
+            else:
+                return None
 
     class Meta:
         model = Course
@@ -120,7 +128,10 @@ class ChapterSerializer(serializers.ModelSerializer):
 
     def get_video(self, obj):
         if obj.video:
-            return "http://localhost:8000" + obj.video.url
+            if settings.DEBUG:
+                return "http://localhost:8000" + obj.video.url
+            else:
+                return "https://e-learning003.netlify.app" + obj.video.url
         else:
             return None
 
@@ -142,7 +153,10 @@ class AdminChapterSerializer(serializers.ModelSerializer):
 
     def get_video(self, obj):
         if obj.video:
-            return "http://localhost:8000" + obj.video.url
+            if settings.DEBUG:
+                return "http://localhost:8000" + obj.video.url
+            else:
+                return "https://e-learning003.netlify.app" + obj.video.url
         else:
             return None
 

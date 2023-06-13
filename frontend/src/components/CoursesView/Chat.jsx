@@ -16,7 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useParams } from "react-router-dom";
 import axios from "../../axios";
 import SendIcon from "@mui/icons-material/Send";
-import { baseUrl } from "../../constants/baseUrl";
+import { baseUrl, wsUrl } from "../../constants/baseUrl";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
@@ -67,7 +67,7 @@ const Chat = () => {
     if (roomName) {
       const room_id = course.course?.chat_room
       console.log(room_id)
-      const newSocket = new WebSocket(`wss://studypoint.shop/ws/chat/${room_id}/`);
+      const newSocket = new WebSocket(`${wsUrl}/ws/chat/${room_id}/`);
       console.log(newSocket)
       newSocket.onopen = (event) => {
         console.log('WebSocket connection opened');

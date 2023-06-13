@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 # import chat.routing
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin_view/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('', include('account.urls')),

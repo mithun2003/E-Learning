@@ -86,10 +86,11 @@
 
 
 import axios from "axios";
+import { baseUrl } from "./constants/baseUrl";
 
 const instance = axios.create({
 //   baseURL: 'http://localhost:8000',
-  baseURL: 'https://www.studypoint.shop',
+  baseURL: baseUrl,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json'
