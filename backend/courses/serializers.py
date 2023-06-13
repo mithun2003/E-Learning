@@ -14,7 +14,7 @@ class BannerSerializer(serializers.ModelSerializer):
                 if settings.DEBUG:
                     return "http://localhost:8000" + obj.image.url
                 else:
-                    return "https://e-learning003.netlify.app" + obj.image.url
+                    return "https://studypoint.shop" + obj.image.url
             else:
                 return None
 
@@ -93,7 +93,7 @@ class CourseSerializer(serializers.ModelSerializer):
                 if settings.DEBUG:
                     return "http://localhost:8000" + obj.image.url
                 else:
-                    return "https://e-learning003.netlify.app" + obj.image.url
+                    return "https://studypoint.shop" + obj.image.url
             else:
                 return None
 
@@ -131,7 +131,7 @@ class ChapterSerializer(serializers.ModelSerializer):
             if settings.DEBUG:
                 return "http://localhost:8000" + obj.video.url
             else:
-                return "https://e-learning003.netlify.app" + obj.video.url
+                return "https://studypoint.shop" + obj.video.url
         else:
             return None
 
@@ -156,7 +156,7 @@ class AdminChapterSerializer(serializers.ModelSerializer):
             if settings.DEBUG:
                 return "http://localhost:8000" + obj.video.url
             else:
-                return "https://e-learning003.netlify.app" + obj.video.url
+                return "https://studypoint.shop" + obj.video.url
         else:
             return None
 

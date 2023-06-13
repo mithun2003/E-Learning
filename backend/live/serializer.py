@@ -13,7 +13,7 @@ class LiveSerializer(serializers.ModelSerializer):
             if settings.DEBUG:
                 return "http://localhost:8000" + obj.thumbnail.url
             else:
-                return "https://e-learning003.netlify.app" +  obj.thumbnail.url
+                return "https://studypoint.shop" +  obj.thumbnail.url
         else:
             return None
   
