@@ -92,7 +92,7 @@ export default function CoursesDetailedView() {
   };
 
   const handleEnroll = async () => {
-    if (user.is_blocked === true) {
+    if (user?.is_blocked === true) {
       Swal.fire({
         title: "Error!",
         text: "You are blocked",
@@ -147,7 +147,7 @@ export default function CoursesDetailedView() {
   };
 
   const handleUnenroll = async () => {
-    if (user.is_blocked === true) {
+    if (user?.is_blocked === true) {
       Swal.fire({
         title: "Error!",
         text: "You are blocked",
