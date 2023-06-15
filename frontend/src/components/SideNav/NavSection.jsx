@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { NavLink as RouterLink } from "react-router-dom";
+import { NavLink as RouterLink, useNavigate } from "react-router-dom";
 // @mui
 import { Box, List, ListItemText } from "@mui/material";
 //
@@ -32,6 +32,7 @@ NavItem.propTypes = {
 };
 
 function NavItem({ item }) {
+  const navigate = useNavigate()
   const { title, path, icon, info } = item;
   const dispatch = useDispatch();
   const teacher = JSON.parse(localStorage.getItem("teacher"))
@@ -70,7 +71,7 @@ function NavItem({ item }) {
         console.log("logged out");
         dispatch(logout());
         // if(success===false){
-          // navigate("/admin/login/");
+        navigate("/");
         // }
       } else {
         console.log("canceled");
@@ -82,7 +83,7 @@ function NavItem({ item }) {
     if (title === "logout") {
       logoutHandler();
     }
-    if (title=="Go Live"){
+    if (title==="Go Live"){
       // const randomPath = '/live/' + generateRandomNumber();
       // openNewWindow(randomPath);
       handleOpen();
