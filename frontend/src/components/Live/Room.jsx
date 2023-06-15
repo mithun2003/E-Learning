@@ -63,7 +63,8 @@ const Room = ({ isOpen, isClose }) => {
       });
       const randomPath = "/live/" + formData.get("room_code");
       if (response) {
-        sessionStorage.setItem("is_host", "true");
+        // sessionStorage.setItem("is_host", "true");
+        localStorage.setItem("is_host", "true");
         setImage("");
         setRoomName("");
         openNewWindow(randomPath);

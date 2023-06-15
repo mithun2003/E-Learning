@@ -7,7 +7,7 @@ const Live = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
-  const isHost = sessionStorage.getItem("is_host") === "true"; // Check if the teacher is the host
+  const isHost = localStorage.getItem("is_host") === "true"; // Check if the teacher is the host
   const role = isHost ? "Host" : "Audience";
   const generateSharedLinks = () => {
     const sharedLinks = [];
@@ -49,9 +49,7 @@ const Live = () => {
       showPreJoinView: false,
  
       onLiveEnd: async () => {
-        sessionStorage.removeItem("is_host");
-
-       
+        localStorage.removeItem("is_host");
         axios.delete(`/live/${roomName}`);
 
         window.close();
