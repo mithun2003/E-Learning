@@ -50,10 +50,13 @@ const Live = () => {
  
       onLiveEnd: async () => {
         localStorage.removeItem("is_host");
-        axios.delete(`/live/${roomName}`);
-
-        //window.close();
-        navigate("/");
+        try {
+          await axios.delete(`/live/${roomName}`);
+          window.close();
+        } catch (error) {
+          console.log(error);
+          // Handle the error or display an error message
+        }
       }
     });
   };
