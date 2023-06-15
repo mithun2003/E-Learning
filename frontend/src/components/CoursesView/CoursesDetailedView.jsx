@@ -508,7 +508,7 @@ export default function CoursesDetailedView() {
           zIndex: "9999"
         }}
       >
-        {(enroll || course?.course?.teacher?.user?.id === user.id) && <Chat />}
+        {(enroll || course?.course?.teacher?.user?.id === user?.id) && <Chat />}
       </Box>
     </div>
   );
