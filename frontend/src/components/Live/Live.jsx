@@ -52,7 +52,7 @@ const Live = () => {
         localStorage.removeItem("is_host");
         axios.delete(`/live/${roomName}`);
 
-        window.close();
+        //window.close();
         navigate("/");
       }
     });
