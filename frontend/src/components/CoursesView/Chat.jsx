@@ -9,7 +9,8 @@ import {
   IconButton,
   TextField,
   Box,
-  InputAdornment
+  InputAdornment,
+  Avatar
 } from "@mui/material";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import CloseIcon from "@mui/icons-material/Close";
@@ -170,15 +171,27 @@ const Chat = () => {
                           {msg.sender.name}
                         </div>
                         <div>
-                          <img
-                            src={`${baseUrl}${msg.sender.image}`}
-                            alt="Sender"
-                            style={{
-                              borderRadius: "50%",
-                              height: "3rem",
-                              width: "3rem"
-                            }}
-                          />
+                        {msg.sender.image ? (
+                            <img
+                              src={`${baseUrl}${msg.sender.image}`}
+                              alt="Sender"
+                              style={{
+                                borderRadius: "50%",
+                                height: "3rem",
+                                width: "3rem"
+                              }}
+                            />
+                          ) : (
+                            <Avatar
+                              alt="Sender"
+                              style={{
+                                height: "3rem",
+                                width: "3rem"
+                              }}
+                            >
+                              {/* You can provide initials or a default icon here */}
+                            </Avatar>
+                          )}
                         </div>
                       </div>
                       <div>{msg.message}</div>
@@ -203,17 +216,27 @@ const Chat = () => {
                           {msg.sender.name}
                         </div>
                         <div>
-                          msg.sender.image ? (
-                          <img
-                            src={imageSource}
-                            alt="Sender"
-                            style={{
-                              borderRadius: "50%",
-                              height: "3rem",
-                              width: "3rem"
-                            }}
-                          />
-                          ) : avatarFallback;
+                          {msg.sender.image ? (
+                            <img
+                              src={`${baseUrl}${msg.sender.image}`}
+                              alt="Sender"
+                              style={{
+                                borderRadius: "50%",
+                                height: "3rem",
+                                width: "3rem"
+                              }}
+                            />
+                          ) : (
+                            <Avatar
+                              alt="Sender"
+                              style={{
+                                height: "3rem",
+                                width: "3rem"
+                              }}
+                            >
+                              {/* You can provide initials or a default icon here */}
+                            </Avatar>
+                          )}
                         </div>
                       </div>
                       <div
