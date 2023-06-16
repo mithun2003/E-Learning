@@ -55,12 +55,14 @@ INSTALLED_APPS = [
     'quiz',
     'Admin',
     'environ',
+    
+    
+
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -81,14 +83,23 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # `allauth` needs this from django
+                'django.template.context_processors.request',
             ],
         },
     },
 ]
+# AUTHENTICATION_BACKENDS = [
+    
+#     # Needed to login by username in Django admin, regardless of `allauth`
+#     'django.contrib.auth.backends.ModelBackend',
 
+#     # `allauth` specific authentication methods, such as login by e-mail
+#     'allauth.account.auth_backends.AuthenticationBackend',
+    
+# ]
 WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
@@ -194,7 +205,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 if DEBUG:
     FRONT_END = 'http://localhost:3000'
 else:
-    FRONT_END = 'https://studypoint.shop'
+    FRONT_END = 'https://e-learning003.netlify.app'
 
 
 DJOSER = {
@@ -241,3 +252,18 @@ JWT_AUTH = {
     # 'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
+
+
+SITE_ID = 1
+
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'APP': {
+#             'client_id': '511588460031-kq4gntg94oirtlules6el7gav64kqnib.apps.googleusercontent.com',
+#             'secret': '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',
+#             'key': ''
+#         }
+#     }
+# }

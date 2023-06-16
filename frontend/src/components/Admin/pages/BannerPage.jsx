@@ -109,7 +109,6 @@ export default function BannerPage() {
     e.preventDefault();
     if (image) {
       const file = fileRef.current.files[0];
-
       const formData = new FormData();
       if (fileRef.current.files.length > 0) {
         console.log("image appended");
@@ -132,7 +131,12 @@ export default function BannerPage() {
           icon: "success",
           backdrop: false // Disable backdrop overlay
         });
-        setOpen(false);
+        if (getResponse.data){
+          setOpen(false);
+          setTitle('')
+          setImage('')
+
+        }
       } catch (error) {
         Swal.fire({
           title: "Error!",

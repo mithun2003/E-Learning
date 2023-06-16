@@ -43,8 +43,6 @@ const Chat = () => {
     console.log(course);
   }, [id]);
 
-
-
   // Fetch messages from the API
   const fetchMessages = async () => {
     try {
@@ -62,49 +60,46 @@ const Chat = () => {
     }
   };
 
-
   useEffect(() => {
     if (roomName) {
-      const room_id = course.course?.chat_room
-      console.log(room_id)
+      const room_id = course.course?.chat_room;
+      console.log(room_id);
       const newSocket = new WebSocket(`${wsUrl}/ws/chat/${room_id}/`);
-      console.log(newSocket)
+      console.log(newSocket);
       newSocket.onopen = (event) => {
-        console.log('WebSocket connection opened');
+        console.log("WebSocket connection opened");
         setSocketOpen(true);
         fetchMessages();
       };
-  
+
       newSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         setMessages((prevMessages) => [...prevMessages, data.message]);
       };
-  
+
       newSocket.onclose = (event) => {
-        console.log('WebSocket connection closed',event);
+        console.log("WebSocket connection closed", event);
         setSocketOpen(false);
       };
-  
+
       setSocket(newSocket);
-  
+
       return () => {
         newSocket.close();
       };
     }
   }, [roomName]);
-  
-
 
   const sendMessage = (senderId, message) => {
     const messageObject = {
       sender_id: senderId,
       message: message,
-      room_name: roomName,
+      room_name: roomName
     };
-  
+
     socket.send(JSON.stringify(messageObject));
   };
-  
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -123,10 +118,9 @@ const Chat = () => {
   };
   const buttonStyle = {
     marginBottom: "16px",
-    borderRadius:'50%',
-    width:'4vw',
-    height:'7vh'
-
+    borderRadius: "50%",
+    width: "4vw",
+    height: "7vh"
   };
 
   return (
@@ -202,16 +196,16 @@ const Chat = () => {
                           display: "flex",
                           alignItems: "center",
                           flexDirection: "row-reverse",
-                          justifyContent: 'space-between',
-                        
+                          justifyContent: "space-between"
                         }}
                       >
                         <div style={{ marginLeft: "3vh", fontWeight: "bold" }}>
                           {msg.sender.name}
                         </div>
                         <div>
+                          msg.sender.image ? (
                           <img
-                            src={`${baseUrl}${msg.sender.image}`}
+                            src={imageSource}
                             alt="Sender"
                             style={{
                               borderRadius: "50%",
@@ -219,6 +213,7 @@ const Chat = () => {
                               width: "3rem"
                             }}
                           />
+                          ) : avatarFallback;
                         </div>
                       </div>
                       <div
@@ -226,7 +221,7 @@ const Chat = () => {
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "flex-end",
-                          justifyContent: 'space-between'
+                          justifyContent: "space-between"
                         }}
                       >
                         <div>{msg.message}</div>
