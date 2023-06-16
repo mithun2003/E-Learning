@@ -108,15 +108,18 @@ const Chat = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleInputChange = (event) => {
     setNewMessage(event.target.value);
   };
+
   const handleSend = () => {
     if (newMessage.trim() !== "") {
       sendMessage(user.id, newMessage);
     }
     setNewMessage("");
   };
+
   const buttonStyle = {
     marginBottom: "16px",
     borderRadius: "50%",
@@ -140,11 +143,19 @@ const Chat = () => {
 
       <Dialog
         open={open}
-        PaperProps={{ style: { width: "50vw", height: "100vh" } }}
+        PaperProps={{ style: { width: "100%", height: "100%" } }}
+        maxWidth="md"
+        fullWidth
       >
         <DialogTitle>Chat - {course.course?.title}</DialogTitle>
         <DialogContent>
-          <div style={{ maxHeight: "calc(100% - 136px)", overflowY: "scroll" }}>
+          <div
+            style={{
+              maxHeight: "calc(100% - 136px)",
+              overflowY: "scroll",
+              marginBottom: "16px"
+            }}
+          >
             {messages.map((msg) => (
               <Box
                 key={msg.id}
@@ -171,7 +182,7 @@ const Chat = () => {
                           {msg.sender.name}
                         </div>
                         <div>
-                        {msg.sender.image ? (
+                          {msg.sender.image ? (
                             <img
                               src={`${baseUrl}${msg.sender.image}`}
                               alt="Sender"
@@ -265,12 +276,16 @@ const Chat = () => {
             variant="outlined"
             label="Type your message"
             fullWidth
-            style={{ marginTop: "16px" }}
+            style={{ marginBottom: "16px" }}
             value={newMessage}
             onChange={handleInputChange}
             sx={{
               position: "sticky",
-              top: "77vh"
+              bottom: "0",
+              left: "0",
+              borderRadius: "0",
+              borderTop: "1px solid #ccc",
+              backgroundColor: "#fff"
             }}
             InputProps={{
               endAdornment: (
@@ -287,4 +302,5 @@ const Chat = () => {
     </div>
   );
 };
+
 export default Chat;
