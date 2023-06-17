@@ -28,15 +28,15 @@ const Courses = ({ isTeacher = null, all = null,search=null }) => {
           const response = await axios.get(`/course/teacher/course-list/${teacher_id}`);
           setCardData(response.data);
           setIsLoading(false);
-        } else if (all) {
-          const response = await axios.get("/course/user/course-list");
-          setCardData(response.data);
-          console.log(response.data);
-          setIsLoading(false);
-        } else if (search) {
+        }  else if (search) {
           const endpoint = `course/search/${searchQuery}`;
           const response = await axios.get(endpoint);
           // Handle the search results
+          setCardData(response.data);
+          console.log(response.data);
+          setIsLoading(false);
+        }else {
+          const response = await axios.get("/course/user/course-list");
           setCardData(response.data);
           console.log(response.data);
           setIsLoading(false);
