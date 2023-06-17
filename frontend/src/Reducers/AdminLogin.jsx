@@ -20,7 +20,7 @@ export const adminLoginUser = createAsyncThunk(
         localStorage.setItem("admin-access", data.access);
         localStorage.setItem("admin-refresh", data.refresh);
         const userData = data.user;
-        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("admin", JSON.stringify(userData));
         const user = response.data.user 
         console.log(user);
         return jwt_decode(data.access);
@@ -40,7 +40,7 @@ const initialState = {
     success: admin_token?true:false,
     error: {},
     isStaff: admin_token?true:false ,
-    admin: JSON.parse(localStorage.getItem("user")) || {},
+    admin: JSON.parse(localStorage.getItem("admin")) || {},
     token: localStorage.getItem("admin-access") || null
   };
   
@@ -54,7 +54,7 @@ const adminLoginSlice = createSlice({
         state.admin = {};
         state.token=null
         localStorage.removeItem("admin-access");
-        localStorage.removeItem("user")
+        localStorage.removeItem("admin")
         localStorage.removeItem("admin-refresh")
     }
   },
@@ -67,7 +67,7 @@ const adminLoginSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.isStaff = true;
-        state.admin = JSON.parse(localStorage.getItem("user"));
+        state.admin = JSON.parse(localStorage.getItem("admin"));
         state.token = localStorage.getItem("admin-access");
         console.log(action.payload);
         console.log(action);

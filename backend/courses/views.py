@@ -13,6 +13,8 @@ from rest_framework import status
 from .serializers import BannerSerializer
 from chat.models import *
 from quiz.models import *
+from django.db.models import Q
+
 
 class Banner(APIView):
     permission_classes = [AllowAny]
@@ -426,8 +428,9 @@ class CheckEnroll(APIView):
         else:
             return Response(enroll)
 
+
 class CourseEnrolled(APIView):
-    def get(self, request,user_id):
+    def get(self, request, user_id):
         try:
             # enroll = Enrollment.objects.all()
             enroll = Enrollment.objects.filter(user_id=user_id)
@@ -444,13 +447,15 @@ class CourseEnrolled(APIView):
                 return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
         except Enrollment.DoesNotExist:
             return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 class EnrolledStudents(APIView):
-    def get(self,request,course_id):
+    def get(self, request, course_id):
         enroll = Enrollment.objects.filter(course_id=course_id)
         if enroll:
-            user = enroll.values_list('user',flat=True)
+            user = enroll.values_list('user', flat=True)
             users = UserAccount.objects.filter(id__in=user)
-            serializer = UserSerializer(users,many=True)
+            serializer = UserSerializer(users, many=True)
             return Response(serializer.data)
         else:
             return Response({'message': 'not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -621,3 +626,15 @@ class Course_By_Category(APIView):
             return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
 
 
+class Search(APIView):
+    def get(self, request, query):
+        try:
+            queryset = Course.objects.filter(
+                Q(title__icontains=query) |
+                Q(cat__name__icontains=query) |
+                Q(teacher__user__name=query)
+            )
+            serializer = CourseSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Course.DoesNotExist():
+            return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)

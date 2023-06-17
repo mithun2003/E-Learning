@@ -5,40 +5,63 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import image from "./logo.png";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { logout } from "../../Reducers/LoginReducer";
 import { useTheme } from "@emotion/react";
-import { useMediaQuery } from "@mui/material";
+import { TextField, useMediaQuery } from "@mui/material";
 import DrawerComp from "./DrawerComp";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { baseUrl } from "../../constants/baseUrl";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import axios from "../../axios";
-const pages = ["Courses", "Category", "About"];
+import SearchIcon from '@mui/icons-material/Search';
+const pages = ["Courses", "Category"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
   const location = useLocation(); // Add this line to use the location
 
   const isMobile = useMediaQuery(theme.breakpoints.down(1240));
   const user = JSON.parse(localStorage.getItem("user"));
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [cat, setCat] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElCat, setAnchorElCat] = useState(null);
   const { isAuthenticated } = useSelector((state) => state.login);
-  const teacher = JSON.parse(localStorage.getItem("teacher"));
+  const [expanded, setExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchClick = () => {
+    setExpanded(true);
+  };
+
+  const handleSearchEnter = (event) => {
+    if (event.key === "Enter") {
+      // const searchParams = new URLSearchParams(window.location.search);
+      // const searchQuery = searchParams.get('query');
+      navigate(`/course/search/?query=${searchQuery}`)
+      console.log(event.key)
+    }
+  };
+
+  // const searchCourses = () => {
+  //   const endpoint = `course/search/${searchQuery}`;
+  //   // Make the API request to the search endpoint using axios or your preferred HTTP client
+  //   axios.get(endpoint)
+  //     .then((response) => {
+  //       // Handle the search results
+  //       console.log(response.data);
+  //     })
+  //     .catch((error) => {
+  //       // Handle any errors
+  //       console.error(error);
+  //     });
+  // };
   const handleWishlist = () => {
     navigate("/whishlist");
   };
@@ -65,7 +88,6 @@ function ResponsiveAppBar() {
       navigate("/courses");
     }
   };
-  
 
   return (
     <AppBar
@@ -201,45 +223,85 @@ function ResponsiveAppBar() {
             </Box>
           </>
         )}
+        <Box display='flex' alignItems='center'>
+        
+            <IconButton onClick={handleSearchClick}>
+              <SearchIcon sx={{ marginRight: "1rem" }} />
+            </IconButton>
 
-        <IconButton onClick={handleWishlist}>
-          <FavoriteBorderIcon sx={{ marginRight: "1rem" }} />
-        </IconButton>
-        {isAuthenticated ? (
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={() => navigate("/profile")} sx={{ p: 0 }}>
-                <Avatar
-                  alt={user.name}
-                  src={user.image && `${baseUrl}${user.image}`}
-                />
-              
-              </IconButton>
-            </Tooltip>
-         
-          </Box>
-        ) : (
-          <Link
-            to="/login"
-            style={{
-              my: 2,
-              color: "#1D5564",
-              display: "block",
-              fontSize: "16px",
-              transition: "text-decoration 0.3s",
-              textDecoration: "none",
-              marginLeft: "auto"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.textDecoration = "underline";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.textDecoration = "none";
-            }}
-          >
-            Login
-          </Link>
-        )}
+      {expanded && (
+        <TextField
+        type="text"
+        placeholder="Enter your search query"
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        onKeyDown={handleSearchEnter}
+        style={{
+          marginRight: '1rem',
+          // "& .css-n26ql7-MuiInputBase-input-MuiOutlinedInput-input": {
+          //   height: "3px"
+          // }
+        }}
+        inputProps={{
+          style: {
+            height: "3px"
+          }
+        }}
+      />
+      
+      )}
+          {isAuthenticated ? (
+            <IconButton onClick={handleWishlist}>
+              <FavoriteBorderIcon sx={{ marginRight: "1rem" }} />
+            </IconButton>
+          ) : (
+            <Link
+              to="/login"
+              style={{
+                my: 2,
+                color: "#1D5564",
+                transition: "text-decoration 0.3s",
+                textDecoration: "none"
+              }}
+            >
+              <FavoriteBorderIcon sx={{ marginRight: "1rem" }} />
+            </Link>
+          )}
+
+          {isAuthenticated ? (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={() => navigate("/profile")} sx={{ p: 0 }}>
+                  <Avatar
+                    alt={user.name}
+                    src={user.image && `${baseUrl}${user.image}`}
+                  />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ) : (
+            <Link
+              to="/login"
+              style={{
+                my: 2,
+                color: "#1D5564",
+                display: "block",
+                fontSize: "16px",
+                transition: "text-decoration 0.3s",
+                textDecoration: "none",
+                marginLeft: "auto"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.textDecoration = "underline";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.textDecoration = "none";
+              }}
+            >
+              Login
+            </Link>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );

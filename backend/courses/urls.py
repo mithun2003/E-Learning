@@ -46,6 +46,9 @@ urlpatterns = [
 
     path('category-view/<cat_id>', Course_By_Category.as_view()),
     
+    
+    path('search/<query>', Search.as_view()),
+    
 
 ]
 

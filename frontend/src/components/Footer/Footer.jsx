@@ -4,9 +4,11 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { useTheme } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
     const theme = useTheme()
+    const navigate = useNavigate()
     const isMedium = useMediaQuery(theme.breakpoints.down("md"))
   return (
     <>
@@ -62,7 +64,7 @@ const Footer = () => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} >
                 <Box sx={{ display: 'flex', flexDirection:{md:'row',lg:'column'},textAlign:'center',height:isMedium?'25vh':'50vh',alignItems:'center',position:'relative',justifyContent:'center' }}>
-
+              
               <Typography
                 variant="body1"
                 sx={{
@@ -70,8 +72,10 @@ const Footer = () => {
                   
                   top:isMedium?0:156,
                   color: "#fff",
-                  fontWeight: 100
+                  fontWeight: 100,
+                  cursor: "pointer"
                 }}
+                onClick={()=>navigate('/courses')}
               >
                 Courses
               </Typography>

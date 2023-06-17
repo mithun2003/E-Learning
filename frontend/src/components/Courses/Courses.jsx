@@ -11,36 +11,45 @@ import React, { useEffect, useState } from "react";
 import axios from "../../axios";
 import StarIcon from "@mui/icons-material/Star";
 import { baseUrl } from "../../constants/baseUrl";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-const Courses = ({ isTeacher = null, all = null }) => {
+const Courses = ({ isTeacher = null, all = null,search=null }) => {
   const navigate = useNavigate();
   const [cardData, setCardData] = useState([]);
   const { teacher_id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('query');
   useEffect(() => {
-    if (isTeacher) {
-      axios
-        .get(`/course/teacher/course-list/${teacher_id}`)
-        .then((response) => {
+    const fetchData = async () => {
+      try {
+        if (isTeacher) {
+          const response = await axios.get(`/course/teacher/course-list/${teacher_id}`);
           setCardData(response.data);
           setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      axios
-        .get("/course/user/course-list")
-        .then((response) => {
+        } else if (all) {
+          const response = await axios.get("/course/user/course-list");
           setCardData(response.data);
           console.log(response.data);
           setIsLoading(false);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, []);
+        } else if (search) {
+          const endpoint = `course/search/${searchQuery}`;
+          const response = await axios.get(endpoint);
+          // Handle the search results
+          setCardData(response.data);
+          console.log(response.data);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        // Handle any errors
+        console.error(error);
+      }
+    };
+  
+    fetchData();
+  }, [all,isTeacher,search,searchQuery,teacher_id]);
+  
   const displayCourses = all ? cardData : cardData.slice(0, 6);
   return (
     <Box
@@ -84,7 +93,7 @@ const Courses = ({ isTeacher = null, all = null }) => {
             mr: { xs: "6vw", md: "1vw" }
           }}
         >
-          {!isTeacher && !all && (
+          {!isTeacher && !all && !search && (
             <Button
               variant="contained"
               sx={{
@@ -110,7 +119,7 @@ const Courses = ({ isTeacher = null, all = null }) => {
           )}
         </Box>
       </Box>
-      <Box display="flex" justifyContent="center">
+      {cardData.length!==0?(<Box display="flex" justifyContent="center">
         {isLoading ? (
           <Grid
             container
@@ -383,7 +392,20 @@ const Courses = ({ isTeacher = null, all = null }) => {
           </>
         )}
         {/* </Grid> */}
-      </Box>
+      </Box>):(
+          <Box display={"grid"} justifyItems={"center"}>
+        <Typography variant="h6" paragraph>
+          Not found
+        </Typography>
+        {search &&
+        <Typography variant="body2">
+          No results found for &nbsp;
+          <strong>&quot;{searchQuery}&quot;</strong>.
+          <br /> Try checking for typos or using complete
+          words.
+        </Typography>}
+        </Box>
+        )}
     </Box>
   );
 };

@@ -38,6 +38,7 @@ import Room from "../components/Live/Room";
 import Live from "../components/Live/Live";
 import WhishlistPage from "../Pages/WhishlistPage";
 import CoursesEnrolled from "../components/EnrolledCourses/CoursesEnrolled";
+import SearchCourse from "../Pages/SearchCourse";
 
 const MainRoutes = () => {
   return (
@@ -46,6 +47,7 @@ const MainRoutes = () => {
       <Routes>
         <Route exact path="/" element={<HomePages />} />
         <Route exact path="/course/detail/:id" element={<CourseDetailPage />} />
+        <Route exact path="/course/search" element={<SearchCourse />} />
         <Route exact path="/activate/:uid/:token" element={<Activate />} />
         <Route exact path="/courses" element={<AllCourses />} />
         <Route
