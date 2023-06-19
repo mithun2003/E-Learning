@@ -577,13 +577,18 @@ class Progress(APIView):
             completed_videos = VideoProgress.objects.filter(
                 user=user, course=course_id, is_completed=True).count()
             total_videos = Chapter.objects.filter(course_id=course_id).count()
+            total_quiz=0
             try:
                 quiz = QuizAttempt.objects.filter(
                     user=user, course_id=course_id, is_completed=True)
                 if quiz:
                     total_quiz = 0
             except QuizAttempt.DoesNotExist:
-                total_quiz = Quiz.objects.filter(course_id=course_id).count()
+                quiz = Quiz.objects.filter(course_id=course_id).count()
+                if not quiz:
+                    total_quiz = 0
+                else:
+                    total_quiz = quiz
             total = total_videos+total_quiz
             if total != 0:
                 progress = (completed_videos / total) * 100

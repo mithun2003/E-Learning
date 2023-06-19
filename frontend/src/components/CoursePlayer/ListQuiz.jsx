@@ -90,11 +90,16 @@ const ListQuiz = () => {
   
     setAnswers({});
   };
-  const handleAttempt=()=>{
-    const response=axios.post(`/course/quiz/attempt/${course_id}`,answers)
-    console.log(response.data);
-    handleProgress()
-  }
+  const handleAttempt = async () => {
+    try {
+      const response = await axios.post(`/course/quiz/attempt/${course_id}`, answers);
+      console.log(response.data);
+      await handleProgress(); // Wait for handleProgress() to complete before proceeding
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
 
   return (
     <div>
