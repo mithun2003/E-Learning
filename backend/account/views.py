@@ -2,23 +2,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
-# from rest_framework.permissions import IsAuthenticated
-# from django.http import Http404
+
 from .models import UserAccount, Teachers
 from rest_framework_simplejwt.tokens import RefreshToken
-# from django.shortcuts import get_object_or_404
-# from rest_framework.exceptions import ParseError
-# from rest_framework.exceptions import AuthenticationFailed
-# from django.db.models import Q
+
 from django.contrib.auth import authenticate, login
-# from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from djoser.views import TokenCreateView
 from rest_framework.decorators import permission_classes
 from django.core.mail import send_mail
 from datetime import datetime, timedelta
-
+from django.conf import settings
 
 class AdminLoginView(APIView):
     permission_classes = [AllowAny]
@@ -278,11 +273,16 @@ class Verify(APIView):
 
             # Send email
             subject = 'Teacher Verification'
-            message = 'Congratulations! You have been verified as a teacher.'
-            from_email = 'mithuncy65@gmail.com'
-            to_email = user.email
-            send_mail(subject, message, from_email, [to_email])
+            message = 'Congratulations! You have been verified as a teacher.\n\n'
+            message += 'Please click on the following link to access your account:\n\n'
+            message += f'{settings.FRONT_END}/profile'
 
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+            )
             return JsonResponse({'message': 'Teacher verified successfully'})
         except Teachers.DoesNotExist:
             return JsonResponse({'message': 'Teacher not found'}, status=404)
