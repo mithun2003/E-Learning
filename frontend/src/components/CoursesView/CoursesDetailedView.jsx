@@ -35,41 +35,7 @@ export default function CoursesDetailedView() {
   const navigate = useNavigate();
   const isLoading = useSelector((state) => state.course.isLoading);
   const location = useLocation();
-
-  useEffect(() => {
-    return () => {
-      dispatch(setNull());
-    };
-  }, [dispatch, location]);
-  useEffect(() => {
-    dispatch(fetchCourse(id));
-    fetchWishlist();
-  }, [dispatch, id]);
   const course = useSelector((state) => state.course.courseData);
-  useEffect(() => {
-    axios
-      .get(`/course/${id}/chapter-list`)
-      .then((response) => {
-        setChapter(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    fetchWishlist();
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(`/course/enrollment/${id}`)
-      .then((response) => {
-        if (response.data.enrolled === true) setEnroll(true);
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, [course]);
-
   const fetchWishlist = async () => {
     try {
       const response = await axios.get(`/course/wishlist/get/${id}`);
@@ -79,49 +45,91 @@ export default function CoursesDetailedView() {
       console.error(error);
     }
   };
+  useEffect(() => {
+  return () => {
+    dispatch(setNull());
+  };
+}, [dispatch, location]);
 
-  const handleEnrollmentStatus = async () => {
-    const response = await axios.get(`/course/enrollment/${id}`);
-    const isEnrolled = response.data.enrolled;
+useEffect(() => {
+  dispatch(fetchCourse(id));
+  fetchWishlist();
+}, [dispatch, id]);
 
-    if (isEnrolled) {
-      setEnroll(true);
-    } else {
-      setEnroll(false);
+useEffect(() => {
+  axios
+    .get(`/course/${id}/chapter-list`)
+    .then((response) => {
+      setChapter(response.data);
+      console.log(response.data);
+    })
+    .catch((error) => console.log(error));
+}, []);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const responseWishlist = await axios.get(`/course/wishlist/get/${id}`);
+      console.log(responseWishlist.data);
+      setWishlist(responseWishlist.data);
+
+      const responseEnrollment = await axios.get(`/course/enrollment/${id}`);
+      const isEnrolled = responseEnrollment.data.enrolled;
+      setEnroll(isEnrolled);
+      console.log(responseEnrollment.data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleEnroll = async () => {
-    if (user?.is_blocked === true) {
-      Swal.fire({
-        title: "Error!",
-        text: "You are blocked",
-        icon: "error",
-        backdrop: false
-      }).then(() => {
-        dispatch(logout());
+  fetchData();
+}, [id]);
+
+const showBlockedUserError = () => {
+  Swal.fire({
+    title: "Error!",
+    text: "You are blocked",
+    icon: "error",
+    backdrop: false
+  }).then(() => {
+    dispatch(logout())
+    navigate('/login');
+  });
+};
+
+
+const handleEnrollUnenroll = async (enroll) => {
+  if (user?.is_block === true) {
+    showBlockedUserError();
+  } else if (isAuthenticated) {
+    try {
+      let endpoint = enroll ? `/course/unenroll/${id}` : `/course/enroll/${id}`;
+      const response = await axios.post(endpoint, null, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
       });
-    } else if (isAuthenticated) {
-      try {
-        await axios.post(`/course/enroll/${id}`, null, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
 
-        await Swal.fire({
-          position: "top-right",
-          icon: "success",
-          title: "You have enrolled in this course",
-          showConfirmButton: false,
-          timer: 2000,
-          toast: true,
-          timerProgressBar: true
-        });
+      const successMessage = enroll ? "unenrolled" : "enrolled";
+      await Swal.fire({
+        position: "top-right",
+        icon: "success",
+        title: `You have successfully ${successMessage} from this course`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        timerProgressBar: true
+      });
 
-        await handleEnrollmentStatus();
-      } catch (error) {
+      const responseEnrollment = await axios.get(`/course/enrollment/${id}`);
+      const isEnrolled = responseEnrollment.data.enrolled;
+      setEnroll(isEnrolled);
+    } catch (error) {
+      console.log("error", error);
+      if (error.response.data.is_blocked == true) {
+        showBlockedUserError();
+      } else {
         Swal.fire({
           position: "top-right",
           icon: "error",
@@ -132,110 +140,45 @@ export default function CoursesDetailedView() {
           timerProgressBar: true
         });
       }
-    } else {
-      Swal.fire({
-        title: "",
-        position: "top-right",
-        text: "You have to login for enrolling.",
-        icon: "warning",
-        showConfirmButton: false,
-        timer: 2000,
-        toast: true,
-        timerProgressBar: true
-      });
     }
-  };
+  } else {
+    Swal.fire({
+      title: "",
+      position: "top-right",
+      text: "You have to login for enrolling.",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 2000,
+      toast: true,
+      timerProgressBar: true
+    });
+  }
+};
 
-  const handleUnenroll = async () => {
-    if (user?.is_blocked === true) {
-      Swal.fire({
-        title: "Error!",
-        text: "You are blocked",
-        icon: "error",
-        backdrop: false
-      }).then(() => {
-        dispatch(logout());
-      });
-    } else {
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "You want to Unenroll from this course",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes"
-      });
+const handleAddToWishlist = async () => {
+  try {
+    await axios.post("/course/wishlist/", { course_id: course?.course?.id });
+    console.log("Course added to wishlist");
+    fetchWishlist();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-      if (result.isConfirmed) {
-        if (isAuthenticated) {
-          try {
-            await axios.post(`/course/unenroll/${id}`, null, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-              }
-            });
+const handleRemoveFromWishlist = async () => {
+  try {
+    await axios.delete(`/course/wishlist/remove/${id}`);
+    console.log("Course removed from wishlist");
+    setWishlist(null);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-            await Swal.fire({
-              position: "top-right",
-              icon: "success",
-              title: "You have successfully unenrolled from this course",
-              showConfirmButton: false,
-              timer: 2000,
-              toast: true,
-              timerProgressBar: true
-            });
+const categories =
+  course?.course?.cat &&
+  course?.course?.cat.map((cat) => cat.name).join(", ");
 
-            await handleEnrollmentStatus();
-          } catch (error) {
-            Swal.fire({
-              position: "top-right",
-              icon: "error",
-              title: "Something went wrong",
-              showConfirmButton: false,
-              timer: 2000,
-              toast: true,
-              timerProgressBar: true
-            });
-          }
-        } else {
-          Swal.fire({
-            position: "top-right",
-            title: "",
-            text: "You have to log in to enroll.",
-            icon: "warning",
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            timerProgressBar: true
-          });
-        }
-      }
-    }
-  };
-  const handleAddToWishlist = async () => {
-    try {
-      await axios.post("/course/wishlist/", { course_id: course?.course?.id });
-      console.log("Course added to wishlist");
-      fetchWishlist();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleRemoveFromWishlist = async (courseId) => {
-    try {
-      await axios.delete(`/course/wishlist/remove/${id}`);
-      console.log("Course removed from wishlist");
-      setWishlist(null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const categories =
-    course?.course?.cat &&
-    course?.course?.cat.map((cat) => cat.name).join(", ");
 
   return (
     <div style={{ backgroundColor: "#C1D3DF" }}>
@@ -342,7 +285,7 @@ export default function CoursesDetailedView() {
                         marginTop: 5,
                         "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
                       }}
-                      onClick={handleUnenroll}
+                      onClick={() => handleEnrollUnenroll(enroll)}
                     >
                       <Typography
                         variant="h4"
@@ -364,7 +307,7 @@ export default function CoursesDetailedView() {
                         marginTop: 5,
                         "&:hover": { bgcolor: "#1D5564", opacity: "0.9" }
                       }}
-                      onClick={handleEnroll}
+                      onClick={() => handleEnrollUnenroll(enroll)}
                     >
                       <Typography
                         variant="h4"

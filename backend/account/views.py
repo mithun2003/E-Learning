@@ -158,52 +158,57 @@ class Teacher(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        is_submit = request.data.pop('is_submit', False)
-        mobile_number = request.data.pop('mobile_number', None)[0]
-        country = request.data.pop('country', None)[0]
-        image = request.data.pop('image', None)[0]
-        name = request.data.pop('name', None)[0]
-        if is_submit == False:
-            pass
-        else:
-            is_submit = True
-        # Save the value of is_submit to the UserAccount model
-        # Add the user id to the request data
-        request.data['user'] = request.user.id
-        print(request.data)
-        print(is_submit,
-              mobile_number,
-              country,
-              image,
-              name)
         user = request.user
-        user.is_submit = is_submit
-        user.mobile_number = mobile_number
-        user.country = country
-        user.image = image
-        user.name = name
-        user.save()
-        print(request.data)
-
-        # Remove is_submit from request.data
-        user_data = UserAccount.objects.get(id=user.id)
-        user_data.is_pending = True
-        user_data.save()
-        request.data.pop('is_submit', None)
-        request.data.pop('mobile_number', None)
-        request.data.pop('country', None)
-        request.data.pop('image', None)
-        request.data.pop('name', None)
-        request.data['user'] = user.id  # Add the user id to the request data
-        print(request.data)
-        serializer = TeacherCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            teacher = serializer.save(user=user)  # Assign the user instance to the user field
-            query = UserAccount.objects.get(id=user.id)
-            serializer_data = UserSerializer(query)
-            return Response(serializer_data.data, status=status.HTTP_201_CREATED)
+        if user.is_block:
+            return Response({"is_block":user.is_block}, status=status.HTTP_404_NOT_FOUND)
+ 
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            is_submit = request.data.pop('is_submit', False)
+            mobile_number = request.data.pop('mobile_number', None)[0]
+            country = request.data.pop('country', None)[0]
+            image = request.data.pop('image', None)[0]
+            name = request.data.pop('name', None)[0]
+            if is_submit == False:
+                pass
+            else:
+                is_submit = True
+            # Save the value of is_submit to the UserAccount model
+            # Add the user id to the request data
+            request.data['user'] = request.user.id
+            print(request.data)
+            print(is_submit,
+                mobile_number,
+                country,
+                image,
+                name)
+            user = request.user
+            user.is_submit = is_submit
+            user.mobile_number = mobile_number
+            user.country = country
+            user.image = image
+            user.name = name
+            user.save()
+            print(request.data)
+
+            # Remove is_submit from request.data
+            user_data = UserAccount.objects.get(id=user.id)
+            user_data.is_pending = True
+            user_data.save()
+            request.data.pop('is_submit', None)
+            request.data.pop('mobile_number', None)
+            request.data.pop('country', None)
+            request.data.pop('image', None)
+            request.data.pop('name', None)
+            request.data['user'] = user.id  # Add the user id to the request data
+            print(request.data)
+            serializer = TeacherCreateSerializer(data=request.data)
+            if serializer.is_valid():
+                teacher = serializer.save(user=user)  # Assign the user instance to the user field
+                query = UserAccount.objects.get(id=user.id)
+                serializer_data = UserSerializer(query)
+                return Response(serializer_data.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class RequestTeacher(APIView):

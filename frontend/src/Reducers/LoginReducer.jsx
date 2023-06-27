@@ -86,6 +86,7 @@ const loginSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        state.error = {};
         state.isAuthenticated = true;
         state.user= JSON.parse(localStorage.getItem("user"))
         state.access = localStorage.getItem("access");

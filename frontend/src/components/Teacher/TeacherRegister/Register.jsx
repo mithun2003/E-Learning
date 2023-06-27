@@ -96,7 +96,7 @@ const Register = () => {
     setFormErrors(newFormErrors);
     const hasErrors = Object.values(newFormErrors).some((error) => error);
 
-    if (user.is_blocked === true) {
+    if (user.is_block === true) {
       Swal.fire({
         title: "Error!",
         text: "You are blocked",
@@ -148,10 +148,10 @@ const Register = () => {
           "Content-Type": "multipart/form-data"
         }
       });
-      const data = response.data;
+      const data = response;
       console.log(data);
       // Check if user is blocked
-      if (data.is_blocked) {
+      if (data) {
         // Redirect to blocked page or show blocked message
         console.log("USER IS BLOCKED");
       } else {
@@ -167,13 +167,24 @@ const Register = () => {
       }
     } catch (error) {
       // Handle API error
+      console.log(error.response.data.is_block)
         const updatedUser = { ...user, is_submit: false };
         dispatch(setUser(updatedUser));
       setFormErrors((prevErrors) => ({
         ...prevErrors,
-        error: error.response.data
+        error: error.response.is_block
       }));
       console.log(formErrors.error);
+      if (error.response.data.is_block === true){
+        Swal.fire({
+          title: "Error!",
+          text: "You are blocked",
+          icon: "error",
+          backdrop: false
+        }).then(() => {
+          dispatch(logout())
+        });
+      }    
     }
   };
 

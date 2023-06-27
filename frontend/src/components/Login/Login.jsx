@@ -27,10 +27,10 @@ const Login = () => {
     password: ""
   });
   const [formError,setFormError]=useState(initialError)
-  const [localerror, setLocalError] = useState("");
+  // const [localerror, setLocalError] = useState("");
   const { loading, success, error } = useSelector((state) => state.login);
   useEffect(() => {
-    setLocalError(error);
+    // setLocalError(error);
     console.log(error);
   }, [error]);
   useEffect(() => {
@@ -40,7 +40,7 @@ const Login = () => {
   }, [success]);
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLocalError('')
+    // setLocalError('')
     const newFormError={
       email:user.email==="",
       password:user.password===""
@@ -59,11 +59,11 @@ const Login = () => {
   useEffect(() => {
     document.body.style.backgroundColor = "#1D5564";
     document.body.style.height = "0"; 
-    setLocalError('')
+    // setLocalError('')
 
   }, []);
   const handleChange = (event) => {
-    setLocalError("");
+    // setLocalError("");
     const {name}=event.target
     setUser({ ...user, [event.target.name]: event.target.value });
     setFormError((prevError) => ({
