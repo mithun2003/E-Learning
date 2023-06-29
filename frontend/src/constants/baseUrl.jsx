@@ -1,4 +1,4 @@
-const Debug = true;
+const Debug = false;
 let baseUrl;
 let wsUrl;
 if (Debug) {
